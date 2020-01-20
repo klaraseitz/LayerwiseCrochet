@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
-    <PatternEditor/>
-  </div>
+  <v-app>
+    <div id="app">
+      <PatternEditor/>
+    </div>
+  </v-app>
 </template>
 
 <script>
