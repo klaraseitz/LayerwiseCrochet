@@ -16,10 +16,6 @@
             }))
     };
 
-
-
-
-
     export default {
         data() {
             return {
@@ -28,11 +24,8 @@
         },
 
         mounted() {
-            console.log('mounted Hook');
             const Graph = ForceGraph();
             let element = this.$refs.canvas;
-            /* eslint no-console: ["error", { allow: ["warn", "error", "log"] }] */
-            console.log(element);
             Graph(element)
                 .graphData(gData);
         }

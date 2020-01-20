@@ -1,17 +1,17 @@
 <template>
   <div id="app">
-    <GraphCanvas/>
+    <PatternEditor/>
   </div>
 </template>
 
 <script>
-import GraphCanvas from "@/components/GraphCanvas";
+  import PatternEditor from "@/components/PatternEditor";
 
-export default {
-  name: 'app',
-  components: {
-    GraphCanvas
-  }
+  export default {
+    name: 'app',
+    components: {
+      PatternEditor
+    }
 }
 </script>
 
