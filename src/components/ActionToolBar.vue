@@ -2,18 +2,32 @@
 
 <template>
     <div>
-        <v-btn class="ma-2" outlined color="indigo">undo</v-btn>
-        <v-btn class="ma-2" outlined color="indigo">redo</v-btn>
-        <v-btn class="ma-2" outlined color="indigo">save</v-btn>
-        <v-btn class="ma-2" outlined color="indigo">open</v-btn>
-        <v-btn class="ma-2" outlined color="indigo">new layer</v-btn>
+        <v-btn class="ma-2" outlined color="indigo">
+            <v-icon> mdi-undo </v-icon>
+        </v-btn>
+        <v-btn class="ma-2" outlined color="indigo">
+            <v-icon> mdi-redo </v-icon>
+        </v-btn>
+        <v-btn class="ma-2" outlined color="indigo">
+            <v-icon> mdi-content-save-outline </v-icon>
+        </v-btn>
+        <v-btn class="ma-2" outlined color="indigo">
+            <v-icon> mdi-folder-open-outline </v-icon>
+        </v-btn>
+        <v-btn class="ma-2" outlined color="indigo">
+            <v-icon> mdi-layers-plus </v-icon>
+        </v-btn>
     </div>
 </template>
 
 <script>
-    import { mdiUndo } from '@mdi/js';
     export default {
-        name: "ActionToolBar"
+        data() {
+            return {
+                name: "ActionToolBar"
+            }
+        }
+
     }
 </script>
 
