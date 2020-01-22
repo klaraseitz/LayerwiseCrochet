@@ -17,9 +17,58 @@
         <v-btn class="ma-2" outlined color="indigo" @click="newLayer">
             <v-icon> mdi-layers-plus </v-icon>
         </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="resetGraph">
+        <v-btn class="ma-2" outlined color="indigo" @click="resetGraph" @click.stop="dialog = true">
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
+
+        <v-dialog
+                v-model="dialog"
+                max-width="290"
+                persistent
+        >
+            <v-card>
+                <v-card-title class="headline">Start a new Pattern</v-card-title>
+                <v-card-text>
+                    Choose which method you want to use to start the new Pattern.
+                    <v-container>
+                        <v-select
+                                v-model="select"
+                                :items="startMethod"
+                                label="Start Method"
+                                data-vv-name="select"
+                        />
+                        <v-text-field v-if="select!='Magic Ring'"
+                                v-model="stitchAmount"
+                                :rules="[rules.number]"
+                                label="Number of Stitches"
+                                maxlength="3"
+                        />
+
+                    </v-container>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer/>
+
+                    <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialog = false"
+                    >
+                        Cancel
+                    </v-btn>
+
+                    <v-btn
+                            color="green darken-1"
+                            text
+                            @click="dialog = false"
+                    >
+                        Done
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </div>
 </template>
 
@@ -27,7 +76,21 @@
     export default {
         data() {
             return {
-                name: "ActionToolBar"
+                name: "ActionToolBar",
+                dialog: false,
+                startMethod: [
+                    "Magic Ring",
+                    "Line of Chain Stitches",
+                    "Round of Chain Stitches"
+                ],
+                select: null,
+                stitchAmount: 6,
+                rules: {
+                    number: value => {
+                        const pattern = /^[1-9][0-9]{0,2}$/;
+                        return pattern.test(value) || 'Please input a whole number.'
+                    },
+                },
             }
         },
         methods: {
