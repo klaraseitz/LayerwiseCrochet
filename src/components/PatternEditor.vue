@@ -3,8 +3,8 @@
         <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
             <LayerSlider/>
-            <GraphCanvas :trigger="graphTriggerMsg" style="width:80%"/>
-            <StitchSelector/>
+            <GraphCanvas :trigger="graphTriggerMsg" :stitch="stitch" style="width:80%"/>
+            <StitchSelector @sendStitch="setStitch($event)"/>
         </div>
     </div>
 </template>
@@ -19,7 +19,8 @@
         data() {
             return {
                 name: "PatternEditor",
-                graphTriggerMsg: ''
+                graphTriggerMsg: '',
+                stitch: {}
             }
         },
         components: {
@@ -31,6 +32,9 @@
         methods: {
             setGraphTrigger(message) {
                 this.graphTriggerMsg = message;
+            },
+            setStitch(msg) {
+                this.stitch = msg.stitch;
             }
         }
     }

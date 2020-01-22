@@ -35,10 +35,6 @@
                 let msg = {name: 'reset'};
                 this.$emit("triggerGraph", msg)
             },
-            startGraph() {
-                let msg = {name: 'start', data: 'magicRing'};
-                this.$emit("triggerGraph", msg)
-            },
             newLayer() {
                 let msg = {name: 'newLayer'};
                 this.$emit("triggerGraph", msg)

@@ -12,6 +12,8 @@
                     activatable
                     open-on-click
                     dense
+                    :active.sync="selectedStitch"
+                    @update:active="updateSelectedStitch"
             >
                 <template v-slot:prepend="{ item }">
                     <v-icon>
@@ -28,6 +30,7 @@ export default {
     data() {
         return {
             name: 'StitchSelector',
+            selectedStitch: [],
             icons: {
                 ring: 'mdi-auto-fix',
                 sc: 'mdi-plus',
@@ -36,7 +39,15 @@ export default {
                 slst: 'mdi-circle-small',
                 chr: 'mdi-dots-horizontal',
             },
-            items: [
+            stitches: [
+                { id: 2, name: "Magic Ring", type: "ring", category: "start" },
+                { id: 3, name: 'Row of Chain Stitches', type: "chr", category: "start" },
+                { id: 4, name: 'Single Crochet', type: "sc", category: "basic" },
+                { id: 5, name: 'Double Crochet', type: "dc", category: "basic" },
+                { id: 6, name: 'Chain Stitch', type: "ch", category: "basic" },
+                { id: 7, name: 'Slip Stitch', type: "slst", category: "basic" },
+            ],
+            items: [ // compute this property from items list and create unique ids
                 {
                     id: 1,
                     name: 'Starters :',
@@ -56,6 +67,16 @@ export default {
                     ],
                 }
             ]
+        }
+    },
+    methods: {
+        updateSelectedStitch() {
+            let stitch = this.stitches.find(obj => {
+                return obj.id === this.selectedStitch[0]
+            });
+            console.log("selected stitch type: " + stitch.name);
+            let msg = {name: 'changeStitch', stitch};
+            this.$emit("sendStitch", msg)
         }
     }
 }

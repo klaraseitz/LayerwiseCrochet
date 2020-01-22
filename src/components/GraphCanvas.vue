@@ -32,22 +32,49 @@
                 currentNode: ''
             }
         },
-        props: [ 'trigger' ],
+        props: [ 'trigger', 'stitch' ],
         watch: {
             trigger: function (trigger) {
-                console.log(trigger);
-                this.resetGraph();
+                switch (trigger.name) {
+                    case 'reset':
+                        this.resetGraph();
+                        break;
+                    case 'newLayer':
+                        this.startGraph();
+                        break;
+                    case 'openGraph':
+                        this.getTrigger(trigger.name);
+                        break;
+                    case 'saveGraph':
+                        this.getTrigger(trigger.name);
+                        break;
+                    case 'redo':
+                        this.getTrigger(trigger.name);
+                        break;
+                    case 'undo':
+                        this.getTrigger(trigger.name);
+                        break;
+                    default:
+                        console.log("got unexpected trigger name");
+
+                }
             }
         },
         methods: {
-            startGraph(stitchType) {
+            startGraph() {
                 if(this.graphLayers != 0){
-                    alert("Graph is not empty");
+                    console.log("Graph is not empty");
                 }else{
-                    let magicRing = {"id": '0', "row": 0, "start": true, "type": "Magic Ring"};
-                    this.currentNode = magicRing.id;
-                    addDataToGraph([magicRing], []);
+                    console.log(this.stitch.type);
+                    if(this.stitch.type == "ring"){
+                        let magicRing = {"id": '0', "row": 0, "start": true, "type": "Magic Ring"};
+                        this.currentNode = magicRing.id;
+                        addDataToGraph([magicRing], []);
+                    }
                 }
+            },
+            getTrigger(data) {
+                console.log("graph got trigger: " + data);
             },
             resetGraph() {
                 graph.graphData({"nodes":[], "links":[]});
