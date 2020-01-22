@@ -1,9 +1,9 @@
 <template>
     <div>
-        <ActionToolBar/>
+        <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
             <LayerSlider/>
-            <GraphCanvas style="width:80%"/>
+            <GraphCanvas :trigger="graphTriggerMsg" style="width:80%"/>
             <StitchSelector/>
         </div>
     </div>
@@ -16,12 +16,22 @@
     import StitchSelector from "@/components/StitchSelector";
 
     export default {
-        name: "PatternEditor",
+        data() {
+            return {
+                name: "PatternEditor",
+                graphTriggerMsg: ''
+            }
+        },
         components: {
             ActionToolBar,
             LayerSlider,
             GraphCanvas,
             StitchSelector
+        },
+        methods: {
+            setGraphTrigger(message) {
+                this.graphTriggerMsg = message;
+            }
         }
     }
 </script>
