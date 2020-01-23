@@ -74,7 +74,7 @@ export default {
             let stitch = this.stitches.find(obj => {
                 return obj.id === this.selectedStitch[0]
             });
-            console.log("selected stitch type: " + stitch.name);
+            console.log("selected stitch type: " + stitch);
             let msg = {name: 'changeStitch', stitch};
             this.$emit("sendStitch", msg)
         }

@@ -80,11 +80,13 @@
         methods: {
             startGraph(method, stitchAmount) {
                 resetGraph();
+                this.graphLayers = 0;
                 switch (method){
                     case 'Magic Ring':
                         let magicRing = {"id": uniqueID(), "layer": 0, "start": true, "type": "Magic Ring"};
                         this.currentNode = magicRing.id;
                         addDataToGraph(magicRing, []);
+                        this.graphLayers = 1;
                         break;
                     case 'Line of Chain Stitches':
                         this.startChain(stitchAmount, false);
@@ -124,8 +126,29 @@
                 this.currentNode = toID;
                 addDataToGraph([], [link]);
             },
+            addStitch(prevNodeID, insertNodeID, type){
+                let node = {"id": uniqueID(), "row": this.graphLayers, "start": false, "type": type, "previous": prevNodeID};
+                let linkToPrevious = {"source": node.id, "target": prevNodeID};
+                let linkToInsert = {"source": node.id, "target": insertNodeID, "inserts": true};
+
+                this.currentNode = node.id;
+                addDataToGraph([node], [linkToPrevious, linkToInsert]);
+            },
             handleNodeClick(node) {
                 console.log("clicked node: " + node.id);
+                console.log("stitch type: " + this.stitch);
+                if(this.stitch.type){
+                    switch (this.stitch.type) {
+                        case 'ch':
+                            this.addChain(this.currentNode, this.graphLayers);
+                            break;
+                        case 'slst':
+                            this.connectWithSlipStitch(this.currentNode, node.id);
+                            break;
+                        default:
+                            this.addStitch(this.currentNode, node.id, this.stitch.type);
+                    }
+                }
             }
         },
         mounted() {
