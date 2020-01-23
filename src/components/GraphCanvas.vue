@@ -50,7 +50,7 @@
                         this.startGraph(trigger.method, trigger.stitchAmount);
                         break;
                     case 'newLayer':
-                        this.getTrigger(trigger.name);
+                        this.graphLayers++;
                         break;
                     case 'openGraph':
                         this.getTrigger(trigger.name);
@@ -67,6 +67,9 @@
                     default:
                         console.log("got unexpected trigger name");
                 }
+            },
+            graphLayers: function (trigger) {
+                this.$emit("topLayer", this.graphLayers);
             }
         },
         computed: {
@@ -102,7 +105,7 @@
                 console.log("graph got trigger: " + data);
             },
             startChain(amount, isClosed) {
-                let firstChain = {"id": uniqueID(), "row": 0, "start": true, "type": "Chain Stitch"};
+                let firstChain = {"id": uniqueID(), "layer": 0, "start": true, "type": "Chain Stitch"};
                 addDataToGraph(firstChain, []);
                 this.currentNode = firstChain.id;
                 for(let i = 1; i < amount; i++){
@@ -113,8 +116,8 @@
                     this.graphLayers = 1;
                 }
             },
-            addChain(previousID, row){
-                let node = {"id": uniqueID(), "row": row, "start": false, "type": "Chain Stitch", "previous": previousID};
+            addChain(previousID, layer){
+                let node = {"id": uniqueID(), "layer": layer, "start": false, "type": "Chain Stitch", "previous": previousID};
                 let link = {"source": node.id, "target": previousID};
 
                 this.currentNode = node.id;
@@ -127,7 +130,7 @@
                 addDataToGraph([], [link]);
             },
             addStitch(prevNodeID, insertNodeID, type){
-                let node = {"id": uniqueID(), "row": this.graphLayers, "start": false, "type": type, "previous": prevNodeID};
+                let node = {"id": uniqueID(), "layer": this.graphLayers, "start": false, "type": type, "previous": prevNodeID};
                 let linkToPrevious = {"source": node.id, "target": prevNodeID};
                 let linkToInsert = {"source": node.id, "target": insertNodeID, "inserts": true};
 
@@ -149,7 +152,7 @@
                             this.addStitch(this.currentNode, node.id, this.stitch.type);
                     }
                 }
-            }
+            },
         },
         mounted() {
             let element = this.$refs.canvas;
@@ -159,8 +162,14 @@
                     element.style.cursor = node ? 'pointer' : null;
                 })
                 .onNodeClick(node => {
-                this.handleNodeClick(node);
-            })
+                this.handleNodeClick(node)})
+                .nodeColor(node => {
+                    if(node.layer%2 == 0){
+                        return 'red'
+                    }else{
+                        return 'black'
+                    }
+                })
         }
     }
 </script>

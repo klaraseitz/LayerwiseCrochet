@@ -2,8 +2,8 @@
     <div>
         <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
-            <LayerSlider/>
-            <GraphCanvas :trigger="graphTriggerMsg" :stitch="stitch" style="width:80%"/>
+            <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
+            <GraphCanvas :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
             <StitchSelector @sendStitch="setStitch($event)"/>
         </div>
     </div>
@@ -20,6 +20,8 @@
             return {
                 name: "PatternEditor",
                 graphTriggerMsg: '',
+                maxLayer: 0,
+                currentLayer: 0,
                 stitch: {}
             }
         },
@@ -35,6 +37,12 @@
             },
             setStitch(msg) {
                 this.stitch = msg.stitch;
+            },
+            updateMaxLayer(maxLayer) {
+                this.maxLayer = maxLayer;
+            },
+            setCurrentLayer(layer) {
+                this.currentLayer = layer;
             }
         }
     }
