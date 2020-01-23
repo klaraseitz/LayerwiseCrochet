@@ -17,7 +17,7 @@
         <v-btn class="ma-2" outlined color="indigo" @click="newLayer">
             <v-icon> mdi-layers-plus </v-icon>
         </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="resetGraph" @click.stop="dialog = true">
+        <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true">
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
 
@@ -32,12 +32,12 @@
                     Choose which method you want to use to start the new Pattern.
                     <v-container>
                         <v-select
-                                v-model="select"
-                                :items="startMethod"
+                                v-model="selectedMethod"
+                                :items="startMethods"
                                 label="Start Method"
                                 data-vv-name="select"
                         />
-                        <v-text-field v-if="select!='Magic Ring'"
+                        <v-text-field v-if="selectedMethod!='Magic Ring'"
                                 v-model="stitchAmount"
                                 :rules="[rules.number]"
                                 label="Number of Stitches"
@@ -61,7 +61,7 @@
                     <v-btn
                             color="green darken-1"
                             text
-                            @click="dialog = false"
+                            @click="startGraph"
                     >
                         Done
                     </v-btn>
@@ -78,12 +78,12 @@
             return {
                 name: "ActionToolBar",
                 dialog: false,
-                startMethod: [
+                startMethods: [
                     "Magic Ring",
                     "Line of Chain Stitches",
                     "Round of Chain Stitches"
                 ],
-                select: null,
+                selectedMethod: null,
                 stitchAmount: 6,
                 rules: {
                     number: value => {
@@ -94,8 +94,9 @@
             }
         },
         methods: {
-            resetGraph() {
-                let msg = {name: 'reset'};
+            startGraph() {
+                this.dialog = false;
+                let msg = {name: 'start', method: this.selectedMethod, stitchAmount: this.stitchAmount};
                 this.$emit("triggerGraph", msg)
             },
             newLayer() {
