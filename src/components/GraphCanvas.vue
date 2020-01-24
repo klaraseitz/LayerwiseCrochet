@@ -3,9 +3,10 @@
 </template>
 
 <script >
-    import ForceGraph from 'force-graph'
+    import ForceGraph from 'force-graph';
+    import Vector from '../helper/vector';
     const graph = ForceGraph();
-    const N = 300;
+    const N = 2;
     const gData = {
         nodes: [...Array(N).keys()].map(i => ({ id: i })),
         links: [...Array(N).keys()]
@@ -15,6 +16,18 @@
                 target: Math.round(Math.random() * (id-1))
             }))
     }
+
+    const stitchImgDict = {
+        'Slipstitch': 'slst.png',
+        'Chain Stitch': 'ch.png',
+        'sc': 'sc.png',
+        'hdc': 'hdc.png',
+        'dc': 'dc.png',
+        'tr': 'tr.png',
+        'dtr': 'dtr.png',
+        'Magic Ring': 'magic_ring.png',
+        'hole': 'hole.png',
+    };
 
     function addDataToGraph(nodes=[], links=[]) {
         const data = graph.graphData();
@@ -124,7 +137,7 @@
                 addDataToGraph([node], [link]);
             },
             connectWithSlipStitch(fromID, toID){
-                let link = {"source": fromID, "target": toID, "slipstitch": true};
+                let link = {"source": fromID, "target": toID, "Slipstitch": true};
 
                 this.currentNode = toID;
                 addDataToGraph([], [link]);
@@ -138,8 +151,6 @@
                 addDataToGraph([node], [linkToPrevious, linkToInsert]);
             },
             handleNodeClick(node) {
-                console.log("clicked node: " + node.id);
-                console.log("stitch type: " + this.stitch);
                 if(this.stitch.type){
                     switch (this.stitch.type) {
                         case 'ch':
@@ -162,13 +173,92 @@
                     element.style.cursor = node ? 'pointer' : null;
                 })
                 .onNodeClick(node => {
-                this.handleNodeClick(node)})
+                    this.handleNodeClick(node)})
                 .nodeColor(node => {
                     if(node.layer%2 == 0){
                         return 'red'
                     }else{
                         return 'black'
                     }
+                })
+                // .nodeCanvasObject(({ id, x, y }, ctx) => {
+                //     ctx.fillStyle = "#000000";
+                //     [
+                //         () => {
+                //             let radius = 0;
+                //             let angle = 0;
+                //             ctx.beginPath();
+                //             ctx.moveTo(x,y);
+                //             for (let n = 0; n < 40; n++) {
+                //                 radius += 0.2;
+                //                 // make a complete circle every 50 iterations
+                //                 angle += (Math.PI * 2) / 20;
+                //                 let newX = x + radius * Math.cos(angle);
+                //                 let newY = y + radius * Math.sin(angle);
+                //                 ctx.lineTo(newX, newY);
+                //             }
+                //
+                //             ctx.stroke();
+                //         }, // magic ring
+                //         () => {ctx.beginPath(); ctx.arc(x, y, 3, 0, 2 * Math.PI); ctx.fill();}, // slipstitch
+                //         () => {ctx.beginPath();
+                //             ctx.moveTo(x-10, y); ctx.lineTo(x + 10, y ); ctx.moveTo(x, y-10); ctx.lineTo(x, y+10);
+                //             ctx.stroke();
+                //         }, // single crochet
+                //         () => {
+                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
+                //             ctx.stroke();
+                //         }, // hdc
+                //         () => {
+                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
+                //             ctx.moveTo(x-5, y+5); ctx.lineTo(x+5, y-5 ); // middle slash
+                //             ctx.stroke();
+                //         }, // dc
+                //         () => {
+                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
+                //             ctx.moveTo(x-5, y); ctx.lineTo(x+5, y-10 ); // top slash
+                //             ctx.moveTo(x-5, y+10); ctx.lineTo(x+5, y ); // bottom slash
+                //             ctx.stroke();
+                //         }, // tr
+                //         () => {
+                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
+                //             ctx.moveTo(x-5, y); ctx.lineTo(x+5, y-10 ); // top slash
+                //             ctx.moveTo(x-5, y+5); ctx.lineTo(x+5, y-5 ); // middle slash
+                //             ctx.moveTo(x-5, y+10); ctx.lineTo(x+5, y ); // bottom slash
+                //             ctx.stroke();
+                //         }, //dtr
+                //         () => {
+                //             ctx.save(); ctx.scale(1.3, 1); // saves settings before scaling
+                //             ctx.beginPath();
+                //             ctx.arc(x/1.3, y, 5, 0, 2 * Math.PI, false); ctx.stroke(); // drawing circle, normalizing scaled x coordinate
+                //             ctx.closePath(); ctx.restore(); // restores settings from last save (next drawings are unaffected by scaling)
+                //         }, // chain stitch
+                //
+                //     ][id%8]();
+                // })
+                .linkCanvasObjectMode(() => 'after')
+                .linkCanvasObject((link, ctx) =>{
+                    let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
+                    let n2Vec = new Vector(link.target.x, link.target.y, link.target.z);
+                    let linkVec = n2Vec.subtract(n1Vec).unit();
+                    let perpendicularVec = new Vector(1, 0, 0);
+                    let angle = perpendicularVec.unitRadianAngleTo(linkVec);
+                    console.log("angle: " + angle);
+                    let centerX = (link.source.x + link.target.x) / 2;
+                    let centerY = (link.source.y + link.target.y) / 2;
+                    ctx.save();
+                    ctx.translate(centerX, centerY);              //translate to center of shape
+                    ctx.rotate(angle);
+                    ctx.translate(-centerX, -centerY);
+
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY-15);
+                    ctx.lineTo(centerX,centerY+15 );
+                    ctx.moveTo(centerX - 10, centerY-15);
+                    ctx.lineTo(centerX +10, centerY-15); // T shape
+
+                    ctx.stroke();
+                    ctx.closePath(); ctx.restore();
                 })
         }
     }
