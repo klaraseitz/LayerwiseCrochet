@@ -4,7 +4,9 @@
 
 <script >
     import ForceGraph from 'force-graph';
-    import Vector from '../helper/vector';
+    import Vector from '@/helper/vector';
+    import CrochetCanvas from "@/helper/crochetCanvas";
+    const stitchCanvas = new CrochetCanvas();
     const graph = ForceGraph();
     const N = 20;
     const gData = {
@@ -15,18 +17,6 @@
                 source: id,
                 target: Math.round(Math.random() * (id-1))
             }))
-    };
-
-    const stitchImgDict = {
-        'Slipstitch': 'slst.png',
-        'Chain Stitch': 'ch.png',
-        'sc': 'sc.png',
-        'hdc': 'hdc.png',
-        'dc': 'dc.png',
-        'tr': 'tr.png',
-        'dtr': 'dtr.png',
-        'Magic Ring': 'magic_ring.png',
-        'hole': 'hole.png',
     };
 
     function addDataToGraph(nodes=[], links=[]) {
@@ -151,16 +141,16 @@
                 addDataToGraph([node], [linkToPrevious, linkToInsert]);
             },
             handleNodeClick(node) {
-                if(this.stitch.type){
-                    switch (this.stitch.type) {
-                        case 'ch':
+                if(this.stitch){
+                    switch (this.stitch) {
+                        case 'Chain Stitch':
                             this.addChain(this.currentNode, this.graphLayers);
                             break;
-                        case 'slst':
+                        case 'Slipstitch':
                             this.connectWithSlipStitch(this.currentNode, node.id);
                             break;
                         default:
-                            this.addStitch(this.currentNode, node.id, this.stitch.type);
+                            this.addStitch(this.currentNode, node.id, this.stitch);
                     }
                 }
             },
@@ -245,6 +235,7 @@
                     let angle = perpendicularVec.unitAngleTo(linkVec);
                     let centerX = (link.source.x + link.target.x) / 2;
                     let centerY = (link.source.y + link.target.y) / 2;
+
                     ctx.save();
                     ctx.translate(centerX, centerY); //translate to center of shape
                     if(linkVec.x < 0){
@@ -255,11 +246,7 @@
                     ctx.translate(-centerX, -centerY);
 
                     ctx.beginPath();
-                    ctx.moveTo(centerX, centerY-15);
-                    ctx.lineTo(centerX,centerY+15 );
-                    ctx.moveTo(centerX - 10, centerY-15);
-                    ctx.lineTo(centerX +10, centerY-15); // T shape
-
+                    stitchCanvas.drawSlipstitch(ctx, centerX, centerY);
                     ctx.stroke();
                     ctx.closePath(); ctx.restore();
                 })
