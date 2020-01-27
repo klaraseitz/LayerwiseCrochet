@@ -29,6 +29,28 @@ export default class CrochetCanvas {
         }
     }
 
+    drawMagicRing(ctx, x, y) {
+        let radius = 0;
+        let angle = 0;
+        ctx.moveTo(x,y);
+        for (let n = 0; n < 40; n++) {
+            radius += 0.2;
+            // make a complete circle every 50 iterations
+            angle += (Math.PI * 2) / 20;
+            let newX = x + radius * Math.cos(angle);
+            let newY = y + radius * Math.sin(angle);
+            ctx.lineTo(newX, newY);
+        }
+
+        ctx.stroke();
+    }
+
+    drawChainStitch(ctx, x, y) {
+        ctx.save(); ctx.scale(1.3, 1); // save() saves settings before scaling
+        ctx.arc(x/1.3, y, 5, 0, 2 * Math.PI, false); ctx.stroke(); // drawing circle, normalizing scaled x coordinate
+        ctx.closePath(); ctx.restore(); // restores settings from last save (next drawings are unaffected by scaling)
+    }
+
     drawSlipstitch(ctx, x, y) {
         ctx.arc(x, y, 3, 0, 2 * Math.PI);
         ctx.fill();
