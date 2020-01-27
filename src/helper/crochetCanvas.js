@@ -27,6 +27,7 @@ export default class CrochetCanvas {
                 this.drawDoubleTrebleCrochet(ctx, x, y);
                 break;
         }
+        ctx.closePath();
     }
 
     drawMagicRing(ctx, x, y) {

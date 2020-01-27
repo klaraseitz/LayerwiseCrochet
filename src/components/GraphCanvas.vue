@@ -171,84 +171,37 @@
                         return 'black'
                     }
                 })
-                // .nodeCanvasObject(({ id, x, y }, ctx) => {
-                //     ctx.fillStyle = "#000000";
-                //     [
-                //         () => {
-                //             let radius = 0;
-                //             let angle = 0;
-                //             ctx.beginPath();
-                //             ctx.moveTo(x,y);
-                //             for (let n = 0; n < 40; n++) {
-                //                 radius += 0.2;
-                //                 // make a complete circle every 50 iterations
-                //                 angle += (Math.PI * 2) / 20;
-                //                 let newX = x + radius * Math.cos(angle);
-                //                 let newY = y + radius * Math.sin(angle);
-                //                 ctx.lineTo(newX, newY);
-                //             }
-                //
-                //             ctx.stroke();
-                //         }, // magic ring
-                //         () => {ctx.beginPath(); ctx.arc(x, y, 3, 0, 2 * Math.PI); ctx.fill();}, // slipstitch
-                //         () => {ctx.beginPath();
-                //             ctx.moveTo(x-10, y); ctx.lineTo(x + 10, y ); ctx.moveTo(x, y-10); ctx.lineTo(x, y+10);
-                //             ctx.stroke();
-                //         }, // single crochet
-                //         () => {
-                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
-                //             ctx.stroke();
-                //         }, // hdc
-                //         () => {
-                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
-                //             ctx.moveTo(x-5, y+5); ctx.lineTo(x+5, y-5 ); // middle slash
-                //             ctx.stroke();
-                //         }, // dc
-                //         () => {
-                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
-                //             ctx.moveTo(x-5, y); ctx.lineTo(x+5, y-10 ); // top slash
-                //             ctx.moveTo(x-5, y+10); ctx.lineTo(x+5, y ); // bottom slash
-                //             ctx.stroke();
-                //         }, // tr
-                //         () => {
-                //             ctx.beginPath(); ctx.moveTo(x, y-15); ctx.lineTo(x, y+15 ); ctx.moveTo(x - 10, y-15); ctx.lineTo(x +10, y-15); // T shape
-                //             ctx.moveTo(x-5, y); ctx.lineTo(x+5, y-10 ); // top slash
-                //             ctx.moveTo(x-5, y+5); ctx.lineTo(x+5, y-5 ); // middle slash
-                //             ctx.moveTo(x-5, y+10); ctx.lineTo(x+5, y ); // bottom slash
-                //             ctx.stroke();
-                //         }, //dtr
-                //         () => {
-                //             ctx.save(); ctx.scale(1.3, 1); // saves settings before scaling
-                //             ctx.beginPath();
-                //             ctx.arc(x/1.3, y, 5, 0, 2 * Math.PI, false); ctx.stroke(); // drawing circle, normalizing scaled x coordinate
-                //             ctx.closePath(); ctx.restore(); // restores settings from last save (next drawings are unaffected by scaling)
-                //         }, // chain stitch
-                //
-                //     ][id%8]();
-                // })
+                .nodeCanvasObject((node, ctx) => {
+                    if(node.type == "Magic Ring" || node.type == "Chain Stitch"){
+                        stitchCanvas.draw(node.type, ctx, node.x, node.y);
+                    }
+                })
                 .linkCanvasObjectMode(() => 'after')
                 .linkCanvasObject((link, ctx) =>{
+                    // Calculate Angle and Center point for placement
                     let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
                     let n2Vec = new Vector(link.target.x, link.target.y, link.target.z);
                     let linkVec = n1Vec.subtract(n2Vec).unit();
                     let perpendicularVec = new Vector(0, 1, 0);
+
                     let angle = perpendicularVec.unitAngleTo(linkVec);
-                    let centerX = (link.source.x + link.target.x) / 2;
-                    let centerY = (link.source.y + link.target.y) / 2;
+                    let x = link.source.x;
+                    let y = link.source.y;
 
-                    ctx.save();
-                    ctx.translate(centerX, centerY); //translate to center of shape
-                    if(linkVec.x < 0){
-                        ctx.rotate(Math.PI + angle);
-                    }else{
-                        ctx.rotate(Math.PI -angle);
+                    // Draw on html5 canvas if the edge is of type insert
+                    if(link.inserts){
+                        ctx.save();
+                        ctx.translate(x, y); //translate to center of shape
+                        if(linkVec.x < 0){
+                            ctx.rotate(Math.PI + angle);
+                        }else{
+                            ctx.rotate(Math.PI -angle);
+                        }
+                        ctx.translate(-x, -y);
+
+                        stitchCanvas.draw(link.source.type, ctx, x, y);
+                        ctx.restore();
                     }
-                    ctx.translate(-centerX, -centerY);
-
-                    ctx.beginPath();
-                    stitchCanvas.drawSlipstitch(ctx, centerX, centerY);
-                    ctx.stroke();
-                    ctx.closePath(); ctx.restore();
                 })
         }
     }
