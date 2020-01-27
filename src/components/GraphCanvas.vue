@@ -6,7 +6,7 @@
     import ForceGraph from 'force-graph';
     import Vector from '../helper/vector';
     const graph = ForceGraph();
-    const N = 2;
+    const N = 20;
     const gData = {
         nodes: [...Array(N).keys()].map(i => ({ id: i })),
         links: [...Array(N).keys()]
@@ -15,7 +15,7 @@
                 source: id,
                 target: Math.round(Math.random() * (id-1))
             }))
-    }
+    };
 
     const stitchImgDict = {
         'Slipstitch': 'slst.png',
@@ -240,15 +240,18 @@
                 .linkCanvasObject((link, ctx) =>{
                     let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
                     let n2Vec = new Vector(link.target.x, link.target.y, link.target.z);
-                    let linkVec = n2Vec.subtract(n1Vec).unit();
-                    let perpendicularVec = new Vector(1, 0, 0);
-                    let angle = perpendicularVec.unitRadianAngleTo(linkVec);
-                    console.log("angle: " + angle);
+                    let linkVec = n1Vec.subtract(n2Vec).unit();
+                    let perpendicularVec = new Vector(0, 1, 0);
+                    let angle = perpendicularVec.unitAngleTo(linkVec);
                     let centerX = (link.source.x + link.target.x) / 2;
                     let centerY = (link.source.y + link.target.y) / 2;
                     ctx.save();
-                    ctx.translate(centerX, centerY);              //translate to center of shape
-                    ctx.rotate(angle);
+                    ctx.translate(centerX, centerY); //translate to center of shape
+                    if(linkVec.x < 0){
+                        ctx.rotate(Math.PI + angle);
+                    }else{
+                        ctx.rotate(Math.PI -angle);
+                    }
                     ctx.translate(-centerX, -centerY);
 
                     ctx.beginPath();

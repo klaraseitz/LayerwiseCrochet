@@ -68,16 +68,12 @@ export default class Vector {
         };
     }
 
-    angleTo(a) {
+    angleTo(a) { // returns radians
         return Math.acos(this.dot(a) / (this.length() * a.length()));
     }
 
     unitAngleTo(a) { // use when vectors are of unit length
         return Math.acos(this.dot(a));
-    }
-
-    unitRadianAngleTo(a) { // use when vectors are of unit length and you dont want degrees
-        return this.dot(a);
     }
 
     toArray(n) {
