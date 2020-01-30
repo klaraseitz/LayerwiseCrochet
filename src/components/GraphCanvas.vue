@@ -187,6 +187,8 @@
                     let angle = perpendicularVec.unitAngleTo(linkVec);
                     let x = link.source.x;
                     let y = link.source.y;
+                    let middleX = (link.source.x + link.target.x)/2;
+                    let middleXÝ = (link.source.y + link.target.y)/2;
 
                     // Draw on html5 canvas if the edge is of type insert
                     if(link.inserts){
@@ -201,6 +203,8 @@
 
                         stitchCanvas.draw(link.source.type, ctx, x, y);
                         ctx.restore();
+                    }else if(link.Slipstitch){
+                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleXÝ);
                     }
                 })
         }
