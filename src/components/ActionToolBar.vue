@@ -20,6 +20,7 @@
         <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true">
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
+        <v-switch v-model="switch3D" :label="`3D ${switch3D.toString()}`" v-on:change="switchDimension"/>
 
         <v-dialog
                 v-model="dialog"
@@ -83,7 +84,7 @@
                     "Line of Chain Stitches",
                     "Round of Chain Stitches"
                 ],
-                selectedMethod: null,
+                selectedMethod: "Magic Ring",
                 stitchAmount: 6,
                 rules: {
                     number: value => {
@@ -91,6 +92,7 @@
                         return pattern.test(value) || 'Please input a whole number.'
                     },
                 },
+                switch3D: true,
             }
         },
         methods: {
@@ -117,6 +119,10 @@
             },
             undo() {
                 let msg = {name: 'undo'};
+                this.$emit("triggerGraph", msg)
+            },
+            switchDimension() {
+                let msg = {name: 'switchDimension', is3D: this.switch3D};
                 this.$emit("triggerGraph", msg)
             }
         }

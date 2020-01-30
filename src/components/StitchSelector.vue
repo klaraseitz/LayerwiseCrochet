@@ -55,8 +55,10 @@ export default {
             let stitch = this.stitches.find(obj => {
                 return obj.id === this.selectedStitch[0]
             });
-            let msg = {name: 'changeStitch', stitch: stitch.name};
-            this.$emit("sendStitch", msg);
+            if(stitch){
+                let msg = {name: 'changeStitch', stitch: stitch.name};
+                this.$emit("sendStitch", msg);
+            }
         }
     },
     computed: {

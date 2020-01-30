@@ -3,12 +3,13 @@
 </template>
 
 <script >
-    import ForceGraph from 'force-graph';
+    import * as THREE from 'three';
+    import ForceGraph3D from '3d-force-graph';
     import Vector from '@/helper/vector';
-    import CrochetCanvas from "@/helper/crochetCanvas";
-    const stitchCanvas = new CrochetCanvas();
-    const graph = ForceGraph();
-    const N = 20;
+    import CrochetPaths from "@/helper/crochetThreejsPaths";
+    const stitchPaths = new CrochetPaths();
+    const graph = ForceGraph3D();
+    const N = 2;
     const gData = {
         nodes: [...Array(N).keys()].map(i => ({ id: i })),
         links: [...Array(N).keys()]
@@ -24,7 +25,7 @@
         data.nodes = data.nodes.concat(nodes);
         data.links = data.links.concat(links);
         graph.graphData(data);
-        console.log("added Data to graph, graph: ");//, graph.graphData());
+        //console.log("added Data to graph, graph: ");//, graph.graphData());
     }
 
     function resetGraph() {
@@ -42,7 +43,8 @@
             return {
                 name: 'GraphCanvas',
                 graphLayers: 0,
-                currentNode: null
+                currentNode: null,
+                is3D: true,
             }
         },
         props: [ 'trigger', 'stitch' ],
@@ -66,6 +68,10 @@
                         break;
                     case 'undo':
                         this.getTrigger(trigger.name);
+                        break;
+                    case 'switchDimension':
+                        this.is3D = trigger.is3D;
+                        graph.refresh();
                         break;
                     default:
                         console.log("got unexpected trigger name");
@@ -105,7 +111,7 @@
                 }
             },
             getTrigger(data) {
-                console.log("graph got trigger: " + data);
+                console.log("graph got unimplemented trigger: " + data);
             },
             startChain(amount, isClosed) {
                 let firstChain = {"id": uniqueID(), "layer": 0, "start": true, "type": "Chain Stitch"};
@@ -159,50 +165,84 @@
             let element = this.$refs.canvas;
             graph(element)
                 .graphData(gData)
+                .numDimensions(this.is3D ? 3 : 2)
+                .backgroundColor("#ffffff")
+                .d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
                 })
                 .onNodeClick(node => {
                     this.handleNodeClick(node)})
-                .nodeColor(node => {
-                    if(node.layer%2 == 0){
-                        return 'red'
+                .nodeOpacity(0)
+                .nodeRelSize(5)
+                .nodeThreeObjectExtend(true)
+                .nodeThreeObject((node) => {
+                    // all drawings are relative to the nodes' current coordinates
+                    if(node.type === "Magic Ring" || node.type === "Chain Stitch"){
+                        return stitchPaths.draw(node.type);
                     }else{
-                        return 'black'
+                        return false;
                     }
                 })
-                .nodeCanvasObject((node, ctx) => {
-                    if(node.type == "Magic Ring" || node.type == "Chain Stitch"){
-                        stitchCanvas.draw(node.type, ctx, node.x, node.y);
-                    }
+                .linkWidth(0.5)
+                .linkColor((link) => {
+                    link.color = 'black';
+                    return 'black'
                 })
-                .linkCanvasObjectMode(() => 'after')
-                .linkCanvasObject((link, ctx) =>{
-                    // Calculate Angle and Center point for placement
-                    let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
-                    let n2Vec = new Vector(link.target.x, link.target.y, link.target.z);
-                    let linkVec = n1Vec.subtract(n2Vec).unit();
-                    let perpendicularVec = new Vector(0, 1, 0);
-
-                    let angle = perpendicularVec.unitAngleTo(linkVec);
-                    let x = link.source.x;
-                    let y = link.source.y;
-
-                    // Draw on html5 canvas if the edge is of type insert
+                .linkThreeObjectExtend(true)
+                .linkThreeObject(link => {
                     if(link.inserts){
-                        ctx.save();
-                        ctx.translate(x, y); //translate to center of shape
-                        if(linkVec.x < 0){
-                            ctx.rotate(Math.PI + angle);
-                        }else{
-                            ctx.rotate(Math.PI -angle);
-                        }
-                        ctx.translate(-x, -y);
+                        let source = graph.graphData().nodes.find(node => {
+                            return node.id === link.source
+                        });
 
-                        stitchCanvas.draw(link.source.type, ctx, x, y);
-                        ctx.restore();
+                        if(source && source.type){
+                            return stitchPaths.draw(source.type);
+                        }
+                    }else if(link.Slipstitch){
+                        return stitchPaths.draw("Slipstitch");
                     }
+                    return false;
                 })
+                .linkPositionUpdate((linkObject, { start, end }, link) => {
+                    if(!linkObject){
+                        return true;
+                    }
+
+                    let position;
+                    let centerPoint;
+                    let startPoint;
+                    if(this.is3D){
+                        centerPoint = Object.assign(...['x', 'y', 'z'].map(c => ({
+                            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+                        })));
+                        startPoint = {
+                            "x":start.x,
+                            "y":start.y,
+                            "z":start.z,
+                        }
+                    }else{
+                        centerPoint = Object.assign(...['x', 'y'].map(c => ({
+                            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+                        })));
+                        startPoint = {
+                            "x":start.x,
+                            "y":start.y,
+                        };
+
+                    }
+                    if(link.Slipstitch){
+                        position = centerPoint;
+                    }else{
+                        position = startPoint;
+                        // change up vector to decide the spin of the object after the rotate of LookAt
+                        // Object.assign(linkObject.up, new THREE.Vector3(0,1,0));
+                        let targetVec = new THREE.Vector3(link.target.x, link.target.y, link.target.z);
+                        linkObject.lookAt(targetVec); // rotates objects' z-axis to face a point(dont normalize that point or it flickers)
+                    }
+
+                    Object.assign(linkObject.position, position);
+                });
         }
     }
 </script>
