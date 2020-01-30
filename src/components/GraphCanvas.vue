@@ -5,6 +5,7 @@
 <script >
     import * as THREE from 'three';
     import ForceGraph3D from '3d-force-graph';
+    import saveAs from 'file-saver';
     import Vector from '@/helper/vector';
     import CrochetPaths from "@/helper/crochetThreejsPaths";
     const stitchPaths = new CrochetPaths();
@@ -38,6 +39,26 @@
         return date.toString() + additionalRandomValue.toString();
     }
 
+    function printGraph(withPositions) {
+        let niceGraph = {"nodes": [], "links": []};
+        graph.graphData().nodes.forEach(node => {
+            if(withPositions){
+                niceGraph.nodes.push({"id": node.id, "row": node.row, "start": node.start,
+                    "end": node.end, "inserts": node.inserts,
+                    "type": node.type, "next": node.next,
+                    "x": node.x, "y": node.y, "z": node.z});
+            }else{
+                niceGraph.nodes.push({"id": node.id, "row": node.row, "start": node.start,
+                    "end": node.end, "inserts": node.inserts,
+                    "type": node.type, "next": node.next});
+            }
+        });
+        graph.graphData().links.forEach(link => {
+            niceGraph.links.push({"source": link.source.id, "target": link.target.id, "inserts": link.inserts, "Slipstitch": link.Slipstitch});
+        });
+        return JSON.stringify(niceGraph);
+    }
+
     export default {
         data() {
             return {
@@ -61,7 +82,7 @@
                         this.getTrigger(trigger.name);
                         break;
                     case 'saveGraph':
-                        this.getTrigger(trigger.name);
+                        this.savePattern(false);
                         break;
                     case 'redo':
                         this.getTrigger(trigger.name);
@@ -160,6 +181,11 @@
                     }
                 }
             },
+            savePattern(keepPositions) {
+                let pattern = printGraph(keepPositions);
+                let blob = new Blob([pattern], {type: "application/json;charset=utf-8"});
+                saveAs(blob, "pattern.json");
+            }
         },
         mounted() {
             let element = this.$refs.canvas;
