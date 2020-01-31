@@ -61,12 +61,6 @@ export default class CrochetPaths {
         return new THREE.Line( geometry, this.material );
     }
 
-    drawCone(){
-        let geometry = new THREE.ConeBufferGeometry( 5, 20, 32 );
-        let material = new THREE.MeshBasicMaterial( {color: 0x0000ff} );
-        return new THREE.Mesh( geometry, material );
-    }
-
     drawSlipstitch(x, y) {
         let path = new THREE.Path();
         path.absarc(x, y, 1, 0, 2*Math.PI, null);

@@ -6,7 +6,6 @@
     import * as THREE from 'three';
     import ForceGraph3D from '3d-force-graph';
     import saveAs from 'file-saver';
-    import Vector from '@/helper/vector';
     import CrochetPaths from "@/helper/crochetThreejsPaths";
     const stitchPaths = new CrochetPaths();
     const graph = ForceGraph3D();
@@ -33,6 +32,10 @@
         graph.graphData({"nodes":[], "links":[]});
     }
 
+    function setGraphFromJson(json) {
+        graph.graphData(json);
+    }
+
     function uniqueID(){
         let date = Date.now();
         let additionalRandomValue = Math.floor(Math.random()*100);
@@ -44,7 +47,7 @@
         graph.graphData().nodes.forEach(node => {
             if(withPositions){
                 niceGraph.nodes.push({"id": node.id, "row": node.row, "start": node.start,
-                    "end": node.end, "inserts": node.inserts,
+                    "end": node.end, "inserts": node.inserts, "layer": node.layer,
                     "type": node.type, "next": node.next,
                     "x": node.x, "y": node.y, "z": node.z});
             }else{
@@ -65,7 +68,6 @@
                 name: 'GraphCanvas',
                 graphLayers: 0,
                 currentNode: null,
-                is3D: true,
             }
         },
         props: [ 'trigger', 'stitch' ],
@@ -78,8 +80,8 @@
                     case 'newLayer':
                         this.graphLayers++;
                         break;
-                    case 'openGraph':
-                        this.getTrigger(trigger.name);
+                    case 'loadGraphFile':
+                        this.loadGraphFile(trigger.patternFile);
                         break;
                     case 'saveGraph':
                         this.savePattern(false);
@@ -90,24 +92,12 @@
                     case 'undo':
                         this.getTrigger(trigger.name);
                         break;
-                    case 'switchDimension':
-                        this.is3D = trigger.is3D;
-                        graph.refresh();
-                        break;
                     default:
                         console.log("got unexpected trigger name");
                 }
             },
             graphLayers: function (trigger) {
                 this.$emit("topLayer", this.graphLayers);
-            }
-        },
-        computed: {
-            nodes: function() {
-                return graph.graphData().nodes;
-            },
-            links: function() {
-                return graph.graphData().links;
             }
         },
         methods: {
@@ -185,15 +175,28 @@
                 let pattern = printGraph(keepPositions);
                 let blob = new Blob([pattern], {type: "application/json;charset=utf-8"});
                 saveAs(blob, "pattern.json");
+            },
+            loadGraphFile(file) {
+                const reader = new FileReader();
+                reader.onload = e => this.loadGraph(e.target.result);
+                reader.readAsText(file);
+            },
+            loadGraph(graph) {
+                console.log("loading Graph");
+                let jsonGraph = JSON.parse(graph);
+                setGraphFromJson(jsonGraph);
+                let lastNode = jsonGraph.nodes[jsonGraph.nodes.length - 1];
+                this.currentNode = lastNode.id;
+                this.graphLayers = lastNode.layer;
             }
         },
         mounted() {
             let element = this.$refs.canvas;
             graph(element)
                 .graphData(gData)
-                .numDimensions(this.is3D ? 3 : 2)
+                .numDimensions(3)
                 .backgroundColor("#ffffff")
-                .d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
+                //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
                 })
@@ -205,28 +208,25 @@
                 .nodeThreeObject((node) => {
                     // all drawings are relative to the nodes' current coordinates
                     if(node.type === "Magic Ring" || node.type === "Chain Stitch"){
-                        return stitchPaths.draw(node.type);
+                        return stitchPaths.draw(node.type).rotateX(1/2*Math.PI);
                     }else{
                         return false;
                     }
                 })
-                .linkWidth(0.5)
-                .linkColor((link) => {
-                    link.color = 'black';
-                    return 'black'
-                })
+                .linkWidth(1)
+                .linkColor(() => 'rgba(0, 0, 0, 100)')
                 .linkThreeObjectExtend(true)
                 .linkThreeObject(link => {
                     if(link.inserts){
+                        let nodeID = link.source;
                         let source = graph.graphData().nodes.find(node => {
-                            return node.id === link.source
+                            return node.id === nodeID
                         });
-
                         if(source && source.type){
                             return stitchPaths.draw(source.type);
                         }
                     }else if(link.Slipstitch){
-                        return stitchPaths.draw("Slipstitch");
+                        return stitchPaths.draw("Slipstitch").rotateX(1/2*Math.PI);
                     }
                     return false;
                 })
@@ -236,27 +236,14 @@
                     }
 
                     let position;
-                    let centerPoint;
-                    let startPoint;
-                    if(this.is3D){
-                        centerPoint = Object.assign(...['x', 'y', 'z'].map(c => ({
-                            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-                        })));
-                        startPoint = {
-                            "x":start.x,
-                            "y":start.y,
-                            "z":start.z,
-                        }
-                    }else{
-                        centerPoint = Object.assign(...['x', 'y'].map(c => ({
-                            [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-                        })));
-                        startPoint = {
-                            "x":start.x,
-                            "y":start.y,
-                        };
-
-                    }
+                    let centerPoint = Object.assign(...['x', 'y', 'z'].map(c => ({
+                        [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+                    })));
+                    let startPoint = {
+                        "x": start.x,
+                        "y": start.y,
+                        "z": start.z,
+                    };
                     if(link.Slipstitch){
                         position = centerPoint;
                     }else{

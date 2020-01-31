@@ -11,7 +11,8 @@
         <v-btn class="ma-2" outlined color="indigo" @click="saveGraph">
             <v-icon> mdi-content-save-outline </v-icon>
         </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="openGraph">
+        <input type="file" accept="application/json" ref="file" style="display: none" v-on:change="loadPattern">
+        <v-btn class="ma-2" outlined color="indigo" @click="$refs.file.click()">
             <v-icon> mdi-folder-open-outline </v-icon>
         </v-btn>
         <v-btn class="ma-2" outlined color="indigo" @click="newLayer">
@@ -20,7 +21,6 @@
         <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true">
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
-        <v-switch v-model="switch3D" :label="`3D ${switch3D.toString()}`" v-on:change="switchDimension"/>
 
         <v-dialog
                 v-model="dialog"
@@ -92,7 +92,7 @@
                         return pattern.test(value) || 'Please input a whole number.'
                     },
                 },
-                switch3D: true,
+                patternFile: null
             }
         },
         methods: {
@@ -103,10 +103,6 @@
             },
             newLayer() {
                 let msg = {name: 'newLayer'};
-                this.$emit("triggerGraph", msg)
-            },
-            openGraph() {
-                let msg = {name: 'openGraph'};
                 this.$emit("triggerGraph", msg)
             },
             saveGraph() {
@@ -121,9 +117,14 @@
                 let msg = {name: 'undo'};
                 this.$emit("triggerGraph", msg)
             },
-            switchDimension() {
-                let msg = {name: 'switchDimension', is3D: this.switch3D};
-                this.$emit("triggerGraph", msg)
+            loadPattern() {
+                let file = this.$refs.file.files[0];
+                if(!file || file.type != "application/json"){
+                    console.warn("No file chosen or file is not of type application/json");
+                    return false;
+                }
+                let msg = {name: 'loadGraphFile', patternFile: file};
+                this.$emit("triggerGraph", msg);
             }
         }
     }
