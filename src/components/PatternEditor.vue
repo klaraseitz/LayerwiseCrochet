@@ -1,9 +1,10 @@
 <template>
     <div>
-        <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
+        <ActionToolBar @triggerGraph="setGraphTrigger($event)" @switchDimension="changeDimension($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
             <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
-            <GraphCanvas :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
+            <GraphCanvas3D v-if="is3D" :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
+            <GraphCanvas2D v-else :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
             <StitchSelector @sendStitch="setStitch($event)"/>
         </div>
     </div>
@@ -11,7 +12,8 @@
 
 <script>
     import ActionToolBar from "@/components/ActionToolBar";
-    import GraphCanvas from "@/components/GraphCanvas";
+    import GraphCanvas3D from "@/components/GraphCanvas";
+    import GraphCanvas2D from "@/components/GraphCanvas2D";
     import LayerSlider from "@/components/LayerSlider";
     import StitchSelector from "@/components/StitchSelector";
 
@@ -22,13 +24,15 @@
                 graphTriggerMsg: '',
                 maxLayer: 0,
                 currentLayer: 0,
-                stitch: {}
+                stitch: {},
+                is3D: true,
             }
         },
         components: {
             ActionToolBar,
             LayerSlider,
-            GraphCanvas,
+            GraphCanvas2D,
+            GraphCanvas3D,
             StitchSelector
         },
         methods: {
@@ -43,6 +47,9 @@
             },
             setCurrentLayer(layer) {
                 this.currentLayer = layer;
+            },
+            changeDimension(is3D){
+                this.is3D = is3D;
             }
         }
     }

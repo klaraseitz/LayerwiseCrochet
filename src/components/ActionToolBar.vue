@@ -21,6 +21,7 @@
         <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true">
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
+        <v-switch v-model="is3D" :label="`3D ${is3D.toString()}`" v-on:change="switchDimension"/>
 
         <v-dialog
                 v-model="dialog"
@@ -92,7 +93,8 @@
                         return pattern.test(value) || 'Please input a whole number.'
                     },
                 },
-                patternFile: null
+                patternFile: null,
+                is3D: true,
             }
         },
         methods: {
@@ -125,6 +127,9 @@
                 }
                 let msg = {name: 'loadGraphFile', patternFile: file};
                 this.$emit("triggerGraph", msg);
+            },
+            switchDimension() {
+                this.$emit("switchDimension",this.is3D);
             }
         }
     }
