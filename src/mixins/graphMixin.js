@@ -1,4 +1,5 @@
 import saveAs from "file-saver";
+import {Node, Link} from "@/helper/graphObjects";
 
 export const graphMixin = {
     data() {
@@ -43,7 +44,7 @@ export const graphMixin = {
             this.graphLayers = 0;
             switch (method){
                 case 'Magic Ring':
-                    let magicRing = {"id": this.uniqueID(), "layer": 0, "start": true, "type": "Magic Ring"};
+                    let magicRing = new Node("Magic Ring", 0, true);
                     this.currentNode = magicRing.id;
                     this.addDataToGraph(magicRing, []);
                     this.graphLayers = 1;
@@ -62,7 +63,7 @@ export const graphMixin = {
             console.log("graph got unimplemented trigger: " + data);
         },
         startChain(amount, isClosed) {
-            let firstChain = {"id": this.uniqueID(), "layer": 0, "start": true, "type": "Chain Stitch"};
+            let firstChain = new Node("Chain Stitch", 0, true);
             this.addDataToGraph(firstChain, []);
             this.currentNode = firstChain.id;
             for(let i = 1; i < amount; i++){
@@ -74,22 +75,22 @@ export const graphMixin = {
             }
         },
         addChain(previousID, layer){
-            let node = {"id": this.uniqueID(), "layer": layer, "start": false, "type": "Chain Stitch", "previous": previousID};
-            let link = {"source": node.id, "target": previousID};
+            let node = new Node("Chain Stitch", layer, false, previousID);
+            let link = new Link(node.id, previousID);
 
             this.currentNode = node.id;
             this.addDataToGraph([node], [link]);
         },
         connectWithSlipStitch(fromID, toID){
-            let link = {"source": fromID, "target": toID, "Slipstitch": true};
+            let link = new Link(fromID, toID, false, true);
 
             this.currentNode = toID;
             this.addDataToGraph([], [link]);
         },
         addStitch(prevNodeID, insertNodeID, type){
-            let node = {"id": this.uniqueID(), "layer": this.graphLayers, "start": false, "type": type, "previous": prevNodeID};
-            let linkToPrevious = {"source": node.id, "target": prevNodeID};
-            let linkToInsert = {"source": node.id, "target": insertNodeID, "inserts": true};
+            let node = new Node(type, this.graphLayers,false, prevNodeID);
+            let linkToPrevious = new Link(node.id, prevNodeID);
+            let linkToInsert = new Link(node.id, insertNodeID, true);
 
             this.currentNode = node.id;
             this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
@@ -137,11 +138,6 @@ export const graphMixin = {
         },
         setGraphFromJson(json) {
             this.graph.graphData(json);
-        },
-        uniqueID(){
-            let date = Date.now();
-            let additionalRandomValue = Math.floor(Math.random()*100);
-            return date.toString() + additionalRandomValue.toString();
         },
         printGraph(withPositions) {
             let niceGraph = {"nodes": [], "links": []};

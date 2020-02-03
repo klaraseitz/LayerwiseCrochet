@@ -62,7 +62,7 @@
                         if(source && source.type){
                             return stitchPaths.draw(source.type);
                         }
-                    }else if(link.Slipstitch){
+                    }else if(link.slipstitch){
                         return stitchPaths.draw("Slipstitch").rotateX(1/2*Math.PI);
                     }
                     return false;
@@ -81,7 +81,7 @@
                         "y": start.y,
                         "z": start.z,
                     };
-                    if(link.Slipstitch){
+                    if(link.slipstitch){
                         position = centerPoint;
                     }else{
                         position = startPoint;
