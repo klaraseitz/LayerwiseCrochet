@@ -12,7 +12,7 @@
 
 <script>
     import ActionToolBar from "@/components/ActionToolBar";
-    import GraphCanvas3D from "@/components/GraphCanvas";
+    import GraphCanvas3D from "@/components/GraphCanvas3D";
     import GraphCanvas2D from "@/components/GraphCanvas2D";
     import LayerSlider from "@/components/LayerSlider";
     import StitchSelector from "@/components/StitchSelector";

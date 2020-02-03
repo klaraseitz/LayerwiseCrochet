@@ -1,5 +1,5 @@
 <template>
-    <div ref="canvas"></div>
+    <div ref="canvas2D"></div>
 </template>
 
 <script >
@@ -28,7 +28,7 @@
             }
         },
         mounted() {
-            let element = this.$refs.canvas;
+            let element = this.$refs.canvas2D;
             this.graph(element)
                 .graphData(gData)
                 .onNodeHover((node) => {
