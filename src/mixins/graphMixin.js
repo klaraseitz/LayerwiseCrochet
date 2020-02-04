@@ -28,7 +28,9 @@ export const graphMixin = {
                     this.getTrigger(trigger.name);
                     break;
                 case 'undo':
-                    this.getTrigger(trigger.name);
+                    this.graph.refresh();
+                    console.log("refreshed graph");
+                    //this.getTrigger(trigger.name);
                     break;
                 default:
                     console.log("got unexpected trigger name");
@@ -94,6 +96,7 @@ export const graphMixin = {
 
             this.currentNode = node.id;
             this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
+            this.graph.refresh();
         },
         handleNodeClick(node) {
             if(this.stitch){

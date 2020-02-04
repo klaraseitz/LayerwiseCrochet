@@ -5,9 +5,9 @@
 <script >
     import * as THREE from 'three';
     import ForceGraph3D from '3d-force-graph';
-    import CrochetPaths from "@/helper/crochetThreejsPaths";
     import {graphMixin} from "@/mixins/graphMixin";
-    const stitchPaths = new CrochetPaths();
+    import CrochetPaths from "@/helper/crochetThreejsPaths";
+    const stitchPaths = new CrochetPaths(0xff0000);
     const N = 2;
     const gData = {
         nodes: [...Array(N).keys()].map(i => ({ id: i })),
@@ -45,7 +45,8 @@
                 .nodeThreeObject((node) => {
                     // all drawings are relative to the nodes' current coordinates
                     if(node.type === "Magic Ring" || node.type === "Chain Stitch"){
-                        return stitchPaths.draw(node.type).rotateX(1/2*Math.PI);
+                        let isCurrent = node.id === this.currentNode;
+                        return stitchPaths.draw(node.type, isCurrent ? 0xff0000 : 0x000000).rotateX(1/2*Math.PI);
                     }else{
                         return false;
                     }
@@ -54,13 +55,22 @@
                 .linkColor(() => 'rgba(0, 0, 0, 100)')
                 .linkThreeObjectExtend(true)
                 .linkThreeObject(link => {
+                    console.log(link);
                     if(link.inserts){
-                        let nodeID = link.source;
-                        let source = this.graph.graphData().nodes.find(node => {
-                            return node.id === nodeID
-                        });
+                        let source;
+                        if(link.source.type){
+                            source = link.source;
+                        }else{
+                            let nodeID = link.source;
+                            source = this.graph.graphData().nodes.find(node => {
+                                return node.id === nodeID
+                            });
+                        }
+                        console.log("Source: ");
+                        console.log(source);
                         if(source && source.type){
-                            return stitchPaths.draw(source.type);
+                            let isCurrent = source.id === this.currentNode;
+                            return stitchPaths.draw(source.type, isCurrent ? 0xff0000 : 0x000000);
                         }
                     }else if(link.slipstitch){
                         return stitchPaths.draw("Slipstitch").rotateX(1/2*Math.PI);

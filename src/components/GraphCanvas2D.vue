@@ -48,6 +48,8 @@
                         stitchCanvas.draw(node.type, ctx, node.x, node.y);
                     }
                 })
+                .linkWidth(1)
+                .linkColor(() => 'rgba(0, 0, 0, 100)')
                 .linkCanvasObjectMode(() => 'after')
                 .linkCanvasObject((link, ctx) =>{
                     // Calculate Angle and Center point for placement

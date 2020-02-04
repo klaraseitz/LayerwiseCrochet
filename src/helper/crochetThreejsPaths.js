@@ -1,36 +1,46 @@
 import * as THREE from 'three';
 
 export default class CrochetPaths {
-
         constructor(color) {
-            this.material = new THREE.LineBasicMaterial({
-                color: color | 0x000000
-            });
+            this.color = color | 0x000000;
         }
 
-        draw(stitch){
-        let x = 0;
-        let y = 0;
-        switch(stitch) {
-            case 'Slipstitch':
-                return this.drawSlipstitch(x, y);
-            case 'Single Crochet':
-                return this.drawSingleCrochet(x, y);
-            case 'Magic Ring':
-                return this.drawMagicRing(x, y);
-            case 'Chain Stitch':
-                return this.drawChainStitch(x, y);
-            case 'Half Double Crochet':
-                return this.drawHalfDoubleCrochet(x, y);
-            case 'Double Crochet':
-                return this.drawDoubleCrochet(x, y);
-            case 'Treble Crochet':
-                return this.drawTrebleCrochet(x, y);
-            case 'Double Treble Crochet':
-                return this.drawDoubleTrebleCrochet(x, y);
-            default:
-                return false;
+        draw(stitch, color){
+            this.color = color | 0x000000;
+            let x = 0;
+            let y = 0;
+            switch(stitch) {
+                case 'Slipstitch':
+                    return this.drawSlipstitch(x, y);
+                case 'Single Crochet':
+                    return this.drawSingleCrochet(x, y);
+                case 'Magic Ring':
+                    return this.drawMagicRing(x, y);
+                case 'Chain Stitch':
+                    return this.drawChainStitch(x, y);
+                case 'Half Double Crochet':
+                    return this.drawHalfDoubleCrochet(x, y);
+                case 'Double Crochet':
+                    return this.drawDoubleCrochet(x, y);
+                case 'Treble Crochet':
+                    return this.drawTrebleCrochet(x, y);
+                case 'Double Treble Crochet':
+                    return this.drawDoubleTrebleCrochet(x, y);
+                default:
+                    return false;
         }
+    }
+
+    lineMaterial() {
+            return new THREE.LineBasicMaterial({
+                color: this.color
+            });
+    }
+
+   meshMaterial() {
+        return new THREE.MeshBasicMaterial({
+            color: this.color
+        });
     }
 
     drawMagicRing(x, y) {
@@ -48,7 +58,7 @@ export default class CrochetPaths {
         }
         let points = path.getPoints();
         let geometry = new THREE.BufferGeometry().setFromPoints( points );
-        return new THREE.Line( geometry, this.material );
+        return new THREE.Line( geometry, this.lineMaterial() );
     }
 
     drawChainStitch(x, y) {
@@ -58,7 +68,7 @@ export default class CrochetPaths {
         let points = path.getPoints();
         let geometry = new THREE.BufferGeometry().setFromPoints( points );
 
-        return new THREE.Line( geometry, this.material );
+        return new THREE.Line( geometry, this.lineMaterial() );
     }
 
     drawSlipstitch(x, y) {
@@ -66,13 +76,12 @@ export default class CrochetPaths {
         path.absarc(x, y, 1, 0, 2*Math.PI, null);
         let points = path.getPoints();
         let geometryLine = new THREE.BufferGeometry().setFromPoints( points );
-        let circleLine = new THREE.Line( geometryLine, this.material );
+        let circleLine = new THREE.Line( geometryLine, this.lineMaterial() );
 
         // this draws a filled circle (what I'd like) But only one side is drawn.
         // Therefore I keep the circle made out of lines.
         let geometryCircle = new THREE.CircleBufferGeometry( 1, 16 );
-        let material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
-        let circle = new THREE.Mesh( geometryCircle, material );
+        let circle = new THREE.Mesh( geometryCircle, this.meshMaterial() );
 
         let group = new THREE.Group();
         group.add(circleLine, circle);
@@ -85,7 +94,7 @@ export default class CrochetPaths {
             vec1,
             vec2
         );
-        return new THREE.Line( geometry, this.material );
+        return new THREE.Line( geometry, this.lineMaterial() );
     }
 
     drawSingleCrochet(x, y) {
