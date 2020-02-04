@@ -116,16 +116,8 @@ export const graphMixin = {
         },
         loadGraphFile(file) {
             const reader = new FileReader();
-            reader.onload = e => this.loadGraph(e.target.result);
+            reader.onload = e => this.setGraphFromJson(e.target.result);
             reader.readAsText(file);
-        },
-        loadGraph(graph) {
-            console.log("loading Graph");
-            let jsonGraph = JSON.parse(graph);
-            this.setGraphFromJson(jsonGraph);
-            let lastNode = jsonGraph.nodes[jsonGraph.nodes.length - 1];
-            this.currentNode = lastNode.id;
-            this.graphLayers = lastNode.layer;
         },
         resetGraph() {
             this.graph.graphData({"nodes":[], "links":[]});
@@ -136,27 +128,33 @@ export const graphMixin = {
             data.links = data.links.concat(links);
             this.graph.graphData(data);
         },
-        setGraphFromJson(json) {
-            this.graph.graphData(json);
+        setGraphFromJson(graph) {
+            let json = JSON.parse(graph);
+            this.graph.graphData(json.graphData);
+            this.currentNode = json.currentNode;
+            this.graphLayers = json.numLayers;
         },
         printGraph(withPositions) {
-            let niceGraph = {"nodes": [], "links": []};
+            let graphData = {"nodes": [], "links": []};
             this.graph.graphData().nodes.forEach(node => {
                 if(withPositions){
-                    niceGraph.nodes.push({"id": node.id, "row": node.row, "start": node.start,
-                        "end": node.end, "inserts": node.inserts, "layer": node.layer,
-                        "type": node.type, "next": node.next,
+                    graphData.nodes.push({"id": node.id, "type": node.type, "layer": node.layer,
+                        "start": node.start, "previous": node.previous,
                         "x": node.x, "y": node.y, "z": node.z});
                 }else{
-                    niceGraph.nodes.push({"id": node.id, "row": node.row, "start": node.start,
-                        "end": node.end, "inserts": node.inserts, "layer": node.layer,
-                        "type": node.type, "next": node.next});
+                    graphData.nodes.push({"id": node.id, "type": node.type, "layer": node.layer,
+                        "start": node.start, "previous": node.previous});
                 }
             });
             this.graph.graphData().links.forEach(link => {
-                niceGraph.links.push({"source": link.source.id, "target": link.target.id, "inserts": link.inserts, "Slipstitch": link.Slipstitch});
+                graphData.links.push({"source": link.source.id, "target": link.target.id, "inserts": link.inserts, "slipstitch": link.slipstitch});
             });
-            return JSON.stringify(niceGraph);
+            let graph = {
+                'graphData': graphData,
+                'currentNode': this.currentNode,
+                'numLayers': this.graphLayers,
+            };
+            return JSON.stringify(graph);
         },
     },
 };
