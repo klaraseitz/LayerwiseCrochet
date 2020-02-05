@@ -50,7 +50,16 @@
                     }
                 })
                 .linkWidth(1)
-                .linkColor(() => 'rgba(0, 0, 0, 100)')
+                .linkColor(link => {
+                    let color = 'rgba(0, 0, 0, 100)';
+                    let source = link.source;
+                    let target = link.target;
+                    if(source.layer === target.layer){
+                        let isEven = source.layer%2 === 0;
+                        color =  isEven ? 'rgba(0, 108, 170, 100)' : 'rgba(200, 80, 0, 100)';
+                    }
+                    return color;
+                })
                 .linkCanvasObjectMode(() => 'after')
                 .linkCanvasObject((link, ctx) =>{
                     // Calculate Angle and Center point for placement

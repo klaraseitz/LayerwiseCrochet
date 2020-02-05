@@ -54,7 +54,31 @@
                     }
                 })
                 .linkWidth(1)
-                .linkColor(() => 'rgba(0, 0, 0, 100)')
+                .linkColor(link => {
+                    let source;
+                    let target;
+                    let color = 'rgba(0, 0, 0, 100)';
+                    if(link.source.type){
+                        source = link.source;
+                        target = link.target;
+                    }else{
+                        let sourceNodeID = link.source;
+                        let targetNodeID = link.target;
+                        this.graph.graphData().nodes.find(node => {
+                            if(node.id === sourceNodeID){
+                                source = node
+                            }
+                            if(node.id === targetNodeID){
+                                target = node
+                            }
+                        });
+                    }
+                    if(source.layer === target.layer){
+                        let isEven = source.layer%2 === 0;
+                        color =  isEven ? 'rgba(0, 108, 170, 100)' : 'rgba(200, 80, 0, 100)';
+                    }
+                    return color;
+                })
                 .linkThreeObjectExtend(true)
                 .linkThreeObject(link => {
                     if(link.inserts){
