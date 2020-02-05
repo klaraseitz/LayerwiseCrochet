@@ -45,7 +45,8 @@
                 })
                 .nodeCanvasObject((node, ctx) => {
                     if(node.type == "Magic Ring" || node.type == "Chain Stitch"){
-                        stitchCanvas.draw(node.type, ctx, node.x, node.y);
+                        let isCurrent = node.id === this.currentNode;
+                        stitchCanvas.draw(node.type, ctx, node.x, node.y, isCurrent ? '#e68a00' : '#000000');
                     }
                 })
                 .linkWidth(1)
@@ -62,7 +63,7 @@
                     let x = link.source.x;
                     let y = link.source.y;
                     let middleX = (link.source.x + link.target.x)/2;
-                    let middleXÝ = (link.source.y + link.target.y)/2;
+                    let middleXY = (link.source.y + link.target.y)/2;
 
                     // Draw on html5 canvas if the edge is of type insert
                     if(link.inserts){
@@ -74,11 +75,11 @@
                             ctx.rotate(Math.PI -angle);
                         }
                         ctx.translate(-x, -y);
-
-                        stitchCanvas.draw(link.source.type, ctx, x, y);
+                        let isCurrent = link.source.id === this.currentNode;
+                        stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
                         ctx.restore();
-                    }else if(link.Slipstitch){
-                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleXÝ);
+                    }else if(link.slipstitch){
+                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleXY, '#000000');
                     }
                 })
         }

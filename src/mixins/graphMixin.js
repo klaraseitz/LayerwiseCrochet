@@ -96,7 +96,6 @@ export const graphMixin = {
 
             this.currentNode = node.id;
             this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
-            this.graph.refresh();
         },
         handleNodeClick(node) {
             if(this.stitch){

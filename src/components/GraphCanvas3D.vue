@@ -38,7 +38,9 @@
                     element.style.cursor = node ? 'pointer' : null;
                 })
                 .onNodeClick(node => {
-                    this.handleNodeClick(node)})
+                    this.handleNodeClick(node);
+                    this.graph.refresh();
+                })
                 .nodeOpacity(0)
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
@@ -46,7 +48,7 @@
                     // all drawings are relative to the nodes' current coordinates
                     if(node.type === "Magic Ring" || node.type === "Chain Stitch"){
                         let isCurrent = node.id === this.currentNode;
-                        return stitchPaths.draw(node.type, isCurrent ? 0xff0000 : 0x000000).rotateX(1/2*Math.PI);
+                        return stitchPaths.draw(node.type, isCurrent ? 0xe68a00 : 0x000000).rotateX(1/2*Math.PI);
                     }else{
                         return false;
                     }
@@ -55,7 +57,6 @@
                 .linkColor(() => 'rgba(0, 0, 0, 100)')
                 .linkThreeObjectExtend(true)
                 .linkThreeObject(link => {
-                    console.log(link);
                     if(link.inserts){
                         let source;
                         if(link.source.type){
@@ -66,11 +67,9 @@
                                 return node.id === nodeID
                             });
                         }
-                        console.log("Source: ");
-                        console.log(source);
                         if(source && source.type){
                             let isCurrent = source.id === this.currentNode;
-                            return stitchPaths.draw(source.type, isCurrent ? 0xff0000 : 0x000000);
+                            return stitchPaths.draw(source.type, isCurrent ? 0xe68a00 : 0x000000);
                         }
                     }else if(link.slipstitch){
                         return stitchPaths.draw("Slipstitch").rotateX(1/2*Math.PI);

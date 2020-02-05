@@ -1,6 +1,9 @@
 export default class CrochetCanvas {
-    draw(stitch, ctx, x, y){
+    draw(stitch, ctx, x, y, color){
         ctx.beginPath();
+        ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+
         switch(stitch) {
             case 'Slipstitch':
                 this.drawSlipstitch(ctx, x, y);
