@@ -5,6 +5,7 @@
             outlined
     >
         <v-subheader>STITCHES</v-subheader>
+        <v-switch v-model="isIncrease" :label="`increasing ${isIncrease.toString()}`" v-on:change="switchStitchMode"/>
         <div>
             <v-treeview
                     :items="items"
@@ -47,7 +48,8 @@ export default {
                 { name: 'Treble Crochet', category: "Basic" },
                 { name: 'Double Treble Crochet', category: "Basic" },
                 { name: 'Slipstitch', category: "Ending" },
-            ]
+            ],
+            isIncrease: true,
         }
     },
     methods: {
@@ -55,10 +57,14 @@ export default {
             let stitch = this.stitches.find(obj => {
                 return obj.id === this.selectedStitch[0]
             });
-            if(stitch){
-                let msg = {name: 'changeStitch', stitch: stitch.name};
-                this.$emit("sendStitch", msg);
-            }
+            let stitchName = stitch ? stitch.name : null;
+            let msg = {name: 'changeStitch', stitch: stitchName};
+            this.$emit("sendStitch", msg);
+
+        },
+        switchStitchMode(){
+            let msg = {name: 'switchStitchMode', isIncrease: this.isIncrease};
+            this.$emit('triggerGraph', msg);
         }
     },
     computed: {

@@ -6,6 +6,7 @@ export const graphMixin = {
         return {
             graphLayers: 0,
             currentNode: null,
+            isIncrease: true,
         }
     },
     props: [ 'trigger', 'stitch' ],
@@ -31,6 +32,9 @@ export const graphMixin = {
                     this.graph.refresh();
                     console.log("refreshed graph");
                     //this.getTrigger(trigger.name);
+                    break;
+                case 'switchStitchMode':
+                    this.isIncrease = trigger.isIncrease;
                     break;
                 default:
                     console.log("got unexpected trigger name");
@@ -97,6 +101,10 @@ export const graphMixin = {
             this.currentNode = node.id;
             this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
         },
+        decreaseStitch(previousNodeID, insertNodeID) {
+            let link = new Link(previousNodeID, insertNodeID, true, false);
+            this.addDataToGraph([], [link]);
+        },
         handleNodeClick(node) {
             if(this.stitch){
                 switch (this.stitch) {
@@ -107,7 +115,12 @@ export const graphMixin = {
                         this.connectWithSlipStitch(this.currentNode, node.id);
                         break;
                     default:
-                        this.addStitch(this.currentNode, node.id, this.stitch);
+                        if(this.isIncrease){
+                            this.addStitch(this.currentNode, node.id, this.stitch);
+                        }else {
+                            this.decreaseStitch(this.currentNode, node.id);
+                        }
+                        
                 }
             }
         },
@@ -157,6 +170,6 @@ export const graphMixin = {
                 'numLayers': this.graphLayers,
             };
             return JSON.stringify(graph);
-        },
+        }
     },
 };

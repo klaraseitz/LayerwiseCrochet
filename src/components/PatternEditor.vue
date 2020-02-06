@@ -5,7 +5,7 @@
             <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
             <GraphCanvas3D v-if="is3D" :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
             <GraphCanvas2D v-else :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
-            <StitchSelector @sendStitch="setStitch($event)"/>
+            <StitchSelector @triggerGraph="setGraphTrigger($event)" @sendStitch="setStitch($event)"/>
         </div>
     </div>
 </template>
@@ -24,7 +24,7 @@
                 graphTriggerMsg: '',
                 maxLayer: 0,
                 currentLayer: 0,
-                stitch: {},
+                stitch: null,
                 is3D: true,
             }
         },
