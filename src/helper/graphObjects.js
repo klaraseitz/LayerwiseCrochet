@@ -1,9 +1,10 @@
 class Node {
-    constructor(type, layer, start, previous) {
+    constructor(type, layer, start, previous, isIncrease) {
         this.type = type || "";
         this.layer = layer || 0;
         this.start = start || false;
         this.previous = previous || null;
+        this.isIncrease = isIncrease || true;
         this.id = this.uniqueID();
     }
 

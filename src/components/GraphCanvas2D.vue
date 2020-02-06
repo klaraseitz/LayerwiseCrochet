@@ -69,10 +69,12 @@
                     let perpendicularVec = new Vector(0, 1, 0);
 
                     let angle = perpendicularVec.unitAngleTo(linkVec);
-                    let x = link.source.x;
-                    let y = link.source.y;
-                    let middleX = (link.source.x + link.target.x)/2;
-                    let middleXY = (link.source.y + link.target.y)/2;
+                    let sourceX = link.source.x;
+                    let sourceY = link.source.y;
+                    let middleX = (sourceX + link.target.x)/2;
+                    let middleY = (sourceY + link.target.y)/2;
+                    let x = (sourceX + middleX) / 2;
+                    let y = (sourceY + middleY) / 2;
 
                     // Draw on html5 canvas if the edge is of type insert
                     if(link.inserts){
@@ -83,12 +85,15 @@
                         }else{
                             ctx.rotate(Math.PI -angle);
                         }
+                        if(!link.source.isIncrease){
+                            ctx.rotate(Math.PI);
+                        }
                         ctx.translate(-x, -y);
                         let isCurrent = link.source.id === this.currentNode;
                         stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
                         ctx.restore();
                     }else if(link.slipstitch){
-                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleXY, '#000000');
+                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleY, '#000000');
                     }
                 })
         }

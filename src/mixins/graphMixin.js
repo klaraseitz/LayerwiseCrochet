@@ -102,6 +102,10 @@ export const graphMixin = {
             this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
         },
         decreaseStitch(previousNodeID, insertNodeID) {
+            let previousNode = this.graph.graphData().nodes.find(node => {
+                return node.id === previousNodeID
+            });
+            previousNode.isIncrease = false;
             let link = new Link(previousNodeID, insertNodeID, true, false);
             this.addDataToGraph([], [link]);
         },

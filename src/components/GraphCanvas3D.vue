@@ -114,14 +114,21 @@
                         "y": start.y,
                         "z": start.z,
                     };
+                    let startCenterMiddlePoint = {
+                        "x": (startPoint.x +  centerPoint.x) / 2,
+                        "y": (startPoint.y +  centerPoint.y) / 2,
+                        "z": (startPoint.z +  centerPoint.z) / 2,
+                    };
                     if(link.slipstitch){
                         position = centerPoint;
                     }else{
-                        position = startPoint;
+                        position = startCenterMiddlePoint;
                         // change up vector to decide the spin of the object after the rotate of LookAt
                         // Object.assign(linkObject.up, new THREE.Vector3(0,1,0));
                         let targetVec = new THREE.Vector3(link.target.x, link.target.y, link.target.z);
-                        linkObject.lookAt(targetVec); // rotates objects' z-axis to face a point(dont normalize that point or it flickers)
+                        let sourceVec = new THREE.Vector3(link.source.x, link.source.y, link.source.z);
+                        let isIncreaseStitch = link.source.isIncrease;
+                        linkObject.lookAt(isIncreaseStitch ? targetVec : sourceVec); // rotates objects' z-axis to face a point(dont normalize that point or it flickers)
                     }
 
                     Object.assign(linkObject.position, position);
