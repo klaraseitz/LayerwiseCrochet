@@ -41,6 +41,9 @@
                 })
                 .onNodeClick(node => {
                     this.handleNodeClick(node)})
+                .onNodeRightClick(node => {
+                    this.handleNodeRightClick(node);
+                })
                 .nodeColor(node => {
                     if(node.layer%2 == 0){
                         return 'red'

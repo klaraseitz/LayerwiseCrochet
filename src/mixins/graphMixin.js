@@ -121,6 +121,11 @@ export const graphMixin = {
                 }
             }
         },
+        handleNodeRightClick(node) {
+            if(this.stitch && (this.stitch != "Chain Stitch" || this.stitch != "Slipstitch")){
+                this.decreaseStitch(this.currentNode, node.id);
+            }
+        },
         savePattern(keepPositions) {
             let pattern = this.printGraph(keepPositions);
             let blob = new Blob([pattern], {type: "application/json;charset=utf-8"});

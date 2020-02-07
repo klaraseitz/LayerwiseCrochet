@@ -46,6 +46,10 @@
                     this.handleNodeClick(node);
                     this.graph.refresh();
                 })
+                .onNodeRightClick(node => {
+                    this.handleNodeRightClick(node);
+                    this.graph.refresh();
+                })
                 .nodeOpacity(0)
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
