@@ -1,6 +1,11 @@
 import saveAs from "file-saver";
 import {Node, Link} from "@/helper/graphObjects";
-import {CommandAddChain} from "@/helper/Command";
+import {
+    CommandAddChain,
+    CommandAddDecreasingStitch,
+    CommandAddStitch,
+    CommandConnectWithSlipStitch
+} from "@/helper/Command";
 import {CommandTracker} from "@/helper/CommandTracker";
 const commandTracker = new CommandTracker();
 
@@ -81,42 +86,27 @@ export const graphMixin = {
                 this.graphLayers = 1;
             }
         },
-        addChain(previousID, layer){
-            let actions = commandTracker.execute(new CommandAddChain(previousID, layer, this.graph.graphData()));
+        addChain(previousID){
+            let actions = commandTracker.execute(new CommandAddChain(previousID, this.graphLayers, this.graph.graphData()));
             this.handleAction(actions);
-            // let node = new Node("Chain Stitch", layer, false, previousID);
-            // let link = new Link(node.id, previousID);
-            //
-            // this.currentNode = node.id;
-            // this.addDataToGraph([node], [link]);
         },
         connectWithSlipStitch(fromID, toID){
-            let link = new Link(fromID, toID, false, true);
-
-            this.currentNode = toID;
-            this.addDataToGraph([], [link]);
+            let actions = commandTracker.execute(new CommandConnectWithSlipStitch(fromID, toID));
+            this.handleAction(actions);
         },
         addStitch(prevNodeID, insertNodeID, type){
-            let node = new Node(type, this.graphLayers,false, prevNodeID);
-            let linkToPrevious = new Link(node.id, prevNodeID);
-            let linkToInsert = new Link(node.id, insertNodeID, true);
-
-            this.currentNode = node.id;
-            this.addDataToGraph([node], [linkToPrevious, linkToInsert]);
+            let actions = commandTracker.execute(new CommandAddStitch(prevNodeID, insertNodeID, type, this.graphLayers));
+            this.handleAction(actions);
         },
         decreaseStitch(previousNodeID, insertNodeID) {
-            let previousNode = this.graph.graphData().nodes.find(node => {
-                return node.id === previousNodeID
-            });
-            previousNode.isIncrease = false;
-            let link = new Link(previousNodeID, insertNodeID, true, false);
-            this.addDataToGraph([], [link]);
+            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNodeID, insertNodeID, this.graph.graphData()));
+            this.handleAction(actions);
         },
         handleNodeClick(node) {
             if(this.stitch){
                 switch (this.stitch) {
                     case 'Chain Stitch':
-                        this.addChain(this.currentNode, this.graphLayers);
+                        this.addChain(this.currentNode);
                         break;
                     case 'Slipstitch':
                         this.connectWithSlipStitch(this.currentNode, node.id);
@@ -137,12 +127,14 @@ export const graphMixin = {
             saveAs(blob, "pattern.json");
         },
         loadGraphFile(file) {
+            commandTracker.resetHistory();
             const reader = new FileReader();
             reader.onload = e => this.setGraphFromJson(e.target.result);
             reader.readAsText(file);
         },
         resetGraph() {
             this.graph.graphData({"nodes":[], "links":[]});
+            commandTracker.resetHistory();
         },
         addDataToGraph(nodes=[], links=[]) {
             const data = this.graph.graphData();

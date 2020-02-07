@@ -58,5 +58,13 @@ CommandTracker.prototype = {
         this._actions = cmd.execute();
         this._currentCommand++;
         return this._actions;
+    },
+    /**
+     * Resets the history so that there is nothing to re- or undo
+     * @returns {undefined}
+     */
+    resetHistory: function () {
+        this._commandsList = [];
+        this._currentCommand = -1;
     }
 };
