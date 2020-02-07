@@ -27,6 +27,11 @@
                 graph: ForceGraph(),
             }
         },
+        methods: {
+            refreshGraph() {
+                // do nothing. the 2D library doesnt support this function
+            }
+        },
         mounted() {
             let element = this.$refs.canvas2D;
             this.graph(element)

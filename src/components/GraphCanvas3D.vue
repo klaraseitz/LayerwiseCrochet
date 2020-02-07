@@ -27,6 +27,11 @@
                 graph: ForceGraph3D(),
             }
         },
+        methods: {
+          refreshGraph() {
+              this.graph.refresh();
+          }
+        },
         mounted() {
             let element = this.$refs.canvas3D;
             this.graph(element)

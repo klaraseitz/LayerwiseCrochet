@@ -1,5 +1,8 @@
 import saveAs from "file-saver";
 import {Node, Link} from "@/helper/graphObjects";
+import {CommandAddChain} from "@/helper/Command";
+import {CommandTracker} from "@/helper/CommandTracker";
+const commandTracker = new CommandTracker();
 
 export const graphMixin = {
     data() {
@@ -26,12 +29,10 @@ export const graphMixin = {
                     this.savePattern(false);
                     break;
                 case 'redo':
-                    this.getTrigger(trigger.name);
+                    this.handleAction(commandTracker.redo());
                     break;
                 case 'undo':
-                    this.graph.refresh();
-                    console.log("refreshed graph");
-                    //this.getTrigger(trigger.name);
+                    this.handleAction(commandTracker.undo());
                     break;
                 case 'switchStitchMode':
                     this.isIncrease = trigger.isIncrease;
@@ -81,11 +82,13 @@ export const graphMixin = {
             }
         },
         addChain(previousID, layer){
-            let node = new Node("Chain Stitch", layer, false, previousID);
-            let link = new Link(node.id, previousID);
-
-            this.currentNode = node.id;
-            this.addDataToGraph([node], [link]);
+            let actions = commandTracker.execute(new CommandAddChain(previousID, layer, this.graph.graphData()));
+            this.handleAction(actions);
+            // let node = new Node("Chain Stitch", layer, false, previousID);
+            // let link = new Link(node.id, previousID);
+            //
+            // this.currentNode = node.id;
+            // this.addDataToGraph([node], [link]);
         },
         connectWithSlipStitch(fromID, toID){
             let link = new Link(fromID, toID, false, true);
@@ -174,6 +177,22 @@ export const graphMixin = {
                 'numLayers': this.graphLayers,
             };
             return JSON.stringify(graph);
+        },
+        removeLastXGraphElements(numNodes = 0, numLinks = 0) {
+            const data = this.graph.graphData();
+            data.nodes.splice(-numNodes, numNodes);
+            data.links.splice(-numLinks, numLinks);
+            this.graph.graphData(data);
+        },
+        handleAction(commandAction){
+            if(commandAction){
+                if (commandAction.currentNode) {this.currentNode = commandAction.currentNode}
+                if (commandAction.graphLayers) {this.graphLayers = commandAction.graphLayers}
+
+                this.addDataToGraph(commandAction.newNodes, commandAction.newLinks);
+                this.removeLastXGraphElements(commandAction.numNodesToRemove, commandAction.numLinksToRemove);
+                this.refreshGraph();
+            }
         }
     },
 };
