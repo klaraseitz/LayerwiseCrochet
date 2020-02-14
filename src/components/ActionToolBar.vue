@@ -2,6 +2,7 @@
 
 <template>
     <div>
+        <v-row justify="center">
         <v-btn class="ma-2" outlined color="indigo" @click="undo">
             <v-icon> mdi-undo </v-icon>
         </v-btn>
@@ -22,6 +23,7 @@
             <v-icon> mdi-new-box </v-icon>
         </v-btn>
         <v-switch v-model="is3D" :label="`3D ${is3D.toString()}`" v-on:change="switchDimension"/>
+        </v-row>
 
         <v-dialog
                 v-model="dialog"

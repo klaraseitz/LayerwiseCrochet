@@ -31,7 +31,7 @@ export const graphMixin = {
                     this.loadGraphFile(trigger.patternFile);
                     break;
                 case 'saveGraph':
-                    this.savePattern(false);
+                    this.savePattern(true);
                     break;
                 case 'redo':
                     this.handleAction(commandTracker.redo());
