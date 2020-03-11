@@ -1,0 +1,43 @@
+{
+  "app_name": "Crochet Chart Designer",
+  "stitch": "stitch | stitches",
+  "stitches": {
+    "ch": "Chain Stitch",
+    "sc": "Single Crochet",
+    "hdc": "Half Double Crochet",
+    "dc": "Double Crochet",
+    "tr": "Treble Crochet",
+    "dtr": "Double Treble Crochet",
+    "slst": "Slipstitch"
+  },
+  "start_methods": {
+    "mr": "Magic Ring",
+    "line_of_ch": "Line of Chain Stitches",
+    "round_of_ch": "Round of Chain Stitches"
+  },
+  "stitch_category": {
+    "basic": "Basic",
+    "ending": "Ending"
+  },
+  "increasing": "increasing",
+  "decreasing": "decreasing",
+  "start_pattern_card": {
+    "title": "Start a new Pattern",
+    "text": "Choose which method you want to use to start the new Pattern.",
+    "method_label": "Start Method",
+    "num_stitches_label": "Number of Stitches"
+  },
+  "stitch_help_card": {
+    "title": "Stitches Help",
+    "select_text": "Select a stitch from the drop down list. Once selected the stitch remains active. Any time a stitch on the crochet chart is clicked the program adds the selected stitch into this clicked stitch.",
+    "increase_text": "The default method is increasing stitches. Switch the method to decreasing in the Stitch dialog. Alternatively left-click to increase and right-click to decrease."
+  },
+  "tooltips": {
+    "undo": "undo last step",
+    "redo": "redo one step",
+    "save": "save current pattern",
+    "open": "discard and open pattern",
+    "add_layer": "add layer",
+    "new_pattern": "start new pattern"
+  }
+}

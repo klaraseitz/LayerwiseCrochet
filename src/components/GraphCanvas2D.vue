@@ -52,7 +52,7 @@
                     }
                 })
                 .nodeCanvasObject((node, ctx) => {
-                    if(node.type == "Magic Ring" || node.type == "Chain Stitch"){
+                    if(node.type == "mr" || node.type == "ch"){
                         let isCurrent = node.id === this.currentNode;
                         stitchCanvas.draw(node.type, ctx, node.x, node.y, isCurrent ? '#e68a00' : '#000000');
                     }
@@ -101,7 +101,7 @@
                         stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
                         ctx.restore();
                     }else if(link.slipstitch){
-                        stitchCanvas.draw("Slipstitch", ctx, middleX, middleY, '#000000');
+                        stitchCanvas.draw("slst", ctx, middleX, middleY, '#000000');
                     }
                 })
         }

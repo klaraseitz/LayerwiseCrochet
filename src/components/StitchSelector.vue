@@ -4,8 +4,15 @@
             max-width="300"
             outlined
     >
-        <v-subheader>STITCHES</v-subheader>
-        <v-switch v-model="isIncrease" :label="`increasing ${isIncrease.toString()}`" v-on:change="switchStitchMode"/>
+        <v-subheader>
+            {{$tc('stitch',2).toUpperCase()}}
+            <v-spacer></v-spacer>
+            <v-btn icon @click.stop="dialog = true">
+                <v-icon>mdi-information-outline</v-icon>
+            </v-btn>
+        </v-subheader>
+
+        <v-switch v-model="isIncrease" :label="isIncrease ? $t('increasing') : $t('decreasing')" v-on:change="switchStitchMode"/>
         <div>
             <v-treeview
                     :items="items"
@@ -15,12 +22,33 @@
                     :active.sync="selectedStitch"
                     @update:active="updateSelectedStitch"
             >
-                <template v-slot:prepend="{ item }">
-                    <v-icon>
-                        {{ icons[item.name] }}
+                <template v-slot:prepend="{ item, open }">
+                    <v-icon v-if="!item.type">
+                        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                    </v-icon>
+                    <v-icon v-else>
+                        {{ icons[item.type] }}
                     </v-icon>
                 </template>
             </v-treeview>
+
+
+            <v-dialog
+                    v-model="dialog"
+                    max-width="400"
+            >
+                <v-card>
+                    <v-card-title class="headline">{{$t('stitch_help_card.title')}}</v-card-title>
+                    <v-card-text>
+                        <div class="text--primary">
+                            {{$t('stitch_help_card.select_text')}}
+                            <br> <br>
+                            {{$t('stitch_help_card.increase_text')}}
+                        </div>
+                    </v-card-text>
+                </v-card>
+            </v-dialog>
+
         </div>
     </v-card>
 </template>
@@ -29,26 +57,18 @@
 export default {
     data() {
         return {
+            dialog: false,
             name: 'StitchSelector',
             selectedStitch: [],
             icons: {
-                'Chain Stitch': 'mdi-shape-oval-plus',
-                'Single Crochet': 'mdi-plus',
-                'Half Double Crochet': 'mdi-plus',
-                'Double Crochet': 'mdi-alpha-t',
-                'Treble Crochet': 'mdi-plus',
-                'Double Treble Crochet': 'mdi-plus',
-                'Slipstitch': 'mdi-circle-small',
+                'ch': 'mdi-shape-oval-plus',
+                'sc': 'mdi-plus',
+                'hdc': 'mdi-plus',
+                'dc': 'mdi-alpha-t',
+                'tr': 'mdi-plus',
+                'dtr': 'mdi-plus',
+                'slst': 'mdi-circle-small',
             },
-            stitches: [
-                { name: 'Chain Stitch', category: "Basic" },
-                { name: 'Single Crochet', category: "Basic" },
-                { name: 'Half Double Crochet', category: "Basic" },
-                { name: 'Double Crochet', category: "Basic" },
-                { name: 'Treble Crochet', category: "Basic" },
-                { name: 'Double Treble Crochet', category: "Basic" },
-                { name: 'Slipstitch', category: "Ending" },
-            ],
             isIncrease: true,
         }
     },
@@ -57,7 +77,7 @@ export default {
             let stitch = this.stitches.find(obj => {
                 return obj.id === this.selectedStitch[0]
             });
-            let stitchName = stitch ? stitch.name : null;
+            let stitchName = stitch ? stitch.type : null;
             let msg = {name: 'changeStitch', stitch: stitchName};
             this.$emit("sendStitch", msg);
 
@@ -76,16 +96,27 @@ export default {
                     return obj.name === stitch.category;
                 });
                 if(categoryBranch){
-                    categoryBranch.children.push({id: id, name: stitch.name});
+                    categoryBranch.children.push({id: id, name: stitch.name, type: stitch.type});
                     stitch.id = id;
                     id++;
                 }else{
-                    treeData.push({id: id, name: stitch.category, children: [{id: id+1, name: stitch.name}]});
+                    treeData.push({id: id, name: stitch.category, children: [{id: id+1, name: stitch.name, type: stitch.type}]});
                     stitch.id = id+1;
                     id += 2;
                 }
             });
             return treeData;
+        },
+        stitches: function() {
+            return [
+                { name: this.$t('stitches.ch'), category: this.$t('stitch_category.basic'), type: "ch" },
+                { name: this.$t('stitches.sc'), category: this.$t('stitch_category.basic'), type: "sc" },
+                { name: this.$t('stitches.hdc'), category: this.$t('stitch_category.basic'), type: "hdc" },
+                { name: this.$t('stitches.dc'), category: this.$t('stitch_category.basic'), type: "dc" },
+                { name: this.$t('stitches.tr'), category: this.$t('stitch_category.basic'), type: "tr" },
+                { name: this.$t('stitches.dtr'), category: this.$t('stitch_category.basic'), type: "dtr" },
+                { name: this.$t('stitches.slst'), category: this.$t('stitch_category.ending'), type: "slst" },
+            ]
         }
     }
 }

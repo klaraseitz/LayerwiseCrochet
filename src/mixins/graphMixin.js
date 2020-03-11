@@ -55,16 +55,16 @@ export const graphMixin = {
             this.resetGraph();
             this.graphLayers = 0;
             switch (method){
-                case 'Magic Ring':
-                    let magicRing = new Node("Magic Ring", 0, true);
+                case 'mr':
+                    let magicRing = new Node("mr", 0, true);
                     this.currentNode = magicRing.id;
                     this.addDataToGraph(magicRing, []);
                     this.graphLayers = 1;
                     break;
-                case 'Line of Chain Stitches':
+                case 'line_of_ch':
                     this.startChain(stitchAmount, false);
                     break;
-                case 'Round of Chain Stitches':
+                case 'round_of_ch':
                     this.startChain(stitchAmount, true);
                     break;
                 default:
@@ -75,7 +75,7 @@ export const graphMixin = {
             console.log("graph got unimplemented trigger: " + data);
         },
         startChain(amount, isClosed) {
-            let firstChain = new Node("Chain Stitch", 0, true);
+            let firstChain = new Node("ch", 0, true);
             this.addDataToGraph(firstChain, []);
             this.currentNode = firstChain.id;
             for(let i = 1; i < amount; i++){
@@ -105,10 +105,10 @@ export const graphMixin = {
         handleNodeClick(node) {
             if(this.stitch){
                 switch (this.stitch) {
-                    case 'Chain Stitch':
+                    case 'ch':
                         this.addChain(this.currentNode);
                         break;
-                    case 'Slipstitch':
+                    case 'slst':
                         this.connectWithSlipStitch(this.currentNode, node.id);
                         break;
                     default:
@@ -122,7 +122,7 @@ export const graphMixin = {
             }
         },
         handleNodeRightClick(node) {
-            if(this.stitch && (this.stitch != "Chain Stitch" || this.stitch != "Slipstitch")){
+            if(this.stitch && (this.stitch != "ch" || this.stitch != "slst")){
                 this.decreaseStitch(this.currentNode, node.id);
             }
         },
@@ -146,6 +146,8 @@ export const graphMixin = {
             data.nodes = data.nodes.concat(nodes);
             data.links = data.links.concat(links);
             this.graph.graphData(data);
+            console.log("graphData: ");
+            console.log(this.graph.graphData());
         },
         setGraphFromJson(graph) {
             let json = JSON.parse(graph);

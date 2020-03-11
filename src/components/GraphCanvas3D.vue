@@ -55,7 +55,7 @@
                 .nodeThreeObjectExtend(true)
                 .nodeThreeObject((node) => {
                     // all drawings are relative to the nodes' current coordinates
-                    if(node.type === "Magic Ring" || node.type === "Chain Stitch"){
+                    if(node.type === "mr" || node.type === "ch"){
                         let isCurrent = node.id === this.currentNode;
                         return stitchPaths.draw(node.type, isCurrent ? 0xe68a00 : 0x000000).rotateX(1/2*Math.PI);
                     }else{
@@ -105,7 +105,7 @@
                             return stitchPaths.draw(source.type, isCurrent ? 0xe68a00 : 0x000000);
                         }
                     }else if(link.slipstitch){
-                        return stitchPaths.draw("Slipstitch").rotateX(1/2*Math.PI);
+                        return stitchPaths.draw("slst").rotateX(1/2*Math.PI);
                     }
                     return false;
                 })

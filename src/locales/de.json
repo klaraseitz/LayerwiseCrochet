@@ -1,0 +1,43 @@
+{
+  "app_name": "Häkelschrift Designer",
+  "stitch": "Masche | Maschen",
+  "stitches": {
+    "ch": "Luftmasche",
+    "sc": "Feste Masche",
+    "hdc": "Halbes Stäbchen",
+    "dc": "Stäbchen",
+    "tr": "Doppeltes Stäbchen",
+    "dtr": "Dreifach Stäbchen",
+    "slst": "Kettmasche"
+  },
+  "start_methods": {
+    "mr": "Fadenring",
+    "line_of_ch": "Luftmaschenkette",
+    "round_of_ch": "Luftmaschenrunde"
+  },
+  "stitch_category": {
+    "basic": "Basis",
+    "ending": "Abschluss"
+  },
+  "increasing": "zunehmen",
+  "decreasing": "abnehmen",
+  "start_pattern_card": {
+    "title": "Anleitung starten",
+    "text": "Wähle aus mit welcher Methode Du beginnen möchtest.",
+    "method_label": "Start Methode",
+    "num_stitches_label": "Anzahl der Maschen"
+  },
+  "stitch_help_card": {
+    "title": "Hilfe zu Maschen",
+    "select_text": "Wähle eine Masche aus der Liste aus. Einmal ausgewählt bleibt die Auswahl aktiv. Immer wenn eine Masche in der Häkelschrift angeklickt wird wird dort dann eine Masche des ausgewählten Typs angefügt.",
+    "increase_text": "Die standard Methode ist Maschenzunahme. In dem Maschendialog kann die Methode von Zunahme zu Abnahme gewechselt werden. Alternativ führt ein links-klick eine Zunahme und ein rechts-klick eine Abnahme aus."
+  },
+  "tooltips": {
+    "undo": "Rückgängig",
+    "redo": "Wiederherholen",
+    "save": "aktuellen Stand speichern",
+    "open": "verwerfen und andere Häkelschrift laden",
+    "add_layer": "Ebene hinzufügen",
+    "new_pattern": "neue Anleitung starten"
+  }
+}

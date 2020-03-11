@@ -5,28 +5,28 @@ export default class CrochetCanvas {
         ctx.strokeStyle = color;
 
         switch(stitch) {
-            case 'Slipstitch':
+            case 'slst':
                 this.drawSlipstitch(ctx, x, y);
                 break;
-            case 'Single Crochet':
+            case 'sc':
                 this.drawSingleCrochet(ctx, x, y);
                 break;
-            case 'Magic Ring':
+            case 'mr':
                 this.drawMagicRing(ctx, x, y);
                 break;
-            case 'Chain Stitch':
+            case 'ch':
                 this.drawChainStitch(ctx, x, y);
                 break;
-            case 'Half Double Crochet':
+            case 'hdc':
                 this.drawHalfDoubleCrochet(ctx, x, y);
                 break;
-            case 'Double Crochet':
+            case 'dc':
                 this.drawDoubleCrochet(ctx, x, y);
                 break;
-            case 'Treble Crochet':
+            case 'tc':
                 this.drawTrebleCrochet(ctx, x, y);
                 break;
-            case 'Double Treble Crochet':
+            case 'dtr':
                 this.drawDoubleTrebleCrochet(ctx, x, y);
                 break;
         }

@@ -10,21 +10,21 @@ export default class CrochetPaths {
             let x = 0;
             let y = 0;
             switch(stitch) {
-                case 'Slipstitch':
+                case 'slst':
                     return this.drawSlipstitch(x, y);
-                case 'Single Crochet':
+                case 'sc':
                     return this.drawSingleCrochet(x, y);
-                case 'Magic Ring':
+                case 'mr':
                     return this.drawMagicRing(x, y);
-                case 'Chain Stitch':
+                case 'ch':
                     return this.drawChainStitch(x, y);
-                case 'Half Double Crochet':
+                case 'hdc':
                     return this.drawHalfDoubleCrochet(x, y);
-                case 'Double Crochet':
+                case 'dc':
                     return this.drawDoubleCrochet(x, y);
-                case 'Treble Crochet':
+                case 'tc':
                     return this.drawTrebleCrochet(x, y);
-                case 'Double Treble Crochet':
+                case 'dtr':
                     return this.drawDoubleTrebleCrochet(x, y);
                 default:
                     return false;

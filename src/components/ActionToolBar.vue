@@ -3,26 +3,57 @@
 <template>
     <div>
         <v-row justify="center">
-        <v-btn class="ma-2" outlined color="indigo" @click="undo">
-            <v-icon> mdi-undo </v-icon>
-        </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="redo">
-            <v-icon> mdi-redo </v-icon>
-        </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="saveGraph">
-            <v-icon> mdi-content-save-outline </v-icon>
-        </v-btn>
-        <input type="file" accept="application/json" ref="file" style="display: none" v-on:change="loadPattern">
-        <v-btn class="ma-2" outlined color="indigo" @click="$refs.file.click()">
-            <v-icon> mdi-folder-open-outline </v-icon>
-        </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click="newLayer">
-            <v-icon> mdi-layers-plus </v-icon>
-        </v-btn>
-        <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true">
-            <v-icon> mdi-new-box </v-icon>
-        </v-btn>
-        <v-switch v-model="is3D" :label="`3D ${is3D.toString()}`" v-on:change="switchDimension"/>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click="undo" v-on="on">
+                    <v-icon> mdi-undo </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.undo')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click="redo" v-on="on">
+                    <v-icon> mdi-redo </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.redo')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click="saveGraph" v-on="on">
+                    <v-icon> mdi-content-save-outline </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.save')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <input type="file" accept="application/json" ref="file" style="display: none" v-on:change="loadPattern" v-on="on">
+                <v-btn class="ma-2" outlined color="indigo" @click="$refs.file.click()" v-on="on">
+                    <v-icon> mdi-folder-open-outline </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.open')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click="newLayer" v-on="on">
+                    <v-icon> mdi-layers-plus </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.add_layer')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
+                    <v-icon> mdi-new-box </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.new_pattern')}}</span>
+        </v-tooltip>
+
+        <v-switch v-model="is3D" :label="is3D ? '3D' : '2D'" v-on:change="switchDimension"/>
         </v-row>
 
         <v-dialog
@@ -31,20 +62,28 @@
                 persistent
         >
             <v-card>
-                <v-card-title class="headline">Start a new Pattern</v-card-title>
+                <v-card-title class="headline">{{$t('start_pattern_card.title')}}</v-card-title>
                 <v-card-text>
-                    Choose which method you want to use to start the new Pattern.
+                    {{$t('start_pattern_card.text')}}
                     <v-container>
                         <v-select
                                 v-model="selectedMethod"
                                 :items="startMethods"
-                                label="Start Method"
+                                v-bind:label="methodsLabel"
                                 data-vv-name="select"
-                        />
-                        <v-text-field v-if="selectedMethod!='Magic Ring'"
+                        >
+                            <template v-slot:selection="{ item }">
+                                {{$t("start_methods."+item)}}
+                            </template>
+                            <template v-slot:item="{ item }">
+                                {{$t("start_methods."+item)}}
+                            </template>
+                        </v-select>
+
+                        <v-text-field v-if="selectedMethod != 'mr' && selectedMethod != '' "
                                 v-model="stitchAmount"
                                 :rules="[rules.number]"
-                                label="Number of Stitches"
+                                v-bind:label="numStitchesLabel"
                                 maxlength="3"
                         />
 
@@ -82,13 +121,9 @@
             return {
                 name: "ActionToolBar",
                 dialog: false,
-                startMethods: [
-                    "Magic Ring",
-                    "Line of Chain Stitches",
-                    "Round of Chain Stitches"
-                ],
-                selectedMethod: "Magic Ring",
                 stitchAmount: 6,
+                startMethods: ["mr", "line_of_ch", "round_of_ch" ],
+                selectedMethod: "mr",
                 rules: {
                     number: value => {
                         const pattern = /^[1-9][0-9]{0,2}$/;
@@ -97,6 +132,14 @@
                 },
                 patternFile: null,
                 is3D: true,
+            }
+        },
+        computed: {
+            methodsLabel: function() {
+                return this.$t('start_pattern_card.method_label');
+            },
+            numStitchesLabel: function() {
+                return this.$t('start_pattern_card.num_stitches_label');
             }
         },
         methods: {

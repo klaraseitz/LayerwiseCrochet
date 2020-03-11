@@ -2,7 +2,7 @@ import {Link, Node} from "@/helper/graphObjects";
 
 export function addChain() {
     let id = this.chainID || null;
-    let node = new Node("Chain Stitch", this.values.layer, false, this.values.previousID, true, id);
+    let node = new Node("ch", this.values.layer, false, this.values.previousID, true, id);
     let link = new Link(node.id, this.values.previousID);
     this.chainID = node.id;
 
