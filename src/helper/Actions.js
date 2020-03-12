@@ -41,7 +41,7 @@ export function disconnectFromSlipstitch() {
 
 export function addStitch() {
     let nodeID = this.nodeID || null;
-    let node = new Node(this.values.type, this.values.graphLayers,false, this.values.prevNodeID, true, nodeID);
+    let node = new Node(this.values.type, this.values.layer,false, this.values.prevNodeID, true, nodeID);
     let linkToPrevious = new Link(node.id, this.values.prevNodeID);
     let linkToInsert = new Link(node.id, this.values.insertNodeID, true);
     this.nodeID = node.id;
