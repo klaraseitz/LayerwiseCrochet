@@ -58,7 +58,7 @@ export default class CrochetPaths {
         }
         let points = path.getPoints();
         let geometry = new THREE.BufferGeometry().setFromPoints( points );
-        return new THREE.Line( geometry, this.lineMaterial() );
+        return new THREE.Line( geometry.rotateX(90), this.lineMaterial() );
     }
 
     drawChainStitch(x, y) {
