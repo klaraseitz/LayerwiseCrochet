@@ -50,6 +50,21 @@
                     this.handleNodeRightClick(node);
                     this.graph.refresh();
                 })
+                .onLinkHover((link) => {
+                    element.style.cursor = link && link.inserts ? 'pointer' : null;
+                })
+                .onLinkClick(link => {
+                    if(link.inserts){
+                        this.handleNodeClick(link.source);
+                        this.graph.refresh();
+                    }
+                })
+                .onLinkRightClick(link => {
+                    if(link.inserts){
+                        this.handleNodeRightClick(link.source);
+                        this.graph.refresh();
+                    }
+                })
                 .nodeOpacity(0)
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)

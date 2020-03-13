@@ -44,6 +44,19 @@
                 .onNodeRightClick(node => {
                     this.handleNodeRightClick(node);
                 })
+                .onLinkHover((link) => {
+                    element.style.cursor = link && link.inserts ? 'pointer' : null;
+                })
+                .onLinkClick(link => {
+                    if(link.inserts){
+                        this.handleNodeClick(link.source);
+                    }
+                })
+                .onLinkRightClick(link => {
+                    if(link.inserts){
+                        this.handleNodeRightClick(link.source);
+                    }
+                })
                 .nodeColor(node => {
                     if(node.layer%2 == 0){
                         return 'red'
