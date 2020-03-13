@@ -14,10 +14,9 @@ export function addChain() {
 }
 
 export function removeChain() {
-    let node = this.values.graph.nodes[this.values.graph.nodes.length - 2];
     return {
-        currentNode: node,
-        graphLayers: node.layer,
+        currentNode: this.values.previous,
+        graphLayers: this.values.previous.layer,
         numNodesToRemove: 1,
         numLinksToRemove: 1
     }
