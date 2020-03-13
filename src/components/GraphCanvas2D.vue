@@ -53,7 +53,7 @@
                 })
                 .nodeCanvasObject((node, ctx) => {
                     if(node.type == "mr" || node.type == "ch"){
-                        let isCurrent = node.id === this.currentNode;
+                        let isCurrent = node.id === this.currentNode.id;
                         stitchCanvas.draw(node.type, ctx, node.x, node.y, isCurrent ? '#e68a00' : '#000000');
                     }
                 })
@@ -99,7 +99,7 @@
                             ctx.rotate(Math.PI);
                         }
                         ctx.translate(-x, -y);
-                        let isCurrent = link.source.id === this.currentNode;
+                        let isCurrent = link.source.id === this.currentNode.id;
                         stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
                         ctx.restore();
                     }else if(link.slipstitch){

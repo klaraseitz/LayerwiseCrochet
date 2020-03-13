@@ -2,12 +2,12 @@ import {Link, Node} from "@/helper/graphObjects";
 
 export function addChain() {
     let id = this.chainID || null;
-    let node = new Node("ch", this.values.layer, false, this.values.previousID, true, id);
-    let link = new Link(node.id, this.values.previousID);
+    let node = new Node("ch", this.values.layer, false, this.values.previous, true, id);
+    let link = new Link(node.id, this.values.previous.id);
     this.chainID = node.id;
 
     return {
-        currentNode: node.id,
+        currentNode: node,
         newNodes: [node],
         newLinks: [link]
     }
@@ -16,7 +16,7 @@ export function addChain() {
 export function removeChain() {
     let node = this.values.graph.nodes[this.values.graph.nodes.length - 2];
     return {
-        currentNode: node.id,
+        currentNode: node,
         graphLayers: node.layer,
         numNodesToRemove: 1,
         numLinksToRemove: 1
@@ -24,30 +24,29 @@ export function removeChain() {
 }
 
 export function connectWithSlipstitch() {
-    let link = new Link(this.values.fromID, this.values.toID, false, true);
-
+    let link = new Link(this.values.from.id, this.values.to.id, false, true);
     return {
-        currentNode: this.values.toID,
+        currentNode: this.values.to,
         newLinks: [link]
     }
 }
 
 export function disconnectFromSlipstitch() {
     return {
-        currentNode: this.values.fromID,
+        currentNode: this.values.from,
         numLinksToRemove: 1
     }
 }
 
 export function addStitch() {
     let nodeID = this.nodeID || null;
-    let node = new Node(this.values.type, this.values.layer,false, this.values.prevNodeID, true, nodeID);
-    let linkToPrevious = new Link(node.id, this.values.prevNodeID);
+    let node = new Node(this.values.type, this.values.layer,false, this.values.previous, true, nodeID);
+    let linkToPrevious = new Link(node.id, this.values.previous.id);
     let linkToInsert = new Link(node.id, this.values.insertNodeID, true);
     this.nodeID = node.id;
 
     return {
-        currentNode: node.id,
+        currentNode: node,
         newNodes: [node],
         newLinks: [linkToPrevious, linkToInsert]
     }
@@ -55,35 +54,29 @@ export function addStitch() {
 
 export function removeStitch() {
     return {
-        currentNode: this.values.prevNodeID,
+        currentNode: this.values.previous,
         numNodesToRemove: 1,
         numLinksToRemove: 2
     }
 }
 
 export function addDecreasingStitch() {
-    let previousNode = this.values.graph.nodes.find(node => {
-        return node.id === this.values.previousNodeID
-    });
-    this.previousIncrease = previousNode.isIncrease;
-    previousNode.isIncrease = false;
-    let link = new Link(this.values.previousNodeID, this.values.insertNodeID, true, false);
+    this.previousIncrease = this.values.previous.isIncrease;
+    this.values.previous.isIncrease = false;
+    let link = new Link(this.values.previous.id, this.values.insertNodeID, true, false);
 
 
     return {
-        currentNode: this.values.prevNodeID,
+        currentNode: this.values.previous,
         newLinks: [link]
     }
 }
 
 export function removeDecreasingStitch() {
-    let previousNode = this.values.graph.nodes.find(node => {
-        return node.id === this.values.previousNodeID
-    });
-    previousNode.isIncrease = this.values.previousIncrease;
+    this.values.previous.isIncrease = this.values.previousIncrease;
 
     return {
-        currentNode: this.values.prevNodeID,
+        currentNode: this.values.previous,
         numLinksToRemove: 1
     }
 }

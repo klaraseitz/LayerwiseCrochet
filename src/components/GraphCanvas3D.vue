@@ -56,7 +56,7 @@
                 .nodeThreeObject((node) => {
                     // all drawings are relative to the nodes' current coordinates
                     if(node.type === "mr" || node.type === "ch"){
-                        let isCurrent = node.id === this.currentNode;
+                        let isCurrent = node.id === this.currentNode.id;
                         return stitchPaths.draw(node.type, isCurrent ? 0xe68a00 : 0x000000).rotateX(1/2*Math.PI);
                     }else{
                         return false;
@@ -67,7 +67,7 @@
                     let source;
                     let target;
                     let color = 'rgba(0, 0, 0, 100)';
-                    if(link.source.type){
+                    if(link.source.type != null){
                         source = link.source;
                         target = link.target;
                     }else{
@@ -103,7 +103,7 @@
                             });
                         }
                         if(source && source.type){
-                            let isCurrent = source.id === this.currentNode;
+                            let isCurrent = source.id === this.currentNode.id;
                             return stitchPaths.draw(source.type, isCurrent ? 0xe68a00 : 0x000000);
                         }
                     }else if(link.slipstitch){

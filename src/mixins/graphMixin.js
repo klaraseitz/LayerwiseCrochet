@@ -57,7 +57,7 @@ export const graphMixin = {
             switch (method){
                 case 'mr':
                     let magicRing = new Node("mr", 0, true);
-                    this.currentNode = magicRing.id;
+                    this.currentNode = magicRing;
                     this.addDataToGraph(magicRing, []);
                     this.graphLayers = 1;
                     break;
@@ -74,32 +74,39 @@ export const graphMixin = {
         getTrigger(data) {
             console.log("graph got unimplemented trigger: " + data);
         },
+        getNodeById(id) {
+            this.graph.graphData().nodes.forEach(node => {
+                if(node.id === id){
+                    return node;
+                }
+            });
+        },
         startChain(amount, isClosed) {
             let firstChain = new Node("ch", 0, true);
             this.addDataToGraph(firstChain, []);
-            this.currentNode = firstChain.id;
+            this.currentNode = firstChain;
             for(let i = 1; i < amount; i++){
                 this.addChain(this.currentNode, 0);
             }
             if(isClosed){
-                this.connectWithSlipStitch(this.currentNode, firstChain.id);
+                this.connectWithSlipStitch(this.currentNode, firstChain);
                 this.graphLayers = 1;
             }
         },
-        addChain(previousID){
-            let actions = commandTracker.execute(new CommandAddChain(previousID, this.graphLayers, this.graph.graphData()));
+        addChain(previous){
+            let actions = commandTracker.execute(new CommandAddChain(previous, this.graphLayers, this.graph.graphData()));
             this.handleAction(actions);
         },
-        connectWithSlipStitch(fromID, toID){
-            let actions = commandTracker.execute(new CommandConnectWithSlipStitch(fromID, toID));
+        connectWithSlipStitch(from, to){
+            let actions = commandTracker.execute(new CommandConnectWithSlipStitch(from, to));
             this.handleAction(actions);
         },
         addStitch(prevNodeID, insertNodeID, type){
             let actions = commandTracker.execute(new CommandAddStitch(prevNodeID, insertNodeID, type, this.graphLayers));
             this.handleAction(actions);
         },
-        decreaseStitch(previousNodeID, insertNodeID) {
-            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNodeID, insertNodeID, this.graph.graphData()));
+        decreaseStitch(previous, insertNodeID) {
+            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previous, insertNodeID, this.graph.graphData()));
             this.handleAction(actions);
         },
         handleNodeClick(node) {
@@ -109,7 +116,7 @@ export const graphMixin = {
                         this.addChain(this.currentNode);
                         break;
                     case 'slst':
-                        this.connectWithSlipStitch(this.currentNode, node.id);
+                        this.connectWithSlipStitch(this.currentNode, node);
                         break;
                     default:
                         if(this.isIncrease){
