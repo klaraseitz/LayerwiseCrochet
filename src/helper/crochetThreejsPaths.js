@@ -72,19 +72,15 @@ export default class CrochetPaths {
     }
 
     drawSlipstitch(x, y) {
-        let path = new THREE.Path();
-        path.absarc(x, y, 1, 0, 2*Math.PI, null);
-        let points = path.getPoints();
-        let geometryLine = new THREE.BufferGeometry().setFromPoints( points );
-        let circleLine = new THREE.Line( geometryLine, this.lineMaterial() );
-
         // this draws a filled circle (what I'd like) But only one side is drawn.
-        // Therefore I keep the circle made out of lines.
-        let geometryCircle = new THREE.CircleBufferGeometry( 1, 16 );
-        let circle = new THREE.Mesh( geometryCircle, this.meshMaterial() );
+        // Therefore I draw the same circle again just the other way around, then that side also gets filled.
+        let geometryCircle1 = new THREE.CircleBufferGeometry( 1, 16 );
+        let geometryCircle2 = new THREE.CircleBufferGeometry( 1, 16, 0, -2*Math.PI );
+        let circleSide1 = new THREE.Mesh( geometryCircle1, this.meshMaterial() );
+        let circleSide2 = new THREE.Mesh( geometryCircle2, this.meshMaterial() );
 
         let group = new THREE.Group();
-        group.add(circleLine, circle);
+        group.add(circleSide1, circleSide2);
         return group;
     }
 
