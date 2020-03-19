@@ -4,6 +4,7 @@
 
 <script >
     import * as THREE from 'three';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
     import ForceGraph3D from '3d-force-graph';
     import {graphMixin} from "@/mixins/graphMixin";
     import CrochetPaths from "@/helper/crochetThreejsPaths";
@@ -28,9 +29,12 @@
             }
         },
         methods: {
-          refreshGraph() {
+            refreshGraph() {
               this.graph.refresh();
-          }
+            },
+            addToScene(gltf) {
+              this.graph.scene().add(gltf.scene);
+            }
         },
         mounted() {
             let element = this.$refs.canvas3D;
@@ -159,6 +163,14 @@
 
                     Object.assign(linkObject.position, position);
                 });
+
+            // use this to add a 3D model to the scene. I couldnt get a local path to load the model yet.
+            /*loader.load( "https://threejsfundamentals.org/threejs/resources/models/cartoon_lowpoly_small_city_free_pack/scene.gltf",
+                this.addToScene, undefined,
+                function ( error ) {
+                    console.error( error );
+                }
+            );*/
         }
     }
 </script>
