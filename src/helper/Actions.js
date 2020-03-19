@@ -2,8 +2,8 @@ import {Link, Node} from "@/helper/graphObjects";
 
 export function addChain() {
     let id = this.chainID || null;
-    let node = new Node("ch", this.values.layer, false, this.values.previous, true, id);
-    let link = new Link(node.id, this.values.previous.id);
+    let node = new Node("ch", this.values.layer, false, this.values.previousNode, null,true, id);
+    let link = new Link(node.id, this.values.previousNode.id);
     this.chainID = node.id;
 
     return {
@@ -15,8 +15,8 @@ export function addChain() {
 
 export function removeChain() {
     return {
-        currentNode: this.values.previous,
-        graphLayers: this.values.previous.layer,
+        currentNode: this.values.previousNode,
+        graphLayers: this.values.previousNode.layer,
         numNodesToRemove: 1,
         numLinksToRemove: 1
     }
@@ -39,9 +39,9 @@ export function disconnectFromSlipstitch() {
 
 export function addStitch() {
     let nodeID = this.nodeID || null;
-    let node = new Node(this.values.type, this.values.layer,false, this.values.previous, true, nodeID);
-    let linkToPrevious = new Link(node.id, this.values.previous.id);
-    let linkToInsert = new Link(node.id, this.values.insertNodeID, true);
+    let node = new Node(this.values.type, this.values.layer,false, this.values.previousNode, this.values.insertNode, true, nodeID);
+    let linkToPrevious = new Link(node.id, this.values.previousNode.id);
+    let linkToInsert = new Link(node.id, this.values.insertNode.id, true);
     this.nodeID = node.id;
 
     return {
@@ -53,30 +53,29 @@ export function addStitch() {
 
 export function removeStitch() {
     return {
-        currentNode: this.values.previous,
+        currentNode: this.values.previousNode,
         numNodesToRemove: 1,
         numLinksToRemove: 2
     }
 }
 
 export function addDecreasingStitch() {
-    this.previousIncrease = this.values.previous.isIncrease;
-    this.values.previous.isIncrease = false;
-    let link = new Link(this.values.previous.id, this.values.insertNodeID, true, false);
-
+    this.previousIsIncrease = this.values.previousNode.isIncrease;
+    this.values.previousNode.isIncrease = false;
+    let link = new Link(this.values.previousNode.id, this.values.insertNode.id, true, false);
 
     return {
-        currentNode: this.values.previous,
+        currentNode: this.values.previousNode,
         newLinks: [link]
     }
 }
 
 export function removeDecreasingStitch() {
-    this.values.previous.isIncrease = this.values.previousIncrease;
+    this.values.previousNode.isIncrease = this.previousIsIncrease;
 
     return {
-        currentNode: this.values.previous,
-        numLinksToRemove: 1
+        currentNode: this.values.previousNode,
+        numLinksToRemove: 1,
     }
 }
 

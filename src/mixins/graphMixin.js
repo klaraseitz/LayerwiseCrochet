@@ -80,7 +80,7 @@ export const graphMixin = {
             console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
 
 
-            // finding starting stitch
+            /*// finding starting stitch
             let startingStitch;
             if(this.currentNode.type === "ch"){
                 startingStitch = this.currentNode.previous;
@@ -100,7 +100,7 @@ export const graphMixin = {
             for (let i = 0; i < numStitches; i++){
                 stitchesToRepeat.push({'type': currentStitch.type, 'increase': currentStitch.isIncrease});
                 currentStitch = currentStitch.previous;
-            }
+            }*/
         },
         getTrigger(data) {
             console.log("graph got unimplemented trigger: " + data);
@@ -132,12 +132,12 @@ export const graphMixin = {
             let actions = commandTracker.execute(new CommandConnectWithSlipStitch(from, to));
             this.handleAction(actions);
         },
-        addStitch(prevNodeID, insertNodeID, type){
-            let actions = commandTracker.execute(new CommandAddStitch(prevNodeID, insertNodeID, type, this.graphLayers));
+        addStitch(prevNode, insertNode, type){
+            let actions = commandTracker.execute(new CommandAddStitch(prevNode, insertNode, type, this.graphLayers));
             this.handleAction(actions);
         },
-        decreaseStitch(previous, insertNodeID) {
-            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previous, insertNodeID, this.graph.graphData()));
+        decreaseStitch(previousNode, insertNode) {
+            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNode, insertNode, this.graph.graphData()));
             this.handleAction(actions);
         },
         handleNodeClick(node) {
@@ -151,9 +151,9 @@ export const graphMixin = {
                         break;
                     default:
                         if(this.isIncrease){
-                            this.addStitch(this.currentNode, node.id, this.stitch);
+                            this.addStitch(this.currentNode, node, this.stitch);
                         }else {
-                            this.decreaseStitch(this.currentNode, node.id);
+                            this.decreaseStitch(this.currentNode, node);
                         }
                         
                 }
@@ -161,7 +161,7 @@ export const graphMixin = {
         },
         handleNodeRightClick(node) {
             if(this.stitch && (this.stitch != "ch" || this.stitch != "slst")){
-                this.decreaseStitch(this.currentNode, node.id);
+                this.decreaseStitch(this.currentNode, node);
             }
         },
         savePattern(keepPositions) {
