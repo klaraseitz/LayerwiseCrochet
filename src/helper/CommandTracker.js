@@ -41,7 +41,7 @@ CommandTracker.prototype = {
             console.error('Nothing to undo');
             return;
         }
-        this._actions = cmd.undo(this._currentProgress);
+        this._actions = cmd.undo();
         this._currentCommand--;
         return this._actions;
     },

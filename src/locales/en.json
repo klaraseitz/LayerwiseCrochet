@@ -19,8 +19,8 @@
     "basic": "Basic",
     "ending": "Ending"
   },
-  "increasing": "increasing",
-  "decreasing": "decreasing",
+  "increasing": "increasing (left-click)",
+  "decreasing": "decreasing (right-click)",
   "start_pattern_card": {
     "title": "Start a new Pattern",
     "text": "Choose which method you want to use to start the new Pattern.",
@@ -32,12 +32,19 @@
     "select_text": "Select a stitch from the drop down list. Once selected the stitch remains active. Any time a stitch on the crochet chart is clicked the program adds the selected stitch into this clicked stitch.",
     "increase_text": "The default method is increasing stitches. Switch the method to decreasing in the Stitch dialog. Alternatively left-click to increase and right-click to decrease."
   },
+  "auto_complete_card":{
+    "title": "Autocomplete Row/Round",
+    "text": "Choose how many previous stitches you want to repeat for how long.",
+    "num_stitches": "Number of previous stitches",
+    "num_repetitions": "Number of whole repetitions"
+  },
   "tooltips": {
     "undo": "undo last step",
     "redo": "redo one step",
     "save": "save current pattern",
     "open": "discard and open pattern",
     "add_layer": "add layer",
-    "new_pattern": "start new pattern"
+    "new_pattern": "start new pattern",
+    "auto_complete": "autocomplete row/round"
   }
 }

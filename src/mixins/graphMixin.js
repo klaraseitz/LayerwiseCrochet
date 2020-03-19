@@ -42,6 +42,9 @@ export const graphMixin = {
                 case 'switchStitchMode':
                     this.isIncrease = trigger.isIncrease;
                     break;
+                case 'auto_complete':
+                    this.handleAutoIncrease(trigger.numStitches, trigger.numRepetitions);
+                    break;
                 default:
                     console.log("got unexpected trigger name");
             }
@@ -69,6 +72,34 @@ export const graphMixin = {
                     break;
                 default:
                     console.log("got unknown start method");
+            }
+        },
+        handleAutoIncrease(numStitches, numRepetitions) {
+            console.log("current stitch is:");
+            console.log(this.currentNode);
+            console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
+
+
+            // finding starting stitch
+            let startingStitch;
+            if(this.currentNode.type === "ch"){
+                startingStitch = this.currentNode.previous;
+            }else{
+                this.graph.graphData().links.forEach(link => {
+                    if(link.inserts && link.source.id == this.currentNode.id){
+                        startingStitch =  link.target.previous;
+                        return;
+                    }
+                });
+            }
+            console.log("will start at this stitch: ");
+            console.log(startingStitch);
+            let stitchesToRepeat = [];
+            let currentStitch = this.currentNode;
+
+            for (let i = 0; i < numStitches; i++){
+                stitchesToRepeat.push({'type': currentStitch.type, 'increase': currentStitch.isIncrease});
+                currentStitch = currentStitch.previous;
             }
         },
         getTrigger(data) {

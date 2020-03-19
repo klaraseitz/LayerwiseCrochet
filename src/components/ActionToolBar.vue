@@ -52,7 +52,14 @@
             </template>
             <span>{{$t('tooltips.new_pattern')}}</span>
         </v-tooltip>
-
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click.stop="auto_complete_dialog = true" v-on="on">
+                    <v-icon> mdi-auto-fix </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.auto_complete')}}</span>
+        </v-tooltip>
         <v-switch v-model="is3D" :label="is3D ? '3D' : '2D'" v-on:change="switchDimension"/>
         </v-row>
 
@@ -111,7 +118,52 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog
+                v-model="auto_complete_dialog"
+                max-width="290"
+                persistent
+        >
+            <v-card>
+                <v-card-title class="headline">{{$t('auto_complete_card.title')}}</v-card-title>
+                <v-card-text>
+                    {{$t('auto_complete_card.text')}}
+                    <v-container>
+                        <v-text-field
+                                v-model="stitchAmountAutoComplete"
+                                :rules="[rules.number]"
+                                v-bind:label="numStitchesLabelAutoComplete"
+                                maxlength="3"
+                        />
+                        <v-text-field
+                                v-model="numberRepetitionsAutoComplete"
+                                :rules="[rules.number]"
+                                v-bind:label="numRepetitionsLabelAutoComplete"
+                                maxlength="3"
+                        />
+                    </v-container>
+                </v-card-text>
 
+                <v-card-actions>
+                    <v-spacer/>
+
+                    <v-btn
+                            color="green darken-1"
+                            text
+                            @click="auto_complete_dialog = false"
+                    >
+                        Cancel
+                    </v-btn>
+
+                    <v-btn
+                            color="green darken-1"
+                            text
+                            @click="autoComplete"
+                    >
+                        Done
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -121,7 +173,10 @@
             return {
                 name: "ActionToolBar",
                 dialog: false,
+                auto_complete_dialog: false,
                 stitchAmount: 6,
+                stitchAmountAutoComplete: 1,
+                numberRepetitionsAutoComplete: 5,
                 startMethods: ["mr", "line_of_ch", "round_of_ch" ],
                 selectedMethod: "mr",
                 rules: {
@@ -140,13 +195,28 @@
             },
             numStitchesLabel: function() {
                 return this.$t('start_pattern_card.num_stitches_label');
+            },
+            numStitchesLabelAutoComplete: function() {
+                return this.$t('auto_complete_card.num_stitches');
+            },
+            numRepetitionsLabelAutoComplete: function() {
+                return this.$t('auto_complete_card.num_repetitions');
             }
         },
         methods: {
             startGraph() {
                 this.dialog = false;
-                let msg = {name: 'start', method: this.selectedMethod, stitchAmount: this.stitchAmount};
+                let msg = {name: 'start',
+                    method: this.selectedMethod,
+                    stitchAmount: this.stitchAmount};
                 this.$emit("triggerGraph", msg)
+            },
+            autoComplete() {
+              this.auto_complete_dialog = false;
+              let msg = {name: 'auto_complete',
+                  numStitches: this.stitchAmountAutoComplete,
+                  numRepetitions: this.numberRepetitionsAutoComplete}
+              this.$emit("triggerGraph", msg);
             },
             newLayer() {
                 let msg = {name: 'newLayer'};
