@@ -18,14 +18,13 @@ CommandTracker.prototype = {
     constructor: CommandTracker,
     /**
      * Execute a new command.
-     * @param {type} command Instance of a command.
+     * @param {CommandAddInitialStitch} command Instance of a command.
      * @returns {undefined}
      */
     execute: function (command) {
         this._actions = command.execute();
         this._currentCommand++;
         this._commandsList[this._currentCommand] = command;
-        console.log(this._commandsList);
         if (this._commandsList[this._currentCommand + 1]) {
             this._commandsList.splice(this._currentCommand + 1);
         }
@@ -39,6 +38,9 @@ CommandTracker.prototype = {
         let cmd = this._commandsList[this._currentCommand];
         if (!cmd) {
             console.error('Nothing to undo');
+            return;
+        }else if(cmd.undo === null){
+            console.error("Can't undo initial stitch");
             return;
         }
         this._actions = cmd.undo();

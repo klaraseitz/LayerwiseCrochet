@@ -22,7 +22,7 @@ export default class CrochetPaths {
                     return this.drawHalfDoubleCrochet(x, y);
                 case 'dc':
                     return this.drawDoubleCrochet(x, y);
-                case 'tc':
+                case 'tr':
                     return this.drawTrebleCrochet(x, y);
                 case 'dtr':
                     return this.drawDoubleTrebleCrochet(x, y);

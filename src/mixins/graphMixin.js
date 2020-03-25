@@ -1,6 +1,7 @@
 import saveAs from "file-saver";
-import {Node, Link} from "@/helper/graphObjects";
+import IndexCounter from "@/helper/indexCounter";
 import {
+    CommandAddInitialStitch,
     CommandAddChain,
     CommandAddDecreasingStitch,
     CommandAddStitch,
@@ -59,10 +60,8 @@ export const graphMixin = {
             this.graphLayers = 0;
             switch (method){
                 case 'mr':
-                    let magicRing = new Node("mr", 0, true);
-                    this.currentNode = magicRing;
-                    this.addDataToGraph(magicRing, []);
-                    this.graphLayers = 1;
+                    let actions = commandTracker.execute(new CommandAddInitialStitch("mr"));
+                    this.handleAction(actions);
                     break;
                 case 'line_of_ch':
                     this.startChain(stitchAmount, false);
@@ -79,43 +78,14 @@ export const graphMixin = {
             console.log(this.currentNode);
             console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
 
-
-            /*// finding starting stitch
-            let startingStitch;
-            if(this.currentNode.type === "ch"){
-                startingStitch = this.currentNode.previous;
-            }else{
-                this.graph.graphData().links.forEach(link => {
-                    if(link.inserts && link.source.id == this.currentNode.id){
-                        startingStitch =  link.target.previous;
-                        return;
-                    }
-                });
-            }
-            console.log("will start at this stitch: ");
-            console.log(startingStitch);
-            let stitchesToRepeat = [];
-            let currentStitch = this.currentNode;
-
-            for (let i = 0; i < numStitches; i++){
-                stitchesToRepeat.push({'type': currentStitch.type, 'increase': currentStitch.isIncrease});
-                currentStitch = currentStitch.previous;
-            }*/
         },
         getTrigger(data) {
             console.log("graph got unimplemented trigger: " + data);
         },
-        getNodeById(id) {
-            this.graph.graphData().nodes.forEach(node => {
-                if(node.id === id){
-                    return node;
-                }
-            });
-        },
         startChain(amount, isClosed) {
-            let firstChain = new Node("ch", 0, true);
-            this.addDataToGraph(firstChain, []);
-            this.currentNode = firstChain;
+            let actions = commandTracker.execute(new CommandAddInitialStitch("ch"));
+            this.handleAction(actions);
+            let firstChain = this.currentNode;
             for(let i = 1; i < amount; i++){
                 this.addChain(this.currentNode, 0);
             }
@@ -125,7 +95,7 @@ export const graphMixin = {
             }
         },
         addChain(previous){
-            let actions = commandTracker.execute(new CommandAddChain(previous, this.graphLayers, this.graph.graphData()));
+            let actions = commandTracker.execute(new CommandAddChain(previous, this.graphLayers));
             this.handleAction(actions);
         },
         connectWithSlipStitch(from, to){
@@ -137,7 +107,7 @@ export const graphMixin = {
             this.handleAction(actions);
         },
         decreaseStitch(previousNode, insertNode) {
-            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNode, insertNode, this.graph.graphData()));
+            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNode, insertNode));
             this.handleAction(actions);
         },
         handleNodeClick(node) {
@@ -160,7 +130,7 @@ export const graphMixin = {
             }
         },
         handleNodeRightClick(node) {
-            if(this.stitch && (this.stitch != "ch" || this.stitch != "slst")){
+            if(this.stitch && (this.stitch !== "ch" || this.stitch !== "slst")){
                 this.decreaseStitch(this.currentNode, node);
             }
         },
@@ -176,6 +146,7 @@ export const graphMixin = {
             reader.readAsText(file);
         },
         resetGraph() {
+            IndexCounter.reset();
             this.graph.graphData({"nodes":[], "links":[]});
             commandTracker.resetHistory();
         },
@@ -184,7 +155,6 @@ export const graphMixin = {
             data.nodes = data.nodes.concat(nodes);
             data.links = data.links.concat(links);
             this.graph.graphData(data);
-            console.log("graphData: ");
             console.log(this.graph.graphData());
         },
         setGraphFromJson(graph) {
@@ -197,16 +167,16 @@ export const graphMixin = {
             let graphData = {"nodes": [], "links": []};
             this.graph.graphData().nodes.forEach(node => {
                 if(withPositions){
-                    graphData.nodes.push({"id": node.id, "type": node.type, "layer": node.layer,
+                    graphData.nodes.push({"index": node.index, "type": node.type, "layer": node.layer,
                         "start": node.start, "previous": node.previous,
                         "x": node.x, "y": node.y, "z": node.z});
                 }else{
-                    graphData.nodes.push({"id": node.id, "type": node.type, "layer": node.layer,
+                    graphData.nodes.push({"index": node.index, "type": node.type, "layer": node.layer,
                         "start": node.start, "previous": node.previous});
                 }
             });
             this.graph.graphData().links.forEach(link => {
-                graphData.links.push({"source": link.source.id, "target": link.target.id, "inserts": link.inserts, "slipstitch": link.slipstitch});
+                graphData.links.push({"source": link.source.index, "target": link.target.index, "inserts": link.inserts, "slipstitch": link.slipstitch});
             });
             let graph = {
                 'graphData': graphData,
@@ -221,13 +191,25 @@ export const graphMixin = {
             data.links.splice(-numLinks, numLinks);
             this.graph.graphData(data);
         },
+        updateNodes(nodes) {
+            let data = this.graph.graphData();
+            nodes.forEach(node => {
+                // Note: you may not replace the nodes or the references in the links will break.
+                // Therefore only relevant properties will be updated here.
+                data.nodes[node.index].next = node.next;
+                data.nodes[node.index].inserts = node.inserts;
+                data.nodes[node.index].isIncrease = node.isIncrease;
+            });
+            this.graph.graphData(data);
+        },
         handleAction(commandAction){
             if(commandAction){
                 if (commandAction.currentNode) {this.currentNode = commandAction.currentNode}
                 if (commandAction.graphLayers) {this.graphLayers = commandAction.graphLayers}
 
-                this.addDataToGraph(commandAction.newNodes, commandAction.newLinks);
                 this.removeLastXGraphElements(commandAction.numNodesToRemove, commandAction.numLinksToRemove);
+                this.addDataToGraph(commandAction.newNodes, commandAction.newLinks);
+                if(commandAction.updateNodes) {this.updateNodes(commandAction.updateNodes)}
                 this.refreshGraph();
             }
         }

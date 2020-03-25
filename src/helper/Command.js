@@ -1,4 +1,5 @@
 import {
+    addInitialStitch,
     addChain,
     addStitch,
     connectWithSlipstitch,
@@ -24,15 +25,29 @@ function Command(normalAction, undoAction, parameterObject) {
 }
 
 /**
+ * Command subtype for adding an initial stitch.
+ * @constructor
+ * @extends Command
+ * @param {type} String the type of initial stitch The values, which will be passed to the actions.
+ * @returns {undefined}
+ */
+export function CommandAddInitialStitch(type) {
+    // Constructor stealing for inheritance.
+    Command.call(this, addInitialStitch, null, {type});
+}
+// Prototype chaining for inheritance.
+CommandAddChain.prototype = Object.create(Command.prototype);
+
+/**
  * Command subtype for adding a chain.
  * @constructor
  * @extends Command
  * @param {type} previousID, layer, graph The values, which will be passed to the actions.
  * @returns {undefined}
  */
-export function CommandAddChain(previousNode, layer, graph) {
+export function CommandAddChain(previousNode, layer) {
     // Constructor stealing for inheritance.
-    Command.call(this, addChain, removeChain, {previousNode, layer, graph});
+    Command.call(this, addChain, removeChain, {previousNode, layer});
 }
 // Prototype chaining for inheritance.
 CommandAddChain.prototype = Object.create(Command.prototype);
@@ -73,9 +88,9 @@ CommandAddStitch.prototype = Object.create(Command.prototype);
  * @param {type} previousID, layer, graph The values, which will be passed to the actions.
  * @returns {undefined}
  */
-export function CommandAddDecreasingStitch(previousNode, insertNode, graph) {
+export function CommandAddDecreasingStitch(previousNode, insertNode) {
     // Constructor stealing for inheritance.
-    Command.call(this, addDecreasingStitch, removeDecreasingStitch, {previousNode, insertNode, graph});
+    Command.call(this, addDecreasingStitch, removeDecreasingStitch, {previousNode, insertNode});
 }
 // Prototype chaining for inheritance.
 CommandAddDecreasingStitch.prototype = Object.create(Command.prototype);

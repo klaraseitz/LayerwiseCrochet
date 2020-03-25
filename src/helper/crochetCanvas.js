@@ -23,7 +23,7 @@ export default class CrochetCanvas {
             case 'dc':
                 this.drawDoubleCrochet(ctx, x, y);
                 break;
-            case 'tc':
+            case 'tr':
                 this.drawTrebleCrochet(ctx, x, y);
                 break;
             case 'dtr':
