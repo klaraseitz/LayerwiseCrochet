@@ -12,6 +12,14 @@ class IndexCounter {
     reset() {
         this._counter = -1;
     }
+
+    setCounter(value) {
+        this._counter = value;
+    }
+
+    getCounter() {
+        return this._counter;
+    }
 }
 
 export default (new IndexCounter())

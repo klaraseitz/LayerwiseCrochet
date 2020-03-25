@@ -77,6 +77,11 @@ export const graphMixin = {
             console.log("current stitch is:");
             console.log(this.currentNode);
             console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
+            console.log("i will start autocompleting into this stitch:");
+            const nodes = this.graph.graphData().nodes
+            let insertNode = nodes[this.currentNode.inserts[0]];
+            let startNode = nodes[insertNode.next];
+            console.log(startNode);
 
         },
         getTrigger(data) {
@@ -140,7 +145,7 @@ export const graphMixin = {
             saveAs(blob, "pattern.json");
         },
         loadGraphFile(file) {
-            commandTracker.resetHistory();
+            this.resetGraph();
             const reader = new FileReader();
             reader.onload = e => this.setGraphFromJson(e.target.result);
             reader.readAsText(file);
@@ -162,26 +167,21 @@ export const graphMixin = {
             this.graph.graphData(json.graphData);
             this.currentNode = json.currentNode;
             this.graphLayers = json.numLayers;
+            IndexCounter.setCounter(json.indexCounter);
         },
         printGraph(withPositions) {
             let graphData = {"nodes": [], "links": []};
             this.graph.graphData().nodes.forEach(node => {
-                if(withPositions){
-                    graphData.nodes.push({"index": node.index, "type": node.type, "layer": node.layer,
-                        "start": node.start, "previous": node.previous,
-                        "x": node.x, "y": node.y, "z": node.z});
-                }else{
-                    graphData.nodes.push({"index": node.index, "type": node.type, "layer": node.layer,
-                        "start": node.start, "previous": node.previous});
-                }
+                graphData.nodes.push(node.export(withPositions));
             });
             this.graph.graphData().links.forEach(link => {
-                graphData.links.push({"source": link.source.index, "target": link.target.index, "inserts": link.inserts, "slipstitch": link.slipstitch});
+                graphData.links.push(link.export());
             });
             let graph = {
                 'graphData': graphData,
-                'currentNode': this.currentNode,
+                'currentNode': this.currentNode.export(withPositions),
                 'numLayers': this.graphLayers,
+                'indexCounter': IndexCounter.getCounter()
             };
             return JSON.stringify(graph);
         },
