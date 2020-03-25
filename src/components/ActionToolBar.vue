@@ -242,6 +242,7 @@
                 }
                 let msg = {name: 'loadGraphFile', patternFile: file};
                 this.$emit("triggerGraph", msg);
+                this.$refs.file.value = ''; // resets chosen file so that same file can be opened twice after another
             },
             switchDimension() {
                 this.$emit("switchDimension",this.is3D);
