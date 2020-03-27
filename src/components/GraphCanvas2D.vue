@@ -36,7 +36,7 @@
             let element = this.$refs.canvas2D;
             this.graph(element)
                 //.graphData(gData)
-                .nodeId("index")
+                .nodeId("uuid")
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
                 })
@@ -67,7 +67,7 @@
                 })
                 .nodeCanvasObject((node, ctx) => {
                     if(node.type == "mr" || node.type == "ch"){
-                        let isCurrent = node.index === this.currentNode.index;
+                        let isCurrent = node.uuid === this.currentNode.uuid;
                         stitchCanvas.draw(node.type, ctx, node.x, node.y, isCurrent ? '#e68a00' : '#000000');
                     }
                 })
@@ -113,7 +113,7 @@
                             ctx.rotate(Math.PI);
                         }
                         ctx.translate(-x, -y);
-                        let isCurrent = link.source.index === this.currentNode.index;
+                        let isCurrent = link.source.uuid === this.currentNode.uuid;
                         stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
                         ctx.restore();
                     }else if(link.slipstitch){

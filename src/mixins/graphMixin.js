@@ -1,5 +1,4 @@
 import saveAs from "file-saver";
-import IndexCounter from "@/helper/indexCounter";
 import {
     CommandAddInitialStitch,
     CommandAddChain,
@@ -73,16 +72,21 @@ export const graphMixin = {
                     console.log("got unknown start method");
             }
         },
+        nodeById() {
+            return new Map(this.graph.graphData().nodes.map((d) => [d.uuid, d]));
+        },
+        getNode(uuid){
+          return this.nodeById().get(uuid);
+        },
         getNextStitchToInsert(node) {
-            const nodes = this.graph.graphData().nodes;
             let insertNode;
             if(node.inserts.length > 0){
-                insertNode = nodes[node.inserts[node.inserts.length-1]];
+                insertNode = this.getNode(node.inserts[node.inserts.length-1]);
             }else{
-                insertNode = nodes[node.previous];
+                insertNode = this.getNode(node.previous);
             }
 
-            return nodes[insertNode.next];
+            return this.getNode(insertNode.next);
         },
         getPreviousStitches(startStitch, numberOfStitches, stitchList = []) {
             // TODO: when in export the undo history is included I could use also that to get the recent x stitches
@@ -90,11 +94,11 @@ export const graphMixin = {
                 return stitchList;
             }
             // gets all n previous stitches including the given one.
-            const nodes = this.graph.graphData().nodes;
+
             // add current Stitch:
             stitchList.push(startStitch);
             // go one back:
-            let prevStitch = nodes[startStitch.previous];
+            let prevStitch = this.getNode(startStitch.previous);
             return this.getPreviousStitches(prevStitch, numberOfStitches-1, stitchList);
         },
         orderStitches(stitches){
@@ -241,7 +245,6 @@ export const graphMixin = {
             reader.readAsText(file);
         },
         resetGraph() {
-            IndexCounter.reset();
             this.graph.graphData({"nodes":[], "links":[]});
             commandTracker.resetHistory();
         },
@@ -257,7 +260,6 @@ export const graphMixin = {
             this.graph.graphData(json.graphData);
             this.currentNode = json.currentNode;
             this.graphLayers = json.numLayers;
-            IndexCounter.setCounter(json.indexCounter);
         },
         printGraph(withPositions) {
             let graphData = {"nodes": [], "links": []};
@@ -270,8 +272,7 @@ export const graphMixin = {
             let graph = {
                 'graphData': graphData,
                 'currentNode': this.currentNode.export(withPositions),
-                'numLayers': this.graphLayers,
-                'indexCounter': IndexCounter.getCounter()
+                'numLayers': this.graphLayers
             };
             return JSON.stringify(graph);
         },
@@ -286,9 +287,9 @@ export const graphMixin = {
             nodes.forEach(node => {
                 // Note: you may not replace the nodes or the references in the links will break.
                 // Therefore only relevant properties will be updated here.
-                data.nodes[node.index].next = node.next;
-                data.nodes[node.index].inserts = node.inserts;
-                data.nodes[node.index].isIncrease = node.isIncrease;
+                this.getNode(node.uuid).next = node.next;
+                this.getNode(node.uuid).inserts = node.inserts;
+                this.getNode(node.uuid).isIncrease = node.isIncrease;
             });
             this.graph.graphData(data);
         },
@@ -300,7 +301,6 @@ export const graphMixin = {
                 this.removeLastXGraphElements(commandAction.numNodesToRemove, commandAction.numLinksToRemove);
                 this.addDataToGraph(commandAction.newNodes, commandAction.newLinks);
                 if(commandAction.updateNodes) {this.updateNodes(commandAction.updateNodes)}
-                this.refreshGraph();
             }
         }
     },

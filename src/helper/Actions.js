@@ -1,10 +1,8 @@
 import {Link, Node} from "@/helper/graphObjects";
-import IndexCounter from "@/helper/indexCounter";
 
 export function addInitialStitch() {
-    let index = this.stitchIndex != null ? this.stitchIndex : IndexCounter.count();
-    let firstStitch = new Node(this.values.type, 0, true, null, [], null, true, index);
-    this.stitchIndex = firstStitch.index;
+    let firstStitch = new Node(this.values.type, 0, true, null, [], null, true, this.uuid);
+    this.uuid = firstStitch.uuid;
 
     return {
         currentNode: firstStitch,
@@ -13,13 +11,12 @@ export function addInitialStitch() {
 }
 
 export function addChain() {
-    let index = this.stitchIndex != null ? this.stitchIndex : IndexCounter.count();
-    let node = new Node("ch", this.values.layer, false, this.values.previousNode.index, null, null, true, index);
-    this.stitchIndex = node.index;
+    let node = new Node("ch", this.values.layer, false, this.values.previousNode.uuid, null, null, true, this.uuid);
+    this.uuid = node.uuid;
 
-    let link = new Link(node.index, this.values.previousNode.index);
+    let link = new Link(node.uuid, this.values.previousNode.uuid);
 
-    this.values.previousNode.next = this.stitchIndex;
+    this.values.previousNode.next = this.uuid;
 
     return {
         currentNode: node,
@@ -42,9 +39,9 @@ export function removeChain() {
 }
 
 export function connectWithSlipstitch() {
-    let link = new Link(this.values.from.index, this.values.to.index, false, true);
+    let link = new Link(this.values.from.uuid, this.values.to.uuid, false, true);
 
-    this.values.from.next = this.values.to.index;
+    this.values.from.next = this.values.to.uuid;
 
     return {
         currentNode: this.values.to,
@@ -64,14 +61,13 @@ export function disconnectFromSlipstitch() {
 }
 
 export function addStitch() {
-    let index = this.stitchIndex != null ? this.stitchIndex : IndexCounter.count();
-    let node = new Node(this.values.type, this.values.layer,false, this.values.previousNode.index, [this.values.insertNode.index], null, true, index);
-    this.stitchIndex = node.index;
+    let node = new Node(this.values.type, this.values.layer,false, this.values.previousNode.uuid, [this.values.insertNode.uuid], null, true, this.uuid);
+    this.uuid = node.uuid;
 
-    let linkToPrevious = new Link(node.index, this.values.previousNode.index);
-    let linkToInsert = new Link(node.index, this.values.insertNode.index, true);
+    let linkToPrevious = new Link(node.uuid, this.values.previousNode.uuid);
+    let linkToInsert = new Link(node.uuid, this.values.insertNode.uuid, true);
 
-    this.values.previousNode.next = this.stitchIndex;
+    this.values.previousNode.next = this.uuid;
 
     return {
         currentNode: node,
@@ -97,9 +93,9 @@ export function addDecreasingStitch() {
     this.previousIsIncrease = this.values.previousNode.isIncrease;
     this.values.previousNode.isIncrease = false;
 
-    let link = new Link(this.values.previousNode.index, this.values.insertNode.index, true, false);
+    let link = new Link(this.values.previousNode.uuid, this.values.insertNode.uuid, true, false);
 
-    this.values.previousNode.inserts.push(this.values.insertNode.index);
+    this.values.previousNode.inserts.push(this.values.insertNode.uuid);
 
     return {
         currentNode: this.values.previousNode,

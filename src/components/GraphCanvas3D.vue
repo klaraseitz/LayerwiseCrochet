@@ -42,7 +42,7 @@
                 //.graphData(gData)
                 .numDimensions(3)
                 .backgroundColor("#ffffff")
-                .nodeId("index")
+                .nodeId("uuid")
                 //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
@@ -76,7 +76,7 @@
                 .nodeThreeObject((node) => {
                     // all drawings are relative to the nodes' current coordinates
                     if(node.type === "mr" || node.type === "ch"){
-                        let isCurrent = node.index === this.currentNode.index && node.index != null;
+                        let isCurrent = node.uuid === this.currentNode.uuid && node.uuid != null;
                         return stitchPaths.draw(node.type, isCurrent ? 0xe68a00 : 0x000000).rotateX(1/2*Math.PI);
                     }else{
                         return false;
@@ -91,13 +91,13 @@
                         source = link.source;
                         target = link.target;
                     }else{
-                        let sourceNodeIndex = link.source;
-                        let targetNodeIndex = link.target;
+                        let sourceNodeUuid = link.source;
+                        let targetNodeUuid = link.target;
                         this.graph.graphData().nodes.find(node => {
-                            if(node.index === sourceNodeIndex){
+                            if(node.uuid === sourceNodeUuid){
                                 source = node
                             }
-                            if(node.index === targetNodeIndex){
+                            if(node.uuid === targetNodeUuid){
                                 target = node
                             }
                         });
@@ -117,13 +117,13 @@
                         if(link.source.type){
                             source = link.source;
                         }else{
-                            let nodeIndex = link.source;
+                            let nodeUuid = link.source;
                             source = this.graph.graphData().nodes.find(node => {
-                                return node.index === nodeIndex
+                                return node.uuid === nodeUuid
                             });
                         }
                         if(source && source.type){
-                            let isCurrent = source.index === this.currentNode.index;
+                            let isCurrent = source.uuid === this.currentNode.uuid;
                             return stitchPaths.draw(source.type, isCurrent ? 0xe68a00 : 0x000000);
                         }
                     }else if(link.slipstitch){
