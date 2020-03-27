@@ -73,15 +73,105 @@ export const graphMixin = {
                     console.log("got unknown start method");
             }
         },
+        getNextStitchToInsert(node) {
+            const nodes = this.graph.graphData().nodes;
+            let insertNode;
+            if(node.inserts.length > 0){
+                insertNode = nodes[node.inserts[node.inserts.length-1]];
+            }else{
+                insertNode = nodes[node.previous];
+            }
+
+            return nodes[insertNode.next];
+        },
+        getPreviousStitches(startStitch, numberOfStitches, stitchList = []) {
+            // TODO: when in export the undo history is included I could use also that to get the recent x stitches
+            if(numberOfStitches === 0) {
+                return stitchList;
+            }
+            // gets all n previous stitches including the given one.
+            const nodes = this.graph.graphData().nodes;
+            // add current Stitch:
+            stitchList.push(startStitch);
+            // go one back:
+            let prevStitch = nodes[startStitch.previous];
+            return this.getPreviousStitches(prevStitch, numberOfStitches-1, stitchList);
+        },
+        orderStitches(stitches){
+            let orderedStitches = [];
+            // start from the back to reverse order
+            let currentInsertId = stitches[stitches.length-1].inserts[0];
+            let intoSameStitch = [];
+            let alreadyPushed = false;
+            for(let i = stitches.length-1; i >= 0; i--){
+                if(stitches[i].inserts.length > 1){
+                    // this should mean that there is a decrease going on
+                    let isFirst = true;
+                    if(!alreadyPushed) {
+                        orderedStitches.push(intoSameStitch);
+                    }
+                    stitches[i].inserts.forEach(insertId => {
+                        intoSameStitch = [];
+                        intoSameStitch.push({"type": stitches[i].type, "isIncrease": isFirst});
+                        orderedStitches.push(intoSameStitch);
+                        alreadyPushed = true;
+                        currentInsertId = insertId;
+                        isFirst = false;
+                    })
+
+                }else{
+                    // here is an increase happening
+                    if(currentInsertId === stitches[i].inserts[0]){
+                        // into the same stitch
+                        intoSameStitch.push(stitches[i]);
+                        alreadyPushed = false;
+                    }else{
+                        // not into the same stitch
+                        currentInsertId = stitches[i].inserts[0];
+                        orderedStitches.push(intoSameStitch);
+                        intoSameStitch = [stitches[i]];
+                        alreadyPushed = false;
+                    }
+                }
+            }
+            if(!alreadyPushed) {orderedStitches.push(intoSameStitch)}
+            return orderedStitches;
+        },
         handleAutoIncrease(numStitches, numRepetitions) {
             console.log("current stitch is:");
             console.log(this.currentNode);
             console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
             console.log("i will start autocompleting into this stitch:");
-            const nodes = this.graph.graphData().nodes
-            let insertNode = nodes[this.currentNode.inserts[0]];
-            let startNode = nodes[insertNode.next];
-            console.log(startNode);
+
+            // find the stitches to repeat:
+            let stitchesToRepeat=[];
+
+            stitchesToRepeat = this.getPreviousStitches(this.currentNode, numStitches);
+            console.log("will repeat these stitches: ");
+            console.log(stitchesToRepeat);
+
+            // order stitches so that we know relevant info and know how many stitches go into the same stitch
+            let orderedStitches = this.orderStitches(stitchesToRepeat);
+            console.log("ordered stitches: ");
+            console.log(orderedStitches);
+            let nextStitch = this.getNextStitchToInsert(this.currentNode);
+            for(let i = 0; i < numRepetitions; i++){
+                console.log("will insert this stitch: ");
+                console.log(nextStitch);
+                // repeating all stitches in order
+                for(let k = 0; k < orderedStitches.length; k++){
+                    orderedStitches[k].forEach(stitch => {
+                        let actions;
+                        if(stitch.isIncrease){
+                            actions = commandTracker.execute(new CommandAddStitch(this.currentNode, nextStitch, stitch.type, this.graphLayers));
+                        }else{
+                            actions = commandTracker.execute(new CommandAddDecreasingStitch(this.currentNode, nextStitch));
+                        }
+                        this.handleAction(actions);
+                    });
+                    nextStitch = this.getNextStitchToInsert(this.currentNode);
+                }
+            }
 
         },
         getTrigger(data) {
