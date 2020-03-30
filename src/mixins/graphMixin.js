@@ -6,6 +6,7 @@ import {
     CommandAddStitch,
     CommandConnectWithSlipStitch
 } from "@/helper/Command";
+import {Link, Node} from "@/helper/graphObjects";
 import {CommandTracker} from "@/helper/CommandTracker";
 const commandTracker = new CommandTracker();
 
@@ -257,7 +258,13 @@ export const graphMixin = {
         },
         setGraphFromJson(graph) {
             let json = JSON.parse(graph);
-            this.graph.graphData(json.graphData);
+            let nodes = json.graphData.nodes.map(node => {
+                return Object.assign(new Node(), node);
+            });
+            let links = json.graphData.links.map(link => {
+                return Object.assign(new Link(), link);
+            });
+            this.graph.graphData({nodes, links});
             this.currentNode = json.currentNode;
             this.graphLayers = json.numLayers;
         },

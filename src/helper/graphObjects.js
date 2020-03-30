@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 class Node {
-    constructor(type, layer, start, previousIndex, insertsIndices, nextIndex, isIncrease, uuid) {
+    constructor(type, layer, start, previousIndex, insertsIndices, nextIndex, isIncrease, uuid, x, y, z) {
         this.type = type || "";
         this.layer = layer || 0;
         this.start = start || false;
@@ -10,6 +10,9 @@ class Node {
         this.next = nextIndex || null;
         this.isIncrease = isIncrease || true;
         this.uuid = uuid || uuidv4();
+        this.x = x || null;
+        this.y = y || null;
+        this.z = z || null;
     }
 
     export(withPositions = true) {
