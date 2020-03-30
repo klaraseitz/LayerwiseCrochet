@@ -1,9 +1,10 @@
-
 /**
  * Class which tracks, executes and undoes commands.
  * @constructor
  * @returns {CommandTracker}
  */
+import {getFunctionByName} from "@/helper/Actions";
+
 export function CommandTracker() {
     this._actions = {};
     // Contains instances of inherited Commands.
@@ -68,5 +69,42 @@ CommandTracker.prototype = {
     resetHistory: function () {
         this._commandsList = [];
         this._currentCommand = -1;
+    },
+    /**
+     * Exports the history and number of current command as object
+     * @returns {history}
+     */
+    exportHistory: function () {
+        let cmdHistory = [...this._commandsList];
+        cmdHistory.splice(this._currentCommand + 1); // remove redo history
+
+        cmdHistory.forEach(cmd => {
+            cmd.execute = cmd.execute.name;
+            cmd.undo = cmd.undo ? cmd.undo.name : null;
+            for (let [key, value] of Object.entries(cmd.values)) {
+                if (typeof value === 'object' && value !== null) {
+                    cmd.values[key] = value.export();
+                }
+            }
+        });
+
+        return {
+            "commands": cmdHistory,
+            "currentCommand": this._currentCommand
+        };
+    },
+    /**
+     * Imports the history from a saved graph
+     * @returns {undefined}
+     */
+    importHistory: function (history) {
+        // replace function names with functions again
+        history.commands.forEach(cmd => {
+            cmd.execute = getFunctionByName(cmd.execute);
+            cmd.undo = cmd.undo ? getFunctionByName(cmd.undo) : null;
+        });
+        // set history
+        this._commandsList = history.commands;
+        this._currentCommand = history.currentCommand;
     }
 };

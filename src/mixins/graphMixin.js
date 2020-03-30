@@ -267,6 +267,7 @@ export const graphMixin = {
             this.graph.graphData({nodes, links});
             this.currentNode = json.currentNode;
             this.graphLayers = json.numLayers;
+            commandTracker.importHistory(json.history);
         },
         printGraph(withPositions) {
             let graphData = {"nodes": [], "links": []};
@@ -279,7 +280,8 @@ export const graphMixin = {
             let graph = {
                 'graphData': graphData,
                 'currentNode': this.currentNode.export(withPositions),
-                'numLayers': this.graphLayers
+                'numLayers': this.graphLayers,
+                'history': commandTracker.exportHistory()
             };
             return JSON.stringify(graph);
         },
@@ -308,6 +310,7 @@ export const graphMixin = {
                 this.removeLastXGraphElements(commandAction.numNodesToRemove, commandAction.numLinksToRemove);
                 this.addDataToGraph(commandAction.newNodes, commandAction.newLinks);
                 if(commandAction.updateNodes) {this.updateNodes(commandAction.updateNodes)}
+                this.refreshGraph();
             }
         }
     },

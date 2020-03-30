@@ -115,3 +115,7 @@ export function removeDecreasingStitch() {
     }
 }
 
+export function getFunctionByName(name) {
+    return eval(name);
+}
+
