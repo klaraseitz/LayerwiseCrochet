@@ -15,7 +15,10 @@
                            @topLayer="updateMaxLayer"
                            @switchDimension="changeDimension($event)"
                            style="width:80%"/>
-            <StitchSelector @triggerGraph="setGraphTrigger($event)" @sendStitch="setStitch($event)"/>
+            <StitchSelector :layer="maxLayer"
+                            @triggerGraph="setGraphTrigger($event)"
+                            @sendStitch="setStitch($event)"
+                            @changeMaxLayer="updateMaxLayer"/>
         </div>
     </div>
 </template>

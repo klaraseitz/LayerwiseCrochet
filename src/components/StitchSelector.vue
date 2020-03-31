@@ -16,7 +16,7 @@
         <div class="thin-border">
             <span>{{$t('layers_amount')}}</span>
             <v-row justify="space-around">
-                <v-btn class="ma-2" >
+                <v-btn class="ma-2" @click="decreaseLayers">
                     <v-icon>mdi-layers-minus</v-icon>
                 </v-btn>
                 <div class="ma-2">
@@ -25,7 +25,7 @@
                     </div>
                     <input type="hidden" />
                 </div>
-                <v-btn class="ma-2">
+                <v-btn class="ma-2" @click="increaseLayers">
                     <v-icon>mdi-layers-plus</v-icon>
                 </v-btn>
             </v-row>
@@ -88,9 +88,10 @@ export default {
                 'slst': 'mdi-circle-small',
             },
             isIncrease: true,
-            layers: 100
+            layers: localStorage.graphJson ? localStorage.graphJson.numLayers : 0
         }
     },
+    props: [ 'layer' ],
     methods: {
         updateSelectedStitch() {
             let stitch = this.stitches.find(obj => {
@@ -104,6 +105,23 @@ export default {
         switchStitchMode(){
             let msg = {name: 'switchStitchMode', isIncrease: this.isIncrease};
             this.$emit('triggerGraph', msg);
+        },
+        decreaseLayers() {
+            this.layers--;
+            this.updateLayer();
+        },
+        increaseLayers() {
+            this.layers++;
+            this.updateLayer();
+        },
+        updateLayer(){
+            let msg = {name: 'setMaxLayers', layers: this.layers};
+            this.$emit("triggerGraph", msg)
+        }
+    },
+    watch: {
+        layer: function (layer) {
+            this.layers = layer;
         }
     },
     computed: {

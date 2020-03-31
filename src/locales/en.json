@@ -44,7 +44,6 @@
     "redo": "redo one step",
     "save": "save current pattern",
     "open": "discard and open pattern",
-    "add_layer": "add layer",
     "new_pattern": "start new pattern",
     "auto_complete": "autocomplete row/round"
   }

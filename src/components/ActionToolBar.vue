@@ -38,14 +38,6 @@
         </v-tooltip>
         <v-tooltip top>
             <template v-slot:activator="{ on }">
-                <v-btn class="ma-2" outlined color="indigo" @click="newLayer" v-on="on">
-                    <v-icon> mdi-layers-plus </v-icon>
-                </v-btn>
-            </template>
-            <span>{{$t('tooltips.add_layer')}}</span>
-        </v-tooltip>
-        <v-tooltip top>
-            <template v-slot:activator="{ on }">
                 <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
                     <v-icon> mdi-new-box </v-icon>
                 </v-btn>
@@ -215,12 +207,8 @@
               this.auto_complete_dialog = false;
               let msg = {name: 'auto_complete',
                   numStitches: this.stitchAmountAutoComplete,
-                  numRepetitions: this.numberRepetitionsAutoComplete}
+                  numRepetitions: this.numberRepetitionsAutoComplete};
               this.$emit("triggerGraph", msg);
-            },
-            newLayer() {
-                let msg = {name: 'newLayer'};
-                this.$emit("triggerGraph", msg)
             },
             saveGraph() {
                 let msg = {name: 'saveGraph'};

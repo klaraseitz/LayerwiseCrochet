@@ -25,8 +25,8 @@ export const graphMixin = {
                 case 'start':
                     this.startGraph(trigger.method, trigger.stitchAmount);
                     break;
-                case 'newLayer':
-                    this.graphLayers++;
+                case 'setMaxLayers':
+                    this.graphLayers = trigger.layers;
                     break;
                 case 'loadGraphFile':
                     this.loadGraphFile(trigger.patternFile);
