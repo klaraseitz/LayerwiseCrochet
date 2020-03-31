@@ -66,7 +66,7 @@
         <v-dialog
                 v-model="dialog"
                 max-width="290"
-                persistent
+                @keydown.enter="startGraph"
         >
             <v-card>
                 <v-card-title class="headline">{{$t('start_pattern_card.title')}}</v-card-title>
@@ -121,7 +121,7 @@
         <v-dialog
                 v-model="auto_complete_dialog"
                 max-width="290"
-                persistent
+                @keydown.enter="autoComplete"
         >
             <v-card>
                 <v-card-title class="headline">{{$t('auto_complete_card.title')}}</v-card-title>
