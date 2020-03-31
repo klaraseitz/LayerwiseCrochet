@@ -254,8 +254,12 @@ export const graphMixin = {
             data.nodes = data.nodes.concat(nodes);
             data.links = data.links.concat(links);
             this.graph.graphData(data);
-            console.log(this.graph.graphData());
-        },
+            // TODO: Save graph only to local storage when change from 2d - 3d is requested
+            //  Here I save the graph data to the local storage whenever there are changes to the graph.
+            //  This takes too long for sure but works so that when changing dimension I can load the saved graph data.
+            //  I would prefer that I only save it when I actually click the dimension switch. But then I have troubles with the emits
+            localStorage.graphJson = this.printGraph();
+    },
         setGraphFromJson(graph) {
             let json = JSON.parse(graph);
             let nodes = json.graphData.nodes.map(node => {
@@ -265,7 +269,7 @@ export const graphMixin = {
                 return Object.assign(new Link(), link);
             });
             this.graph.graphData({nodes, links});
-            this.currentNode = json.currentNode;
+            this.currentNode = Object.assign(new Node(), json.currentNode);
             this.graphLayers = json.numLayers;
             commandTracker.importHistory(json.history);
         },
@@ -279,7 +283,7 @@ export const graphMixin = {
             });
             let graph = {
                 'graphData': graphData,
-                'currentNode': this.currentNode.export(withPositions),
+                'currentNode': this.currentNode,
                 'numLayers': this.graphLayers,
                 'history': commandTracker.exportHistory()
             };

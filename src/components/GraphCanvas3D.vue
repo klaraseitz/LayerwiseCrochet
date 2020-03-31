@@ -164,7 +164,10 @@
 
                     Object.assign(linkObject.position, position);
                 });
-
+            
+            if(localStorage.graphJson){
+                this.setGraphFromJson(localStorage.graphJson);
+            }
             // use this to add a 3D model to the scene. I couldnt get a local path to load the model yet.
             /*loader.load( "https://threejsfundamentals.org/threejs/resources/models/cartoon_lowpoly_small_city_free_pack/scene.gltf",
                 this.addToScene, undefined,

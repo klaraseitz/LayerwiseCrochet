@@ -3,8 +3,16 @@
         <ActionToolBar @triggerGraph="setGraphTrigger($event)" @switchDimension="changeDimension($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
             <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
-            <GraphCanvas3D v-if="is3D" :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
-            <GraphCanvas2D v-else :trigger="graphTriggerMsg" :stitch="stitch" @topLayer="updateMaxLayer" style="width:80%"/>
+            <GraphCanvas3D v-if="is3D"
+                           :trigger="graphTriggerMsg"
+                           :stitch="stitch"
+                           @topLayer="updateMaxLayer"
+                           style="width:80%"/>
+            <GraphCanvas2D v-else
+                           :trigger="graphTriggerMsg"
+                           :stitch="stitch"
+                           @topLayer="updateMaxLayer"
+                           style="width:80%"/>
             <StitchSelector @triggerGraph="setGraphTrigger($event)" @sendStitch="setStitch($event)"/>
         </div>
     </div>
@@ -50,7 +58,7 @@
             },
             changeDimension(is3D){
                 this.is3D = is3D;
-            }
+            },
         }
     }
 </script>

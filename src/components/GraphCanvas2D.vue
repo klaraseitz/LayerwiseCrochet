@@ -119,7 +119,10 @@
                     }else if(link.slipstitch){
                         stitchCanvas.draw("slst", ctx, middleX, middleY, '#000000');
                     }
-                })
+                });
+            if(localStorage.graphJson){
+                this.setGraphFromJson(localStorage.graphJson);
+            }
         }
     }
 </script>

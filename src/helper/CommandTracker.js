@@ -72,20 +72,17 @@ CommandTracker.prototype = {
     },
     /**
      * Exports the history and number of current command as object
-     * @returns {history}
+     * @returns {Object}
      */
     exportHistory: function () {
         let cmdHistory = [...this._commandsList];
         cmdHistory.splice(this._currentCommand + 1); // remove redo history
 
-        cmdHistory.forEach(cmd => {
-            cmd.execute = cmd.execute.name;
-            cmd.undo = cmd.undo ? cmd.undo.name : null;
-            for (let [key, value] of Object.entries(cmd.values)) {
-                if (typeof value === 'object' && value !== null) {
-                    cmd.values[key] = value.export();
-                }
-            }
+        cmdHistory = cmdHistory.map(cmd => {
+            let cmdCopy = Object.assign({}, cmd);
+            cmdCopy.execute = cmdCopy.execute.name;
+            cmdCopy.undo = cmdCopy.undo ? cmdCopy.undo.name : null;
+            return cmdCopy;
         });
 
         return {
