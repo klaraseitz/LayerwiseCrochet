@@ -32,7 +32,7 @@ export const graphMixin = {
                     this.loadGraphFile(trigger.patternFile);
                     break;
                 case 'saveGraph':
-                    this.savePattern(true);
+                    this.savePattern();
                     break;
                 case 'redo':
                     this.handleAction(commandTracker.redo());
@@ -46,8 +46,13 @@ export const graphMixin = {
                 case 'auto_complete':
                     this.handleAutoIncrease(trigger.numStitches, trigger.numRepetitions);
                     break;
+                case 'saveTempGraph':
+                    // this saves the graph temporarily to local storage before changing dimensions
+                    localStorage.graphJson = this.printGraph();
+                    this.$emit("switchDimension", trigger.is3D);
+                    break;
                 default:
-                    console.log("got unexpected trigger name");
+                    console.warn("got unexpected trigger name");
             }
         },
         graphLayers: function (trigger) {
@@ -70,7 +75,7 @@ export const graphMixin = {
                     this.startChain(stitchAmount, true);
                     break;
                 default:
-                    console.log("got unknown start method");
+                    console.warn("got unknown start method");
             }
         },
         nodeById() {
@@ -180,7 +185,7 @@ export const graphMixin = {
 
         },
         getTrigger(data) {
-            console.log("graph got unimplemented trigger: " + data);
+            console.warn("graph got unimplemented trigger: " + data);
         },
         startChain(amount, isClosed) {
             let actions = commandTracker.execute(new CommandAddInitialStitch("ch"));
@@ -234,8 +239,8 @@ export const graphMixin = {
                 this.decreaseStitch(this.currentNode, node);
             }
         },
-        savePattern(keepPositions) {
-            let pattern = this.printGraph(keepPositions);
+        savePattern() {
+            let pattern = this.printGraph();
             let blob = new Blob([pattern], {type: "application/json;charset=utf-8"});
             saveAs(blob, "pattern.json");
         },
@@ -254,12 +259,7 @@ export const graphMixin = {
             data.nodes = data.nodes.concat(nodes);
             data.links = data.links.concat(links);
             this.graph.graphData(data);
-            // TODO: Save graph only to local storage when change from 2d - 3d is requested
-            //  Here I save the graph data to the local storage whenever there are changes to the graph.
-            //  This takes too long for sure but works so that when changing dimension I can load the saved graph data.
-            //  I would prefer that I only save it when I actually click the dimension switch. But then I have troubles with the emits
-            localStorage.graphJson = this.printGraph();
-    },
+        },
         setGraphFromJson(graph) {
             let json = JSON.parse(graph);
             let nodes = json.graphData.nodes.map(node => {
@@ -273,11 +273,8 @@ export const graphMixin = {
             this.graphLayers = json.numLayers;
             commandTracker.importHistory(json.history);
         },
-        printGraph(withPositions) {
-            let graphData = {"nodes": [], "links": []};
-            this.graph.graphData().nodes.forEach(node => {
-                graphData.nodes.push(node.export(withPositions));
-            });
+        printGraph() {
+            let graphData = {"nodes": this.graph.graphData().nodes, "links": []};
             this.graph.graphData().links.forEach(link => {
                 graphData.links.push(link.export());
             });

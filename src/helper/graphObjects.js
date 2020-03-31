@@ -23,6 +23,15 @@ class Link {
         this.inserts = inserts || false;
         this.slipstitch = slipstitch || false;
     }
+
+    export() {
+        return {
+            "source": this.source.uuid || this.source,
+            "target": this.target.uuid || this.target,
+            "inserts": this.inserts,
+            "slipstitch": this.slipstitch
+        }
+    }
 }
 
 export {Node, Link};

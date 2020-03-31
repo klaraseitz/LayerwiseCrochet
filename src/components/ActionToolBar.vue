@@ -245,7 +245,8 @@
                 this.$refs.file.value = ''; // resets chosen file so that same file can be opened twice after another
             },
             switchDimension() {
-                this.$emit("switchDimension",this.is3D);
+                let msg = {name: 'saveTempGraph', is3D: this.is3D};
+                this.$emit("triggerGraph", msg);
             }
         }
     }

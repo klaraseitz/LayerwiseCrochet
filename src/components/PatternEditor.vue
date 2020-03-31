@@ -1,17 +1,19 @@
 <template>
     <div>
-        <ActionToolBar @triggerGraph="setGraphTrigger($event)" @switchDimension="changeDimension($event)"/>
+        <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
             <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
             <GraphCanvas3D v-if="is3D"
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
                            @topLayer="updateMaxLayer"
+                           @switchDimension="changeDimension($event)"
                            style="width:80%"/>
             <GraphCanvas2D v-else
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
                            @topLayer="updateMaxLayer"
+                           @switchDimension="changeDimension($event)"
                            style="width:80%"/>
             <StitchSelector @triggerGraph="setGraphTrigger($event)" @sendStitch="setStitch($event)"/>
         </div>
