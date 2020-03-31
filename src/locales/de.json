@@ -10,6 +10,7 @@
     "dtr": "Dreifach Stäbchen",
     "slst": "Kettmasche"
   },
+  "layers_amount": "Anzahl Ebenen",
   "start_methods": {
     "mr": "Fadenring",
     "line_of_ch": "Luftmaschenkette",

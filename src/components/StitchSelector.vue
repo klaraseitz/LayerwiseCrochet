@@ -13,6 +13,24 @@
         </v-subheader>
 
         <v-switch v-model="isIncrease" :label="isIncrease ? $t('increasing') : $t('decreasing')" v-on:change="switchStitchMode"/>
+        <div class="thin-border">
+            <span>{{$t('layers_amount')}}</span>
+            <v-row justify="space-around">
+                <v-btn class="ma-2" >
+                    <v-icon>mdi-layers-minus</v-icon>
+                </v-btn>
+                <div class="ma-2">
+                    <div class="vertical-center" tabindex="0">
+                        <slot>{{ layers }}</slot>
+                    </div>
+                    <input type="hidden" />
+                </div>
+                <v-btn class="ma-2">
+                    <v-icon>mdi-layers-plus</v-icon>
+                </v-btn>
+            </v-row>
+        </div>
+
         <div>
             <v-treeview
                     :items="items"
@@ -70,6 +88,7 @@ export default {
                 'slst': 'mdi-circle-small',
             },
             isIncrease: true,
+            layers: 100
         }
     },
     methods: {
@@ -123,5 +142,18 @@ export default {
 </script>
 
 <style scoped>
-
+    .vertical-center {
+        margin: 0;
+        position: relative;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
+    .thin-border {
+        border-style: solid;
+        border-color: grey;
+        border-width: 1px;
+        border-radius: 10px;
+        padding: 10px;
+    }
 </style>

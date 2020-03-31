@@ -10,6 +10,7 @@
     "dtr": "Double Treble Crochet",
     "slst": "Slipstitch"
   },
+  "layers_amount": "Number of Layers",
   "start_methods": {
     "mr": "Magic Ring",
     "line_of_ch": "Line of Chain Stitches",
