@@ -26,6 +26,15 @@
             return {
                 name: 'GraphCanvas3D',
                 graph: ForceGraph3D(),
+                stitchDistances: {
+                    'ch': 0,
+                    'sc': 10,
+                    'hdc': 20,
+                    'dc': 30,
+                    'tr': 40,
+                    'dtr': 50,
+                    'slst': 0
+                }
             }
         },
         methods: {
@@ -169,7 +178,9 @@
                     }
 
                     Object.assign(linkObject.position, position);
-                });
+                })
+                .d3Force('link')
+                .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
             
             if(localStorage.graphJson){
                 this.setGraphFromJson(localStorage.graphJson);
