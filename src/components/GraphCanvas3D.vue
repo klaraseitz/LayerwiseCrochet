@@ -70,6 +70,12 @@
                         this.graph.refresh();
                     }
                 })
+                .onNodeDragEnd((node, translate) => {
+                    // handle like a click when drag distance is minimal
+                    if(translate.x <= 1 && translate.x >= -1 && translate.y <= 1 && translate.y >= -1 && translate.z <= 1 && translate.z >= -1){
+                        this.handleNodeClick(node);
+                    }
+                })
                 .nodeOpacity(0)
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
