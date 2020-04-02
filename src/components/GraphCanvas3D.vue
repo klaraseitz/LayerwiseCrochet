@@ -41,6 +41,106 @@
             refreshGraph() {
               this.graph.refresh();
             },
+            setEdgeVisibility(isVisible) {
+                if(!isVisible){
+                    this.graph
+                        .linkColor(link => 'rgba(0, 0, 0, 0)') // no links
+                        .nodeThreeObject(node => this.getThreeObjectForNode(node, true))
+                        .linkThreeObject(link => this.getThreeObjectForLink(link, true));
+                }else{
+                    // values for thin lines: alpha: 0.7, opacity: 1, width: 0
+                    this.graph
+                        .linkColor(link => this.calcColorOfLink(link, '0.7'))
+                        .nodeThreeObject(node => this.getThreeObjectForNode(node, false))
+                        .linkThreeObject(link => this.getThreeObjectForLink(link, false));
+                }
+                this.refreshGraph();
+            },
+            getThreeObjectForNode(node, isColored) {
+                // all drawings are relative to the nodes' current coordinates
+                if(node.type === "mr" || node.type === "ch"){
+                    let color = this.getNodeColor(node, isColored);
+                    return stitchPaths.draw(node.type, color).rotateX(1/2*Math.PI);
+                }else{
+                    return false;
+                }
+            },
+            getThreeObjectForLink(link, isColored) {
+                let color = this.getLinkColor(link, isColored);
+                if(link.inserts){
+                    let {source} = this.getNodesFromLink(link);
+                    if(source && source.type){
+                        return stitchPaths.draw(source.type, color);
+                    }
+                }else if(link.slipstitch){
+                    return stitchPaths.draw("slst", color).rotateX(1/2*Math.PI);
+                }
+                return false;
+            },
+            getNodeColor(node, isColored) {
+                let isCurrent = node.uuid === this.currentNode.uuid && node.uuid != null;
+                let color = new THREE.Color( 0x000000 );
+                if(isCurrent){
+                    color = new THREE.Color( 0xe68a00 );
+                }else if(isColored){
+                    let isEven = node.layer % 2 === 0;
+                    color = isEven ? new THREE.Color( 0xff0000 ) : new THREE.Color( 0x000000 );
+                }
+                return color;
+            },
+            getLinkColor(link, isColored) {
+                let {source} = this.getNodesFromLink(link);
+                let color = new THREE.Color( 0x000000 );
+                if(link.inserts) {
+                    let isCurrent = source.uuid === this.currentNode.uuid;
+                    if (isCurrent) {
+                        color = new THREE.Color(0xe68a00);
+                    }
+                }
+                if(isColored){
+                    let isEven = source.layer % 2 === 0;
+                    color = isEven ? new THREE.Color( 0xff0000 ) : new THREE.Color( 0x000000 );
+                }
+                return color;
+
+            },
+            getNodesFromLink(link) {
+                let source;
+                let target;
+                // get source/target of the link either by id or from link directly
+                if(link.source.type != null && link.target.type != null){
+                    // the link already refers to nodes in source and target
+                    source = link.source;
+                    target = link.target;
+                }else{
+                    // the link so far only has the uuids of the nodes
+                    this.graph.graphData().nodes.find(node => {
+                        if(node.uuid === link.source){
+                            source = node
+                        }
+                        if(node.uuid === link.target){
+                            target = node
+                        }
+                    });
+                }
+                return {
+                    source,
+                    target
+                }
+            },
+            calcColorOfLink(link, alpha){
+                let {source, target} = this.getNodesFromLink(link);
+                let color = 'rgba(0, 0, 0, 0)'; // by default link is invisible
+                if(source.layer === target.layer){
+                    // link connects nodes of same layer, gets color of row
+                    let isEven = source.layer%2 === 0;
+                    color =  isEven ? "rgba(0, 0, 0, "+alpha+")" : "rgba(255, 0, 0, "+alpha+")";
+                }else if(!link.inserts){
+                    // link connects nodes of different layer, but is not an insert (previous link of ch at beginning of row)
+                    color = "rgba(0, 0, 255, "+alpha+")";
+                }
+                return color;
+            },
             addToScene(gltf) {
               this.graph.scene().add(gltf.scene);
             }
@@ -88,64 +188,12 @@
                 .nodeOpacity(0)
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
-                .nodeThreeObject((node) => {
-                    // all drawings are relative to the nodes' current coordinates
-                    if(node.type === "mr" || node.type === "ch"){
-                        let isCurrent = node.uuid === this.currentNode.uuid && node.uuid != null;
-                        return stitchPaths.draw(node.type, isCurrent ? 0xe68a00 : 0x000000).rotateX(1/2*Math.PI);
-                    }else{
-                        return false;
-                    }
-                })
-                .linkWidth(1)
-                .linkColor(link => {
-                    let source;
-                    let target;
-                    let color = 'rgba(0, 0, 0, 100)';
-                    if(link.source.type != null){
-                        source = link.source;
-                        target = link.target;
-                    }else{
-                        let sourceNodeUuid = link.source;
-                        let targetNodeUuid = link.target;
-                        this.graph.graphData().nodes.find(node => {
-                            if(node.uuid === sourceNodeUuid){
-                                source = node
-                            }
-                            if(node.uuid === targetNodeUuid){
-                                target = node
-                            }
-                        });
-                    }
-                    if(source.layer === target.layer){
-                        let isEven = source.layer%2 === 0;
-                        color =  isEven ? 'rgba(0, 108, 170, 100)' : 'rgba(200, 80, 0, 100)';
-                    }else if(!link.inserts){
-                        color = 'rgba(34, 139, 34, 100)';
-                    }
-                    return color;
-                })
+                .nodeThreeObject(node => this.getThreeObjectForNode(node, false))
+                .linkOpacity(1)
+                .linkWidth(0)
+                .linkColor(link => this.calcColorOfLink(link, '0.7'))
                 .linkThreeObjectExtend(true)
-                .linkThreeObject(link => {
-                    if(link.inserts){
-                        let source;
-                        if(link.source.type){
-                            source = link.source;
-                        }else{
-                            let nodeUuid = link.source;
-                            source = this.graph.graphData().nodes.find(node => {
-                                return node.uuid === nodeUuid
-                            });
-                        }
-                        if(source && source.type){
-                            let isCurrent = source.uuid === this.currentNode.uuid;
-                            return stitchPaths.draw(source.type, isCurrent ? 0xe68a00 : 0x000000);
-                        }
-                    }else if(link.slipstitch){
-                        return stitchPaths.draw("slst").rotateX(1/2*Math.PI);
-                    }
-                    return false;
-                })
+                .linkThreeObject(link => this.getThreeObjectForLink(link, false))
                 .linkPositionUpdate((linkObject, { start, end }, link) => {
                     if(!linkObject){
                         return true;

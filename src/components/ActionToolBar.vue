@@ -189,7 +189,7 @@
                 },
                 patternFile: null,
                 is3D: true,
-                isEdgeVisible: false
+                isEdgeVisible: true
             }
         },
         computed: {

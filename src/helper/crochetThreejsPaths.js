@@ -2,11 +2,11 @@ import * as THREE from 'three';
 
 export default class CrochetPaths {
         constructor(color) {
-            this.color = color | 0x000000;
+            this.color = color || 0x000000;
         }
 
         draw(stitch, color){
-            this.color = color | 0x000000;
+            this.color = color || 0x000000;
             let x = 0;
             let y = 0;
             switch(stitch) {
