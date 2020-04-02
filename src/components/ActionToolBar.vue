@@ -38,20 +38,30 @@
         </v-tooltip>
         <v-tooltip top>
             <template v-slot:activator="{ on }">
-                <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
-                    <v-icon> mdi-new-box </v-icon>
-                </v-btn>
-            </template>
-            <span>{{$t('tooltips.new_pattern')}}</span>
-        </v-tooltip>
-        <v-tooltip top>
-            <template v-slot:activator="{ on }">
                 <v-btn class="ma-2" outlined color="indigo" @click.stop="auto_complete_dialog = true" v-on="on">
                     <v-icon> mdi-auto-fix </v-icon>
                 </v-btn>
             </template>
             <span>{{$t('tooltips.auto_complete')}}</span>
         </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click.stop="toggleEdgeVisibility" v-on="on">
+                    <v-icon v-if="isEdgeVisible"> mdi-eye </v-icon>
+                    <v-icon v-else> mdi-eye-off </v-icon>
+                </v-btn>
+            </template>
+            <span>{{isEdgeVisible ? $t('tooltips.hide_edges') : $t('tooltips.show_edges')}}</span>
+        </v-tooltip>
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
+                    <v-icon> mdi-new-box </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.new_pattern')}}</span>
+        </v-tooltip>
+
         <v-switch v-model="is3D" :label="is3D ? '3D' : '2D'" v-on:change="switchDimension"/>
         </v-row>
 
@@ -179,6 +189,7 @@
                 },
                 patternFile: null,
                 is3D: true,
+                isEdgeVisible: false
             }
         },
         computed: {
@@ -234,6 +245,11 @@
             },
             switchDimension() {
                 let msg = {name: 'saveTempGraph', is3D: this.is3D};
+                this.$emit("triggerGraph", msg);
+            },
+            toggleEdgeVisibility() {
+                this.isEdgeVisible = !this.isEdgeVisible;
+                let msg = {name: 'toggleEdgeVisibility', visibility: this.isEdgeVisible};
                 this.$emit("triggerGraph", msg);
             }
         }

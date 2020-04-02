@@ -45,6 +45,8 @@
     "save": "save current pattern",
     "open": "discard and open pattern",
     "new_pattern": "start new pattern",
-    "auto_complete": "autocomplete row/round"
+    "auto_complete": "autocomplete row/round",
+    "hide_edges": "hide edges",
+    "show_edges": "show edges"
   }
 }

@@ -51,6 +51,9 @@ export const graphMixin = {
                     localStorage.graphJson = this.printGraph();
                     this.$emit("switchDimension", trigger.is3D);
                     break;
+                case 'toggleEdgeVisibility':
+                    this.setEdgeVisibility(trigger.visibility);
+                    break;
                 default:
                     console.warn("got unexpected trigger name");
             }

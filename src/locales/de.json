@@ -45,6 +45,8 @@
     "save": "aktuellen Stand speichern",
     "open": "verwerfen und andere Häkelschrift laden",
     "new_pattern": "neue Anleitung starten",
-    "auto_complete": "Runde/Reihe vervollständigen"
+    "auto_complete": "Runde/Reihe vervollständigen",
+    "hide_edges": "Kanten verbergen",
+    "show_edges": "Kanten anzeigen"
   }
 }
