@@ -34,7 +34,10 @@
                     'tr': 40,
                     'dtr': 50,
                     'slst': 0
-                }
+                },
+                highlightNodes: [],
+                highlightLink: null,
+                isEdgeVisible: true
             }
         },
         methods: {
@@ -42,6 +45,7 @@
               this.graph.refresh();
             },
             setEdgeVisibility(isVisible) {
+                this.isEdgeVisible = isVisible;
                 if(!isVisible){
                     this.graph
                         .linkColor(link => 'rgba(0, 0, 0, 0)') // no links
@@ -65,8 +69,8 @@
                     return false;
                 }
             },
-            getThreeObjectForLink(link, isColored) {
-                let color = this.getLinkColor(link, isColored);
+            getThreeObjectForLink(link, isColored, fixedColor) {
+                let color = fixedColor || this.getLinkColor(link, isColored);
                 if(link.inserts){
                     let {source} = this.getNodesFromLink(link);
                     if(source && source.type){
@@ -143,6 +147,11 @@
             },
             addToScene(gltf) {
               this.graph.scene().add(gltf.scene);
+            },
+            highlightHoveredElements(){
+                this.graph
+                    .nodeColor(node => this.highlightNodes.indexOf(node) === -1 ? 'rgba(0,0,0,0)' : 'rgb(230,138,0,1)')
+                    .linkColor(link => link === this.highlightLink && link.inserts ? 'rgb(230,138,0,1)' : this.calcColorOfLink(link,'0.7'));
             }
         },
         mounted() {
@@ -155,6 +164,10 @@
                 //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
+                    if ((!node && !this.highlightNodes.length) || (this.highlightNodes.length === 1 && this.highlightNodes[0] === node)) return;
+
+                    this.highlightNodes = node ? [node] : [];
+                    this.highlightHoveredElements();
                 })
                 .onNodeClick(node => {
                     this.handleNodeClick(node);
@@ -166,6 +179,11 @@
                 })
                 .onLinkHover((link) => {
                     element.style.cursor = link && link.inserts ? 'pointer' : null;
+
+                    if (this.highlightLink === link || !link || !link.inserts) return;
+                    this.highlightLink = link;
+                    this.highlightNodes = link ? [link.source] : [];
+                    this.highlightHoveredElements();
                 })
                 .onLinkClick(link => {
                     if(link.inserts){
@@ -185,7 +203,8 @@
                         this.handleNodeClick(node);
                     }
                 })
-                .nodeOpacity(0)
+                .nodeColor(node => 'rgba(0,0,0,0)')
+                .nodeOpacity(0.5) // keep node visible for when node is highlighted on hover
                 .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
                 .nodeThreeObject(node => this.getThreeObjectForNode(node, false))
