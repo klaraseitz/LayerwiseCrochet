@@ -16,6 +16,14 @@ export const graphMixin = {
             graphLayers: 0,
             currentNode: null,
             isIncrease: true,
+            isEdgeVisible: true,
+            colors: {
+                "highlight": {rgba_line: "rgba(230, 138, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0xe68a00},
+                "even": {rgba_line: "rgba(255, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0xff0000},
+                "default": {rgba_line: "rgba(0, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0x000000},
+                "layer_start": {rgba_line: "rgba(0, 0, 255, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0x0000ff},
+                "invisible": {rgba: "rgba(0,0,0,0)", hex: 0x00000000},
+            }
         }
     },
     props: [ 'trigger', 'stitch' ],
@@ -52,7 +60,8 @@ export const graphMixin = {
                     this.$emit("switchDimension", trigger.is3D);
                     break;
                 case 'toggleEdgeVisibility':
-                    this.setEdgeVisibility(trigger.visibility);
+                    this.isEdgeVisible = trigger.visibility;
+                    this.refreshGraph();
                     break;
                 default:
                     console.warn("got unexpected trigger name");

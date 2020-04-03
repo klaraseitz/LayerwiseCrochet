@@ -25,7 +25,7 @@
         data() {
             return {
                 name: 'GraphCanvas3D',
-                graph: ForceGraph3D(),
+                graph: ForceGraph3D({ controlType: 'orbit' }),
                 stitchDistances: {
                     'ch': 0,
                     'sc': 10,
@@ -35,44 +35,27 @@
                     'dtr': 50,
                     'slst': 0
                 },
-                highlightNodes: [],
-                highlightLink: null,
-                isEdgeVisible: true
+                highlightedNode: null,
+                highlightedLink: null
             }
         },
         methods: {
             refreshGraph() {
               this.graph.refresh();
             },
-            setEdgeVisibility(isVisible) {
-                this.isEdgeVisible = isVisible;
-                if(!isVisible){
-                    this.graph
-                        .linkColor(link => 'rgba(0, 0, 0, 0)') // no links
-                        .nodeThreeObject(node => this.getThreeObjectForNode(node, true))
-                        .linkThreeObject(link => this.getThreeObjectForLink(link, true));
-                }else{
-                    // values for thin lines: alpha: 0.7, opacity: 1, width: 0
-                    this.graph
-                        .linkColor(link => this.calcColorOfLink(link, '0.7'))
-                        .nodeThreeObject(node => this.getThreeObjectForNode(node, false))
-                        .linkThreeObject(link => this.getThreeObjectForLink(link, false));
-                }
-                this.refreshGraph();
-            },
-            getThreeObjectForNode(node, isColored) {
+            getThreeObjectForNode(node) {
                 // all drawings are relative to the nodes' current coordinates
                 if(node.type === "mr" || node.type === "ch"){
-                    let color = this.getNodeColor(node, isColored);
+                    let color = this.getStitchColor(node);
                     return stitchPaths.draw(node.type, color).rotateX(1/2*Math.PI);
                 }else{
                     return false;
                 }
             },
-            getThreeObjectForLink(link, isColored, fixedColor) {
-                let color = fixedColor || this.getLinkColor(link, isColored);
+            getThreeObjectForLink(link) {
+                let {source} = this.getNodesFromLink(link);
+                let color = this.getStitchColor(source);
                 if(link.inserts){
-                    let {source} = this.getNodesFromLink(link);
                     if(source && source.type){
                         return stitchPaths.draw(source.type, color);
                     }
@@ -81,32 +64,29 @@
                 }
                 return false;
             },
-            getNodeColor(node, isColored) {
-                let isCurrent = node.uuid === this.currentNode.uuid && node.uuid != null;
-                let color = new THREE.Color( 0x000000 );
-                if(isCurrent){
-                    color = new THREE.Color( 0xe68a00 );
-                }else if(isColored){
-                    let isEven = node.layer % 2 === 0;
-                    color = isEven ? new THREE.Color( 0xff0000 ) : new THREE.Color( 0x000000 );
+            getStitchColor(node){
+                if(node.uuid === this.currentNode.uuid){
+                    return this.colors.highlight.hex;
+                }else if(!this.isEdgeVisible && node.layer % 2 === 0) {
+                    return this.colors.even.hex;
+                }else{
+                    return this.colors.default.hex;
                 }
-                return color;
             },
-            getLinkColor(link, isColored) {
-                let {source} = this.getNodesFromLink(link);
-                let color = new THREE.Color( 0x000000 );
-                if(link.inserts) {
-                    let isCurrent = source.uuid === this.currentNode.uuid;
-                    if (isCurrent) {
-                        color = new THREE.Color(0xe68a00);
-                    }
-                }
-                if(isColored){
-                    let isEven = source.layer % 2 === 0;
-                    color = isEven ? new THREE.Color( 0xff0000 ) : new THREE.Color( 0x000000 );
-                }
-                return color;
-
+            getLineColor(link){
+              if(this.isEdgeVisible){
+                  let {source, target} = this.getNodesFromLink(link);
+                  if(source.layer === target.layer){
+                      if(source.layer % 2 === 0){
+                          return this.colors.even.rgba_line;
+                      }else{
+                          return this.colors.default.rgba_line;
+                      }
+                  }else if(!link.inserts){
+                      return this.colors.layer_start.rgba_line;
+                  }
+              }
+              return this.colors.invisible.rgba;
             },
             getNodesFromLink(link) {
                 let source;
@@ -132,87 +112,35 @@
                     target
                 }
             },
-            calcColorOfLink(link, alpha){
-                let {source, target} = this.getNodesFromLink(link);
-                let color = 'rgba(0, 0, 0, 0)'; // by default link is invisible
-                if(source.layer === target.layer){
-                    // link connects nodes of same layer, gets color of row
-                    let isEven = source.layer%2 === 0;
-                    color =  isEven ? "rgba(0, 0, 0, "+alpha+")" : "rgba(255, 0, 0, "+alpha+")";
-                }else if(!link.inserts){
-                    // link connects nodes of different layer, but is not an insert (previous link of ch at beginning of row)
-                    color = "rgba(0, 0, 255, "+alpha+")";
-                }
-                return color;
-            },
             addToScene(gltf) {
               this.graph.scene().add(gltf.scene);
             },
             highlightHoveredElements(){
                 this.graph
-                    .nodeColor(node => this.highlightNodes.indexOf(node) === -1 ? 'rgba(0,0,0,0)' : 'rgb(230,138,0,1)')
-                    .linkColor(link => link === this.highlightLink && link.inserts ? 'rgb(230,138,0,1)' : this.calcColorOfLink(link,'0.7'));
+                    .nodeColor(node => node === this.highlightedNode ? this.colors.highlight.rgba_stitch : this.colors.invisible.rgba)
+                    .linkColor(link => link === this.highlightedLink && link.inserts ? this.colors.highlight.rgba_line : this.getLineColor(link));
             }
         },
         mounted() {
             let element = this.$refs.canvas3D;
             this.graph(element)
+// *** Data Input ***
                 //.graphData(gData)
-                .numDimensions(3)
-                .backgroundColor("#ffffff")
                 .nodeId("uuid")
-                //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
-                .onNodeHover((node) => {
-                    element.style.cursor = node ? 'pointer' : null;
-                    if ((!node && !this.highlightNodes.length) || (this.highlightNodes.length === 1 && this.highlightNodes[0] === node)) return;
-
-                    this.highlightNodes = node ? [node] : [];
-                    this.highlightHoveredElements();
-                })
-                .onNodeClick(node => {
-                    this.handleNodeClick(node);
-                    this.graph.refresh();
-                })
-                .onNodeRightClick(node => {
-                    this.handleNodeRightClick(node);
-                    this.graph.refresh();
-                })
-                .onLinkHover((link) => {
-                    element.style.cursor = link && link.inserts ? 'pointer' : null;
-
-                    if (this.highlightLink === link || !link || !link.inserts) return;
-                    this.highlightLink = link;
-                    this.highlightNodes = link ? [link.source] : [];
-                    this.highlightHoveredElements();
-                })
-                .onLinkClick(link => {
-                    if(link.inserts){
-                        this.handleNodeClick(link.source);
-                        this.graph.refresh();
-                    }
-                })
-                .onLinkRightClick(link => {
-                    if(link.inserts){
-                        this.handleNodeRightClick(link.source);
-                        this.graph.refresh();
-                    }
-                })
-                .onNodeDragEnd((node, translate) => {
-                    // handle like a click when drag distance is minimal
-                    if(translate.x <= 1 && translate.x >= -1 && translate.y <= 1 && translate.y >= -1 && translate.z <= 1 && translate.z >= -1){
-                        this.handleNodeClick(node);
-                    }
-                })
+// *** Container Layout ***
+                .backgroundColor("#ffffff")
+// *** Node Styling ***
+                .nodeRelSize(5)
                 .nodeColor(node => 'rgba(0,0,0,0)')
                 .nodeOpacity(0.5) // keep node visible for when node is highlighted on hover
-                .nodeRelSize(5)
                 .nodeThreeObjectExtend(true)
-                .nodeThreeObject(node => this.getThreeObjectForNode(node, false))
+                .nodeThreeObject(node => this.getThreeObjectForNode(node))
+// *** Link Styling ***
                 .linkOpacity(1)
                 .linkWidth(0)
-                .linkColor(link => this.calcColorOfLink(link, '0.7'))
+                .linkColor(link => this.getLineColor(link))
                 .linkThreeObjectExtend(true)
-                .linkThreeObject(link => this.getThreeObjectForLink(link, false))
+                .linkThreeObject(link => this.getThreeObjectForLink(link))
                 .linkPositionUpdate((linkObject, { start, end }, link) => {
                     if(!linkObject){
                         return true;
@@ -246,12 +174,60 @@
 
                     Object.assign(linkObject.position, position);
                 })
+// *** Interaction ***
+                .onNodeHover((node) => {
+                    element.style.cursor = node ? 'pointer' : null;
+                    this.highlightedNode = node ? node : null;
+                    this.highlightedLink = null;
+                    this.highlightHoveredElements();
+                })
+                .onNodeClick(node => {
+                    this.handleNodeClick(node);
+                    this.graph.refresh();
+                })
+                .onNodeRightClick(node => {
+                    this.handleNodeRightClick(node);
+                    this.graph.refresh();
+                })
+                .onNodeDragEnd((node, translate) => {
+                    // handle like a click when drag distance is minimal
+                    if(translate.x <= 1 && translate.x >= -1 && translate.y <= 1 && translate.y >= -1 && translate.z <= 1 && translate.z >= -1){
+                        this.handleNodeClick(node);
+                    }
+                })
+                .onLinkHover((link) => {
+                    element.style.cursor = link && link.inserts ? 'pointer' : null;
+                    if(link && link.inserts){
+                        this.highlightedLink = link;
+                        this.highlightedNode = link.source;
+                    }else{
+                        this.highlightedLink = null;
+                        this.highlightedNode = null;
+                    }
+                    this.highlightHoveredElements();
+                })
+                .onLinkClick(link => {
+                    if(link.inserts){
+                        this.handleNodeClick(link.source);
+                        this.graph.refresh();
+                    }
+                })
+                .onLinkRightClick(link => {
+                    if(link.inserts){
+                        this.handleNodeRightClick(link.source);
+                        this.graph.refresh();
+                    }
+                })
+// *** Force Engine Configuration ***
+                .numDimensions(3)
+                //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .d3Force('link')
                 .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
             
             if(localStorage.graphJson){
                 this.setGraphFromJson(localStorage.graphJson);
             }
+
             // use this to add a 3D model to the scene. I couldnt get a local path to load the model yet.
             /*loader.load( "https://threejsfundamentals.org/threejs/resources/models/cartoon_lowpoly_small_city_free_pack/scene.gltf",
                 this.addToScene, undefined,
