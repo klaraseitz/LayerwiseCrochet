@@ -10,9 +10,11 @@ class Node {
         this.next = nextIndex || null;
         this.isIncrease = isIncrease || true;
         this.uuid = uuid || uuidv4();
-        this.x = x || null;
-        this.y = y || null;
-        this.z = z || null;
+        if(x && y && z){
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 }
 
