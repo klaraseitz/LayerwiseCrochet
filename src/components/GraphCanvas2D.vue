@@ -30,61 +30,32 @@
         methods: {
             refreshGraph() {
                 // do nothing. the 2D library doesnt support this function
+            },
+            getCanvasObjectForNode(node, ctx) {
+                // all drawings are relative to the nodes' current coordinates
+                if(node.type === "mr" || node.type === "ch"){
+                    let color = this.getStitchColor(node);
+                    return stitchCanvas.draw(node.type, ctx, node.x, node.y, color);
+                }else{
+                    return false;
+                }
             }
         },
         mounted() {
             let element = this.$refs.canvas2D;
             this.graph(element)
+// *** Data Input ***
                 //.graphData(gData)
                 .nodeId("uuid")
-                .onNodeHover((node) => {
-                    element.style.cursor = node ? 'pointer' : null;
-                })
-                .onNodeClick(node => {
-                    this.handleNodeClick(node)})
-                .onNodeRightClick(node => {
-                    this.handleNodeRightClick(node);
-                })
-                .onLinkHover((link) => {
-                    element.style.cursor = link && link.inserts ? 'pointer' : null;
-                })
-                .onLinkClick(link => {
-                    if(link.inserts){
-                        this.handleNodeClick(link.source);
-                    }
-                })
-                .onLinkRightClick(link => {
-                    if(link.inserts){
-                        this.handleNodeRightClick(link.source);
-                    }
-                })
-                .nodeColor(node => {
-                    if(node.layer%2 == 0){
-                        return 'red'
-                    }else{
-                        return 'black'
-                    }
-                })
-                .nodeCanvasObject((node, ctx) => {
-                    if(node.type == "mr" || node.type == "ch"){
-                        let isCurrent = node.uuid === this.currentNode.uuid;
-                        stitchCanvas.draw(node.type, ctx, node.x, node.y, isCurrent ? '#e68a00' : '#000000');
-                    }
-                })
-                .linkWidth(1)
-                .linkColor(link => {
-                    let color = 'rgba(0, 0, 0, 100)';
-                    let source = link.source;
-                    let target = link.target;
-                    if(source.layer === target.layer){
-                        let isEven = source.layer%2 === 0;
-                        color =  isEven ? 'rgba(0, 108, 170, 100)' : 'rgba(200, 80, 0, 100)';
-                    }else if(!link.inserts){
-                        color = 'rgba(34, 139, 34, 100)';
-                    }
-                    return color;
-                })
-                .linkCanvasObjectMode(() => 'after')
+// *** Node Styling ***
+                .nodeRelSize(5)
+                .nodeColor(() => 'transparent')
+                .nodeCanvasObjectMode(() => 'before')
+                .nodeCanvasObject((node, ctx) => this.getCanvasObjectForNode(node, ctx))
+// *** Link Styling ***
+                .linkWidth(0)
+                .linkColor(link => this.getLineColor(link))
+                .linkCanvasObjectMode(() => 'before')
                 .linkCanvasObject((link, ctx) =>{
                     // Calculate Angle and Center point for placement
                     let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
@@ -100,6 +71,8 @@
                     let x = (sourceX + middleX) / 2;
                     let y = (sourceY + middleY) / 2;
 
+                    let color = this.getStitchColor(link.source);
+
                     // Draw on html5 canvas if the edge is of type insert
                     if(link.inserts){
                         ctx.save();
@@ -113,13 +86,56 @@
                             ctx.rotate(Math.PI);
                         }
                         ctx.translate(-x, -y);
-                        let isCurrent = link.source.uuid === this.currentNode.uuid;
-                        stitchCanvas.draw(link.source.type, ctx, x, y, isCurrent ? '#e68a00' : '#000000');
+                        stitchCanvas.draw(link.source.type, ctx, x, y, color);
                         ctx.restore();
                     }else if(link.slipstitch){
-                        stitchCanvas.draw("slst", ctx, middleX, middleY, '#000000');
+                        stitchCanvas.draw("slst", ctx, middleX, middleY, color);
                     }
-                });
+                })
+// *** Interaction ***
+                .onNodeHover((node) => {
+                    element.style.cursor = node ? 'pointer' : null;
+                    this.highlightedNode = node ? node : null;
+                    this.highlightedLink = null;
+                    this.highlightHoveredElements();
+                })
+                .onNodeClick(node => {
+                    this.handleNodeClick(node)})
+                .onNodeRightClick(node => {
+                    this.handleNodeRightClick(node);
+                })
+                .onNodeDragEnd((node, translate) => {
+                    // handle like a click when drag distance is minimal
+                    if(translate.x <= 1 && translate.x >= -1 && translate.y <= 1 && translate.y >= -1){
+                        this.handleNodeClick(node);
+                    }
+                })
+                .onLinkHover((link) => {
+                    element.style.cursor = link && link.inserts ? 'pointer' : null;
+                    if(link && link.inserts){
+                        this.highlightedLink = link;
+                        this.highlightedNode = link.source;
+                    }else{
+                        this.highlightedLink = null;
+                        this.highlightedNode = null;
+                    }
+                    this.highlightHoveredElements();
+                })
+                .onLinkClick(link => {
+                    if(link.inserts){
+                        this.handleNodeClick(link.source);
+                    }
+                })
+                .onLinkRightClick(link => {
+                    if(link.inserts){
+                        this.handleNodeRightClick(link.source);
+                    }
+                })
+// *** Force Engine Configuration ***
+                .d3Force('link')
+                .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
+
+
             if(localStorage.graphJson){
                 this.setGraphFromJson(localStorage.graphJson);
             }

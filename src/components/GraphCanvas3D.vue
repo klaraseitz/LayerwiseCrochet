@@ -25,18 +25,7 @@
         data() {
             return {
                 name: 'GraphCanvas3D',
-                graph: ForceGraph3D({ controlType: 'orbit' }),
-                stitchDistances: {
-                    'ch': 0,
-                    'sc': 10,
-                    'hdc': 20,
-                    'dc': 30,
-                    'tr': 40,
-                    'dtr': 50,
-                    'slst': 0
-                },
-                highlightedNode: null,
-                highlightedLink: null
+                graph: ForceGraph3D({controlType: 'orbit'})
             }
         },
         methods: {
@@ -64,61 +53,8 @@
                 }
                 return false;
             },
-            getStitchColor(node){
-                if(node.uuid === this.currentNode.uuid){
-                    return this.colors.highlight.hex;
-                }else if(!this.isEdgeVisible && node.layer % 2 === 0) {
-                    return this.colors.even.hex;
-                }else{
-                    return this.colors.default.hex;
-                }
-            },
-            getLineColor(link){
-              if(this.isEdgeVisible){
-                  let {source, target} = this.getNodesFromLink(link);
-                  if(source.layer === target.layer){
-                      if(source.layer % 2 === 0){
-                          return this.colors.even.rgba_line;
-                      }else{
-                          return this.colors.default.rgba_line;
-                      }
-                  }else if(!link.inserts){
-                      return this.colors.layer_start.rgba_line;
-                  }
-              }
-              return this.colors.invisible.rgba;
-            },
-            getNodesFromLink(link) {
-                let source;
-                let target;
-                // get source/target of the link either by id or from link directly
-                if(link.source.type != null && link.target.type != null){
-                    // the link already refers to nodes in source and target
-                    source = link.source;
-                    target = link.target;
-                }else{
-                    // the link so far only has the uuids of the nodes
-                    this.graph.graphData().nodes.find(node => {
-                        if(node.uuid === link.source){
-                            source = node
-                        }
-                        if(node.uuid === link.target){
-                            target = node
-                        }
-                    });
-                }
-                return {
-                    source,
-                    target
-                }
-            },
             addToScene(gltf) {
               this.graph.scene().add(gltf.scene);
-            },
-            highlightHoveredElements(){
-                this.graph
-                    .nodeColor(node => node === this.highlightedNode ? this.colors.highlight.rgba_stitch : this.colors.invisible.rgba)
-                    .linkColor(link => link === this.highlightedLink && link.inserts ? this.colors.highlight.rgba_line : this.getLineColor(link));
             }
         },
         mounted() {

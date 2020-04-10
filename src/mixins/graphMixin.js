@@ -18,12 +18,23 @@ export const graphMixin = {
             isIncrease: true,
             isEdgeVisible: true,
             colors: {
-                "highlight": {rgba_line: "rgba(230, 138, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0xe68a00},
-                "even": {rgba_line: "rgba(255, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0xff0000},
-                "default": {rgba_line: "rgba(0, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0x000000},
-                "layer_start": {rgba_line: "rgba(0, 0, 255, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: 0x0000ff},
-                "invisible": {rgba: "rgba(0,0,0,0)", hex: 0x00000000},
-            }
+                "highlight": {rgba_line: "rgba(230, 138, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: '#e68a00'},
+                "even": {rgba_line: "rgba(255, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: '#ff0000'},
+                "default": {rgba_line: "rgba(0, 0, 0, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: '#000000'},
+                "layer_start": {rgba_line: "rgba(0, 0, 255, 0.7)", rgba_stitch: "rgba(230, 138, 0, 1)", hex: '#0000ff'},
+                "invisible": {rgba: "rgba(0,0,0,0)", hex: '#00000000'},
+            },
+            stitchDistances: {
+                'ch': 0,
+                'sc': 10,
+                'hdc': 20,
+                'dc': 30,
+                'tr': 40,
+                'dtr': 50,
+                'slst': 0
+            },
+            highlightedNode: null,
+            highlightedLink: null
         }
     },
     props: [ 'trigger', 'stitch' ],
@@ -249,6 +260,59 @@ export const graphMixin = {
         handleNodeRightClick(node) {
             if(this.stitch && (this.stitch !== "ch" || this.stitch !== "slst")){
                 this.decreaseStitch(this.currentNode, node);
+            }
+        },
+        highlightHoveredElements(){
+            this.graph
+                .nodeColor(node => node === this.highlightedNode ? this.colors.highlight.rgba_stitch : this.colors.invisible.rgba)
+                .linkColor(link => link === this.highlightedLink && link.inserts ? this.colors.highlight.rgba_line : this.getLineColor(link));
+        },
+        getStitchColor(node){
+            if(node.uuid === this.currentNode.uuid){
+                return this.colors.highlight.hex;
+            }else if(!this.isEdgeVisible && node.layer % 2 === 0) {
+                return this.colors.even.hex;
+            }else{
+                return this.colors.default.hex;
+            }
+        },
+        getLineColor(link){
+            if(this.isEdgeVisible){
+                let {source, target} = this.getNodesFromLink(link);
+                if(source.layer === target.layer){
+                    if(source.layer % 2 === 0){
+                        return this.colors.even.rgba_line;
+                    }else{
+                        return this.colors.default.rgba_line;
+                    }
+                }else if(!link.inserts){
+                    return this.colors.layer_start.rgba_line;
+                }
+            }
+            return this.colors.invisible.rgba;
+        },
+        getNodesFromLink(link) {
+            let source;
+            let target;
+            // get source/target of the link either by id or from link directly
+            if(link.source.type != null && link.target.type != null){
+                // the link already refers to nodes in source and target
+                source = link.source;
+                target = link.target;
+            }else{
+                // the link so far only has the uuids of the nodes
+                this.graph.graphData().nodes.find(node => {
+                    if(node.uuid === link.source){
+                        source = node
+                    }
+                    if(node.uuid === link.target){
+                        target = node
+                    }
+                });
+            }
+            return {
+                source,
+                target
             }
         },
         savePattern() {

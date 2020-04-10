@@ -11,7 +11,7 @@
     "3d-force-graph": "~1.60.11",
     "@mdi/js": "^4.8.95",
     "core-js": "^3.4.4",
-    "force-graph": "~1.23.1",
+    "force-graph": "~1.27.2",
     "material-design-icons": "^3.0.1",
     "material-design-icons-iconfont": "^5.0.1",
     "three": "^0.112.1",
