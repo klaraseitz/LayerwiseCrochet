@@ -44,9 +44,10 @@
                     <v-icon v-if="!item.type">
                         {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                     </v-icon>
-                    <v-icon v-else>
-                        {{ icons[item.type] }}
-                    </v-icon>
+                    <icon-base v-else
+                            :icon-name=icons[item.type]
+                            v-slot:singleCrochet>
+                    </icon-base>
                 </template>
             </v-treeview>
 
@@ -72,6 +73,8 @@
 </template>
 
 <script>
+import IconBase from "@/components/IconBase";
+
 export default {
     data() {
         return {
@@ -79,17 +82,20 @@ export default {
             name: 'StitchSelector',
             selectedStitch: [],
             icons: {
-                'ch': 'mdi-shape-oval-plus',
-                'sc': 'mdi-plus',
-                'hdc': 'mdi-plus',
-                'dc': 'mdi-alpha-t',
-                'tr': 'mdi-plus',
-                'dtr': 'mdi-plus',
-                'slst': 'mdi-circle-small',
+                'ch': 'chainStitch',
+                'sc': 'singleCrochet',
+                'hdc': 'halfDoubleCrochet',
+                'dc': 'doubleCrochet',
+                'tr': 'trebleCrochet',
+                'dtr': 'doubleTrebleCrochet',
+                'slst': 'slipstitch',
             },
             isIncrease: true,
             layers: localStorage.graphJson ? localStorage.graphJson.numLayers : 0
         }
+    },
+    components: {
+        IconBase
     },
     props: [ 'layer' ],
     methods: {
