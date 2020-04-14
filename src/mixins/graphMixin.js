@@ -74,6 +74,9 @@ export const graphMixin = {
                     this.isEdgeVisible = trigger.visibility;
                     this.refreshGraph();
                     break;
+                case 'centerView':
+                    this.graph.cameraPosition({ }, {x:0,y:0,z:0});
+                    break;
                 default:
                     console.warn("got unexpected trigger name");
             }

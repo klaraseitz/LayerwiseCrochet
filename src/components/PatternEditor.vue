@@ -2,7 +2,6 @@
     <div>
         <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
         <div style="width: 100%; display:flex; justify-content: center">
-            <LayerSlider :maxLayer="maxLayer" @changeCurrentLayer="setCurrentLayer"/>
             <GraphCanvas3D v-if="is3D"
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
@@ -19,6 +18,18 @@
                             @triggerGraph="setGraphTrigger($event)"
                             @sendStitch="setStitch($event)"
                             @changeMaxLayer="updateMaxLayer"/>
+            <v-btn
+                    color="indigo"
+                    dark
+                    outlined
+                    elevation="24"
+                    fixed
+                    left
+                    fab
+                    @click="centerView"
+            >
+                <v-icon>mdi-cube-scan</v-icon>
+            </v-btn>
         </div>
     </div>
 </template>
@@ -27,7 +38,6 @@
     import ActionToolBar from "@/components/ActionToolBar";
     import GraphCanvas3D from "@/components/GraphCanvas3D";
     import GraphCanvas2D from "@/components/GraphCanvas2D";
-    import LayerSlider from "@/components/LayerSlider";
     import StitchSelector from "@/components/StitchSelector";
 
     export default {
@@ -43,7 +53,6 @@
         },
         components: {
             ActionToolBar,
-            LayerSlider,
             GraphCanvas2D,
             GraphCanvas3D,
             StitchSelector
@@ -58,12 +67,13 @@
             updateMaxLayer(maxLayer) {
                 this.maxLayer = maxLayer;
             },
-            setCurrentLayer(layer) {
-                this.currentLayer = layer;
-            },
             changeDimension(is3D){
                 this.is3D = is3D;
             },
+            centerView(){
+                let msg = {name: 'centerView'};
+                this.setGraphTrigger(msg);
+            }
         }
     }
 </script>
