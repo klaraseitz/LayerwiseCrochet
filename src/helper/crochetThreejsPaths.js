@@ -26,6 +26,8 @@ export default class CrochetPaths {
                     return this.drawTrebleCrochet(x, y);
                 case 'dtr':
                     return this.drawDoubleTrebleCrochet(x, y);
+                case 'hole':
+                    return this.drawHole(x, y);
                 default:
                     return false;
         }
@@ -41,6 +43,20 @@ export default class CrochetPaths {
         return new THREE.MeshBasicMaterial({
             color: this.color
         });
+    }
+
+    drawHole(x,y) {
+        let material = new THREE.LineDashedMaterial( {
+            color: this.color,
+            linewidth: 1,
+            scale: 1,
+            dashSize: 2,
+            gapSize: 2,
+        } );
+        let circGeometry = new THREE.CircleGeometry( 5, 16 );
+        circGeometry.vertices.shift();
+
+        return new THREE.Line( circGeometry, material).computeLineDistances();
     }
 
     drawMagicRing(x, y) {
@@ -72,16 +88,8 @@ export default class CrochetPaths {
     }
 
     drawSlipstitch(x, y) {
-        // this draws a filled circle (what I'd like) But only one side is drawn.
-        // Therefore I draw the same circle again just the other way around, then that side also gets filled.
-        let geometryCircle1 = new THREE.CircleBufferGeometry( 1, 16 );
-        let geometryCircle2 = new THREE.CircleBufferGeometry( 1, 16, 0, -2*Math.PI );
-        let circleSide1 = new THREE.Mesh( geometryCircle1, this.meshMaterial() );
-        let circleSide2 = new THREE.Mesh( geometryCircle2, this.meshMaterial() );
-
-        let group = new THREE.Group();
-        group.add(circleSide1, circleSide2);
-        return group;
+        let geometry = new THREE.SphereGeometry( 2, 16, 16 );
+        return new THREE.Mesh( geometry, this.meshMaterial() );
     }
 
     createLine(vec1, vec2) {

@@ -4,7 +4,8 @@ import {
     CommandAddChain,
     CommandAddDecreasingStitch,
     CommandAddStitch,
-    CommandConnectWithSlipStitch
+    CommandConnectWithSlipStitch,
+    CommandAddHole
 } from "@/helper/Command";
 import {Link, Node} from "@/helper/graphObjects";
 import {CommandTracker} from "@/helper/CommandTracker";
@@ -34,7 +35,9 @@ export const graphMixin = {
                 'slst': 0
             },
             highlightedNode: null,
-            highlightedLink: null
+            highlightedLink: null,
+            selectedNodes: new Set(),
+            highlightAny: true
         }
     },
     props: [ 'trigger', 'stitch' ],
@@ -76,6 +79,20 @@ export const graphMixin = {
                     break;
                 case 'centerView':
                     this.graph.cameraPosition({ }, {x:0,y:0,z:0});
+                    break;
+                case 'startAddHole':
+                    this.graph.nodeColor(() => 'grey');
+                    this.graph.onNodeClick(this.handleNodeClickToSelect);
+                    this.highlightAny = false;
+                    break;
+                case 'stopAddHole':
+                    if(trigger.shouldCreate){
+                        this.addHoleNode();
+                    }
+                    this.graph.nodeColor(() => 'transparent');
+                    this.graph.onNodeClick(this.handleNodeClick);
+                    this.highlightAny = true;
+                    this.selectedNodes.clear();
                     break;
                 default:
                     console.warn("got unexpected trigger name");
@@ -259,11 +276,31 @@ export const graphMixin = {
                         
                 }
             }
+            this.refreshGraph();
+        },
+        handleNodeClickToSelect(node) {
+            this.selectedNodes.has(node) ? this.selectedNodes.delete(node) : this.selectedNodes.add(node);
+            this.graph.nodeColor(node => this.selectedNodes.has(node) ? 'yellow' : 'grey');
         },
         handleNodeRightClick(node) {
             if(this.stitch && (this.stitch !== "ch" || this.stitch !== "slst")){
                 this.decreaseStitch(this.currentNode, node);
             }
+        },
+        handleNodeHover(node) {
+            this.highlightedNode = node ? node : null;
+            this.highlightedLink = null;
+            this.highlightHoveredElements();
+        },
+        handleLinkHover(link){
+            if(link && link.inserts){
+                this.highlightedLink = link;
+                this.highlightedNode = link.source;
+            }else{
+                this.highlightedLink = null;
+                this.highlightedNode = null;
+            }
+            this.highlightHoveredElements();
         },
         highlightHoveredElements(){
             this.graph
@@ -317,6 +354,10 @@ export const graphMixin = {
                 source,
                 target
             }
+        },
+        addHoleNode() {
+          let actions = commandTracker.execute(new CommandAddHole(this.selectedNodes));
+          this.handleAction(actions);
         },
         savePattern() {
             let pattern = this.printGraph();

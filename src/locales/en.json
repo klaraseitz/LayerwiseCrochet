@@ -47,6 +47,7 @@
     "new_pattern": "start new pattern",
     "auto_complete": "autocomplete row/round",
     "hide_edges": "hide edges",
-    "show_edges": "show edges"
+    "show_edges": "show edges",
+    "add_hole": "define a hole for insertion"
   }
 }

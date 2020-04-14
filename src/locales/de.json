@@ -47,6 +47,7 @@
     "new_pattern": "neue Anleitung starten",
     "auto_complete": "Runde/Reihe vervollständigen",
     "hide_edges": "Kanten verbergen",
-    "show_edges": "Kanten anzeigen"
+    "show_edges": "Kanten anzeigen",
+    "add_hole": "Einstichsloch angeben"
   }
 }

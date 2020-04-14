@@ -115,6 +115,34 @@ export function removeDecreasingStitch() {
     }
 }
 
+export function addHole() {
+    let hole = new Node('hole', 0, false, null, [], null, true, this.uuid);
+    this.uuid = hole.uuid;
+
+    let highestLayer = 0;
+    let newLinks = [];
+    this.values.surroundingNodes.forEach(node => {
+        if(node.layer > highestLayer) {
+            highestLayer = node.layer;
+        }
+        let link = new Link(this.uuid, node.uuid, false, false);
+        newLinks.push(link);
+    });
+    hole.layer = highestLayer;
+
+    return {
+        newNodes: [hole],
+        newLinks: newLinks
+    }
+}
+
+export function removeHole() {
+    return {
+        numLinksToRemove: this.values.surroundingNodes.length,
+        numNodesToRemove: 1
+    }
+}
+
 export function getFunctionByName(name) {
     return eval(name);
 }

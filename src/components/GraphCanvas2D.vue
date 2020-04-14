@@ -33,7 +33,7 @@
             },
             getCanvasObjectForNode(node, ctx) {
                 // all drawings are relative to the nodes' current coordinates
-                if(node.type === "mr" || node.type === "ch"){
+                if(node.type === "mr" || node.type === "ch" || node.type === "hole"){
                     let color = this.getStitchColor(node);
                     return stitchCanvas.draw(node.type, ctx, node.x, node.y, color);
                 }else{
@@ -95,9 +95,7 @@
 // *** Interaction ***
                 .onNodeHover((node) => {
                     element.style.cursor = node ? 'pointer' : null;
-                    this.highlightedNode = node ? node : null;
-                    this.highlightedLink = null;
-                    this.highlightHoveredElements();
+                    if(this.highlightAny) {this.handleNodeHover(node)}
                 })
                 .onNodeClick(node => {
                     this.handleNodeClick(node)})
@@ -107,19 +105,12 @@
                 .onNodeDragEnd((node, translate) => {
                     // handle like a click when drag distance is minimal
                     if(translate.x <= 1 && translate.x >= -1 && translate.y <= 1 && translate.y >= -1){
-                        this.handleNodeClick(node);
+                        this.highlightAny ? this.handleNodeClick(node) : this.handleNodeClickToSelect(node);
                     }
                 })
                 .onLinkHover((link) => {
                     element.style.cursor = link && link.inserts ? 'pointer' : null;
-                    if(link && link.inserts){
-                        this.highlightedLink = link;
-                        this.highlightedNode = link.source;
-                    }else{
-                        this.highlightedLink = null;
-                        this.highlightedNode = null;
-                    }
-                    this.highlightHoveredElements();
+                    if(this.highlightAny) {this.handleLinkHover(link)}
                 })
                 .onLinkClick(link => {
                     if(link.inserts){

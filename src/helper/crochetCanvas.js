@@ -29,8 +29,20 @@ export default class CrochetCanvas {
             case 'dtr':
                 this.drawDoubleTrebleCrochet(ctx, x, y);
                 break;
+            case 'hole':
+                this.drawHole(ctx, x, y);
         }
         ctx.closePath();
+    }
+
+    drawHole(ctx, x, y) {
+        ctx.save();
+        ctx.setLineDash([2, 2]);
+        ctx.beginPath();
+        ctx.arc(x, y, 5, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
     }
 
     drawMagicRing(ctx, x, y) {

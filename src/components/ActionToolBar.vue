@@ -53,6 +53,17 @@
             </template>
             <span>{{isEdgeVisible ? $t('tooltips.hide_edges') : $t('tooltips.show_edges')}}</span>
         </v-tooltip>
+
+        <v-tooltip top>
+            <template v-slot:activator="{ on }">
+                <v-btn class="ma-2" outlined color="indigo"
+                       @click.stop="startAddHole" :disabled="waitingForHoleSelection" v-on="on">
+                    <v-icon> mdi-selection-ellipse-arrow-inside </v-icon>
+                </v-btn>
+            </template>
+            <span>{{$t('tooltips.add_hole')}}</span>
+        </v-tooltip>
+
         <v-tooltip top>
             <template v-slot:activator="{ on }">
                 <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
@@ -166,6 +177,39 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-btn
+                class="accept-tile"
+                v-if="waitingForHoleSelection"
+                color="green"
+                dark
+                outlined
+                elevation="24"
+                bottom
+                fixed
+                right
+                fab
+                tile
+                @click="acceptHole"
+        >
+            <v-icon>mdi-check</v-icon>
+        </v-btn>
+        <v-btn
+                class="accept-tile"
+                v-if="waitingForHoleSelection"
+                color="red"
+                dark
+                outlined
+                elevation="24"
+                bottom
+                left
+                fixed
+                tile
+                fab
+                @click="discardHole"
+        >
+            <v-icon>mdi-close</v-icon>
+        </v-btn>
     </div>
 </template>
 
@@ -189,7 +233,8 @@
                 },
                 patternFile: null,
                 is3D: true,
-                isEdgeVisible: true
+                isEdgeVisible: true,
+                waitingForHoleSelection: false
             }
         },
         computed: {
@@ -251,11 +296,30 @@
                 this.isEdgeVisible = !this.isEdgeVisible;
                 let msg = {name: 'toggleEdgeVisibility', visibility: this.isEdgeVisible};
                 this.$emit("triggerGraph", msg);
+            },
+            startAddHole() {
+                this.waitingForHoleSelection = true;
+                let msg = {name: 'startAddHole'};
+                this.$emit("triggerGraph", msg);
+            },
+            stopAddHole(shouldCreate) {
+                this.waitingForHoleSelection = false;
+                let msg = {name: 'stopAddHole', shouldCreate: shouldCreate};
+                this.$emit("triggerGraph", msg);
+            },
+            acceptHole(){
+                this.stopAddHole(true);
+            },
+            discardHole(){
+                this.stopAddHole(false);
             }
         }
     }
 </script>
 
 <style scoped>
-
+    .accept-tile {
+        margin-left: 50%;
+        margin-right: 50%;
+    }
 </style>
