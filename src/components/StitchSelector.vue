@@ -44,9 +44,7 @@
                     <v-icon v-if="!item.type">
                         {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                     </v-icon>
-                    <icon-base v-else
-                            :icon-name=icons[item.type]
-                            v-slot:singleCrochet>
+                    <icon-base v-else :icon-name=icons[item.type]>
                     </icon-base>
                 </template>
             </v-treeview>

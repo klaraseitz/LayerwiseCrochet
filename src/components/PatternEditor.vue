@@ -18,18 +18,7 @@
                             @triggerGraph="setGraphTrigger($event)"
                             @sendStitch="setStitch($event)"
                             @changeMaxLayer="updateMaxLayer"/>
-            <v-btn
-                    color="indigo"
-                    dark
-                    outlined
-                    elevation="24"
-                    fixed
-                    left
-                    fab
-                    @click="centerView"
-            >
-                <v-icon>mdi-cube-scan</v-icon>
-            </v-btn>
+            <ViewButtonBar @triggerGraph="setGraphTrigger($event)"/>
         </div>
     </div>
 </template>
@@ -39,6 +28,7 @@
     import GraphCanvas3D from "@/components/GraphCanvas3D";
     import GraphCanvas2D from "@/components/GraphCanvas2D";
     import StitchSelector from "@/components/StitchSelector";
+    import ViewButtonBar from "@/components/ViewButtonBar";
 
     export default {
         data() {
@@ -49,13 +39,15 @@
                 currentLayer: 0,
                 stitch: null,
                 is3D: true,
+                isGraphReduced: false,
             }
         },
         components: {
             ActionToolBar,
             GraphCanvas2D,
             GraphCanvas3D,
-            StitchSelector
+            StitchSelector,
+            ViewButtonBar
         },
         methods: {
             setGraphTrigger(message) {

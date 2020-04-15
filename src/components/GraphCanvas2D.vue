@@ -31,6 +31,9 @@
             refreshGraph() {
                 // do nothing. the 2D library doesnt support this function
             },
+            centerCameraPosition() {
+                // do nothing. the 2D library doesnt support this function
+            },
             getCanvasObjectForNode(node, ctx) {
                 // all drawings are relative to the nodes' current coordinates
                 if(node.type === "mr" || node.type === "ch" || node.type === "hole"){

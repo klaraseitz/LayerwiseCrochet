@@ -48,6 +48,11 @@
     "auto_complete": "Runde/Reihe vervollständigen",
     "hide_edges": "Kanten verbergen",
     "show_edges": "Kanten anzeigen",
-    "add_hole": "Einstichsloch angeben"
+    "add_hole": "Einstichsloch angeben",
+    "center_view": "zentrieren",
+    "collapse_graph": "vorige Ebenen verstecken",
+    "expand_graph": "vorige Ebenen anzeigen",
+    "switch_to_3d": "zur 3D Ansicht wechseln",
+    "switch_to_2d": "zur 2D Ansicht wechseln"
   }
 }

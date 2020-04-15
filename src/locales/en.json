@@ -48,6 +48,11 @@
     "auto_complete": "autocomplete row/round",
     "hide_edges": "hide edges",
     "show_edges": "show edges",
-    "add_hole": "define a hole for insertion"
+    "add_hole": "define a hole for insertion",
+    "center_view": "center",
+    "collapse_graph": "hide previous layers",
+    "expand_graph": "show previous layers",
+    "switch_to_3d": "switch to 3D view",
+    "switch_to_2d": "switch to 2D view"
   }
 }

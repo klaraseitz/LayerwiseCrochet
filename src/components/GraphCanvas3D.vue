@@ -32,6 +32,9 @@
             refreshGraph() {
               this.graph.refresh();
             },
+            centerCameraPosition() {
+                this.graph.cameraPosition({ }, {x:0,y:0,z:0});
+            },
             getThreeObjectForNode(node) {
                 // all drawings are relative to the nodes' current coordinates
                 if(node.type === "mr" || node.type === "ch" || node.type === "hole"){
