@@ -37,7 +37,10 @@ export const graphMixin = {
             highlightedNode: null,
             highlightedLink: null,
             selectedNodes: new Set(),
-            highlightAny: true
+            highlightAny: true,
+            collapsedNodes: new Set(),
+            collapsedLinks: new Set(),
+            maxLayerToCollapse: -1
         }
     },
     props: [ 'trigger', 'stitch' ],
@@ -49,6 +52,9 @@ export const graphMixin = {
                     break;
                 case 'setMaxLayers':
                     this.graphLayers = trigger.layers;
+                    if(this.collapsedNodes.size > 0 && this.graphLayers - 2 > this.maxLayerToCollapse) {
+                        this.collapseLayers();
+                    }
                     break;
                 case 'loadGraphFile':
                     this.loadGraphFile(trigger.patternFile);
@@ -93,6 +99,13 @@ export const graphMixin = {
                     this.graph.onNodeClick(this.handleNodeClick);
                     this.highlightAny = true;
                     this.selectedNodes.clear();
+                    break;
+                case 'toggleCollapse':
+                    if(trigger.isCollapsed){
+                        this.expandLayers();
+                    }else{
+                        this.collapseLayers();
+                    }
                     break;
                 default:
                     console.warn("got unexpected trigger name");
@@ -191,11 +204,6 @@ export const graphMixin = {
             return orderedStitches;
         },
         handleAutoIncrease(numStitches, numRepetitions) {
-            console.log("current stitch is:");
-            console.log(this.currentNode);
-            console.log("Now i'd like to repeat the last "+ numStitches + " for " + numRepetitions + " times.");
-            console.log("i will start autocompleting into this stitch:");
-
             // find the stitches to repeat:
             let stitchesToRepeat=[];
 
@@ -226,9 +234,6 @@ export const graphMixin = {
                 }
             }
 
-        },
-        getTrigger(data) {
-            console.warn("graph got unimplemented trigger: " + data);
         },
         startChain(amount, isClosed) {
             let actions = commandTracker.execute(new CommandAddInitialStitch("ch"));
@@ -359,6 +364,32 @@ export const graphMixin = {
           let actions = commandTracker.execute(new CommandAddHole(this.selectedNodes));
           this.handleAction(actions);
         },
+        expandLayers() {
+            this.addDataToGraph(Array.from(this.collapsedNodes), Array.from(this.collapsedLinks));
+            this.collapsedNodes.clear();
+            this.collapsedLinks.clear();
+        },
+        collapseLayers() {
+            let maxLayerToCollapse = this.graphLayers - 2;
+            let prunedNodes = [];
+            let prunedLinks = [];
+            this.graph.graphData().nodes.forEach(node => {
+                if(node.layer <= maxLayerToCollapse){
+                    this.collapsedNodes.add(node);
+                }else{
+                    prunedNodes.push(node);
+                }
+            });
+            this.graph.graphData().links.forEach(link => {
+                let {source, target} = this.getNodesFromLink(link);
+                if(source.layer <= maxLayerToCollapse && target.layer <= maxLayerToCollapse){
+                    this.collapsedLinks.add(link);
+                }else{
+                    prunedLinks.push(link);
+                }
+            });
+            this.graph.graphData({nodes: prunedNodes, links: prunedLinks});
+        },
         savePattern() {
             let pattern = this.printGraph();
             let blob = new Blob([pattern], {type: "application/json;charset=utf-8"});
@@ -372,6 +403,9 @@ export const graphMixin = {
         },
         resetGraph() {
             this.graph.graphData({"nodes":[], "links":[]});
+            this.collapsedLinks = new Set();
+            this.collapsedNodes = new Set();
+            this.maxLayerToCollapse = -1;
             commandTracker.resetHistory();
         },
         addDataToGraph(nodes=[], links=[]) {

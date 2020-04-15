@@ -64,7 +64,7 @@
         data() {
             return {
                 name: "ViewButtonBar",
-                isGraphReduced: false,
+                isGraphReduced: true,
                 is3D: true,
                 isEdgeVisible: true,
                 iconName: 'video3dOff'
@@ -87,6 +87,8 @@
             },
             toggleCollapseGraph() {
                 this.isGraphReduced = !this.isGraphReduced;
+                let msg = {name: 'toggleCollapse', isCollapsed: this.isGraphReduced};
+                this.$emit("triggerGraph", msg);
             }
         },
         components: {
