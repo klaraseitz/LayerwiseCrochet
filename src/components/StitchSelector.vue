@@ -89,7 +89,7 @@ export default {
                 'slst': 'slipstitch',
             },
             isIncrease: true,
-            layers: localStorage.graphJson ? localStorage.graphJson.numLayers : 0
+            layers: 0
         }
     },
     components: {

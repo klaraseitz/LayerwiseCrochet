@@ -118,7 +118,7 @@ export const graphMixin = {
     methods: {
         startGraph(method, stitchAmount) {
             this.resetGraph();
-            this.graphLayers = 0;
+
             switch (method){
                 case 'mr':
                     let actions = commandTracker.execute(new CommandAddInitialStitch("mr"));
@@ -403,6 +403,7 @@ export const graphMixin = {
         },
         resetGraph() {
             this.graph.graphData({"nodes":[], "links":[]});
+            this.graphLayers = 0;
             this.collapsedLinks = new Set();
             this.collapsedNodes = new Set();
             this.maxLayerToCollapse = -1;

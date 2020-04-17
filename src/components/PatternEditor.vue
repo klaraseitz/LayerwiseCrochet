@@ -36,7 +36,6 @@
                 name: "PatternEditor",
                 graphTriggerMsg: '',
                 maxLayer: 0,
-                currentLayer: 0,
                 stitch: null,
                 is3D: true,
                 isGraphReduced: false,
