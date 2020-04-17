@@ -7,7 +7,8 @@
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
     import ForceGraph3D from '3d-force-graph';
     import {graphMixin} from "@/mixins/graphMixin";
-    import CrochetPaths from "@/helper/crochetThreejsPaths";
+    import CrochetPaths from "@/helper/crochetStitchDrawings3d";
+    import Vector from "@/helper/vector";
     const stitchPaths = new CrochetPaths(0xff0000);
     const N = 2;
     const gData = {
@@ -30,7 +31,7 @@
         },
         methods: {
             refreshGraph() {
-              this.graph.refresh();
+                this.graph.refresh();
             },
             centerCameraPosition() {
                 this.graph.cameraPosition({ }, {x:0,y:0,z:0});
@@ -39,20 +40,21 @@
                 // all drawings are relative to the nodes' current coordinates
                 if(node.type === "mr" || node.type === "ch" || node.type === "hole"){
                     let color = this.getStitchColor(node);
-                    return stitchPaths.draw(node.type, color).rotateX(1/2*Math.PI);
+                    return stitchPaths.draw(node.type, color);
                 }else{
                     return false;
                 }
             },
             getThreeObjectForLink(link) {
-                let {source} = this.getNodesFromLink(link);
+                let {source, target} = this.getNodesFromLink(link);
                 let color = this.getStitchColor(source);
+
                 if(link.inserts){
                     if(source && source.type){
                         return stitchPaths.draw(source.type, color);
                     }
                 }else if(link.slipstitch){
-                    return stitchPaths.draw("slst", color).rotateX(1/2*Math.PI);
+                    return stitchPaths.draw("slst", color);
                 }
                 return false;
             },
@@ -70,7 +72,7 @@
                 .backgroundColor("#ffffff")
 // *** Node Styling ***
                 .nodeRelSize(5)
-                .nodeColor(node => 'rgba(0,0,0,0)')
+                .nodeColor(() => "transparent")
                 .nodeOpacity(0.5) // keep node visible for when node is highlighted on hover
                 .nodeThreeObjectExtend(true)
                 .nodeThreeObject(node => this.getThreeObjectForNode(node))
@@ -102,13 +104,34 @@
                     if(link.slipstitch){
                         position = centerPoint;
                     }else{
-                        position = startCenterMiddlePoint;
-                        // change up vector to decide the spin of the object after the rotate of LookAt
-                        // Object.assign(linkObject.up, new THREE.Vector3(0,1,0));
-                        let targetVec = new THREE.Vector3(link.target.x, link.target.y, link.target.z);
-                        let sourceVec = new THREE.Vector3(link.source.x, link.source.y, link.source.z);
-                        let isIncreaseStitch = link.source.isIncrease;
-                        linkObject.lookAt(isIncreaseStitch ? targetVec : sourceVec); // rotates objects' z-axis to face a point(dont normalize that point or it flickers)
+                        position = startPoint;
+
+                        let screenCoordSource = this.graph.graph2ScreenCoords(link.source.x, link.source.y, link.source.z);
+                        let screenCoordTarget = this.graph.graph2ScreenCoords(link.target.x, link.target.y, link.target.z);
+
+                        let spriteUpVec = new Vector(0, 1, 0);
+                        let linkVec = new Vector(
+                            Math.abs(screenCoordSource.x - screenCoordTarget.x),
+                            Math.abs(screenCoordSource.y - screenCoordTarget.y),
+                            Math.abs(screenCoordSource.z - screenCoordTarget.z)
+                        );
+                        let radians = spriteUpVec.angleTo(linkVec);
+                        let stitchAbove = screenCoordSource.y >= screenCoordTarget.y;
+                        let stitchRight = screenCoordSource.x >= screenCoordTarget.x;
+
+                        if(stitchAbove){
+                            radians += Math.PI;
+                            if(!stitchRight){
+                                radians *= -1;
+                            }
+                        }else{
+                            if(stitchRight){
+                                radians *= -1;
+                            }
+                        }
+                        linkObject.children[0].material.setValues({
+                            rotation: radians
+                        })
                     }
 
                     Object.assign(linkObject.position, position);

@@ -95,7 +95,7 @@ export const graphMixin = {
                     if(trigger.shouldCreate){
                         this.addHoleNode();
                     }
-                    this.graph.nodeColor(() => 'transparent');
+                    this.graph.nodeColor(() => "rgba(0,0,0,0)");
                     this.graph.onNodeClick(this.handleNodeClick);
                     this.highlightAny = true;
                     this.selectedNodes.clear();
