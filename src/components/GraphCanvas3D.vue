@@ -33,8 +33,8 @@
             refreshGraph() {
                 this.graph.refresh();
             },
-            centerCameraPosition() {
-                this.graph.cameraPosition({ }, {x:0,y:0,z:0});
+            setCameraPosition(position = {}, lookAt = {x:0, y:0, z:0}) {
+                this.graph.cameraPosition(position, lookAt);
             },
             getThreeObjectForNode(node) {
                 // all drawings are relative to the nodes' current coordinates
@@ -99,12 +99,17 @@
                     let startCenterMiddlePoint = {
                         "x": (startPoint.x +  centerPoint.x) / 2,
                         "y": (startPoint.y +  centerPoint.y) / 2,
-                        "z": (startPoint.z +  centerPoint.z) / 2,
+                        "z": (startPoint.z +  centerPoint.z) / 2 ,
+                    };
+                    let secondMiddlePoint = {
+                        "x": (startPoint.x +  startCenterMiddlePoint.x) / 2,
+                        "y": (startPoint.y +  startCenterMiddlePoint.y) / 2,
+                        "z": (startPoint.z +  startCenterMiddlePoint.z) / 2 ,
                     };
                     if(link.slipstitch){
                         position = centerPoint;
                     }else{
-                        position = startPoint;
+                        position = secondMiddlePoint;
 
                         let screenCoordSource = this.graph.graph2ScreenCoords(link.source.x, link.source.y, link.source.z);
                         let screenCoordTarget = this.graph.graph2ScreenCoords(link.target.x, link.target.y, link.target.z);

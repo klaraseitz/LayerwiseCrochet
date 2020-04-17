@@ -84,7 +84,7 @@ export const graphMixin = {
                     this.refreshGraph();
                     break;
                 case 'centerView':
-                    this.centerCameraPosition();
+                    this.setCameraPosition();
                     break;
                 case 'startAddHole':
                     this.graph.nodeColor(() => 'grey');
@@ -123,6 +123,7 @@ export const graphMixin = {
                 case 'mr':
                     let actions = commandTracker.execute(new CommandAddInitialStitch("mr"));
                     this.handleAction(actions);
+                    this.setCameraPosition({z:-200});
                     break;
                 case 'line_of_ch':
                     this.startChain(stitchAmount, false);

@@ -31,7 +31,7 @@
             refreshGraph() {
                 // do nothing. the 2D library doesnt support this function
             },
-            centerCameraPosition() {
+            setCameraPosition() {
                 // do nothing. the 2D library doesnt support this function
             },
             getCanvasObjectForNode(node, ctx) {
