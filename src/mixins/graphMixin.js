@@ -319,8 +319,10 @@ export const graphMixin = {
             this.refreshGraph();
         },
         handleNodeClickToSelect(node) {
-            this.selectedNodes.has(node) ? this.selectedNodes.delete(node) : this.selectedNodes.add(node);
-            this.graph.nodeColor(node => this.selectedNodes.has(node) ? 'yellow' : 'grey');
+            if(node.type !== "hole") {
+                this.selectedNodes.has(node) ? this.selectedNodes.delete(node) : this.selectedNodes.add(node);
+                this.graph.nodeColor(node => this.selectedNodes.has(node) ? 'yellow' : 'grey');
+            }
         },
         handleNodeRightClick(node) {
             if(this.stitch && (this.stitch !== "ch" || this.stitch !== "slst")){
