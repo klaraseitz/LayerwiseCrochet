@@ -9,12 +9,17 @@ class Node {
         this.inserts = insertsIndices || [];
         this.next = nextIndex || null;
         this.isIncrease = isIncrease || true;
+        this.surroundingNodes = type === 'hole' ? [] : null;
         this.uuid = uuid || uuidv4();
         if(x && y && z){
             this.x = x;
             this.y = y;
             this.z = z;
         }
+    }
+
+    setSurroundingNodes(nodes) {
+        this.surroundingNodes = nodes;
     }
 }
 

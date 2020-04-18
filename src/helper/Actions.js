@@ -118,6 +118,8 @@ export function removeDecreasingStitch() {
 export function addHole() {
     let hole = new Node('hole', 0, false, null, [], null, true, this.uuid);
     this.uuid = hole.uuid;
+    let surroundingNodeIds = this.values.surroundingNodes.map(node => node.uuid);
+    hole.surroundingNodes = surroundingNodeIds;
 
     let highestLayer = 0;
     let newLinks = [];

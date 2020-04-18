@@ -3,7 +3,6 @@
 </template>
 
 <script>
-    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
     import ForceGraph3D from '3d-force-graph';
     import {graphMixin} from "@/mixins/graphMixin";
     import CrochetPaths from "@/helper/crochetStitchDrawings3d";
@@ -45,7 +44,7 @@
                 }
             },
             getThreeObjectForLink(link) {
-                let {source, target} = this.getNodesFromLink(link);
+                let {source} = this.getNodesFromLink(link);
                 let color = this.getStitchColor(source);
 
                 if(link.inserts){
@@ -57,8 +56,24 @@
                 }
                 return false;
             },
-            addToScene(gltf) {
-              this.graph.scene().add(gltf.scene);
+            calculateCenterPositionForHole(node) {
+                if(node.type === 'hole'){
+                    let newX = 0;
+                    let newY = 0;
+                    let newZ = 0;
+                    node.surroundingNodes.forEach(uuid => {
+                        let node = this.getNode(uuid);
+                        newX += node.x;
+                        newY += node.y;
+                        newZ += node.z;
+                    })
+                    newX /= node.surroundingNodes.length;
+                    newY /= node.surroundingNodes.length;
+                    newZ /= node.surroundingNodes.length;
+                    node.x = newX;
+                    node.y = newY;
+                    node.z = newZ;
+                }
             }
         },
         mounted() {
@@ -83,6 +98,7 @@
                 .linkThreeObject(link => this.getThreeObjectForLink(link))
                 .linkPositionUpdate((linkObject, { start, end }, link) => {
                     if(!linkObject){
+                        this.calculateCenterPositionForHole(link.source);
                         return true;
                     }
 
@@ -179,7 +195,7 @@
 
 
             this.graph.cooldownTime(Infinity)
-                .d3Force('collide', d3.forceCollide(5))
+                //.d3Force('collide', d3.forceCollide(5))
                 //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .d3Force('link')
                 .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
@@ -188,14 +204,6 @@
             if(localStorage.graphJson){
                 this.setGraphFromJson(localStorage.graphJson);
             }
-
-            // use this to add a 3D model to the scene. I couldnt get a local path to load the model yet.
-            /*loader.load( "https://threejsfundamentals.org/threejs/resources/models/cartoon_lowpoly_small_city_free_pack/scene.gltf",
-                this.addToScene, undefined,
-                function ( error ) {
-                    console.error( error );
-                }
-            );*/
         }
     }
 </script>
