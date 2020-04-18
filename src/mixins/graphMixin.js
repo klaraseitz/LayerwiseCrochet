@@ -313,7 +313,6 @@ export const graphMixin = {
                         }else {
                             this.decreaseStitch(this.currentNode, node);
                         }
-                        
                 }
             }
             this.refreshGraph();
@@ -402,7 +401,7 @@ export const graphMixin = {
           this.handleAction(actions);
         },
         expandLayers() {
-            this.addDataToGraph(Array.from(this.collapsedNodes), Array.from(this.collapsedLinks));
+            this.addDataToGraph(Array.from(this.collapsedNodes), Array.from(this.collapsedLinks), true);
             this.collapsedNodes.clear();
             this.collapsedLinks.clear();
         },
@@ -446,10 +445,16 @@ export const graphMixin = {
             this.maxLayerToCollapse = -1;
             commandTracker.resetHistory();
         },
-        addDataToGraph(nodes=[], links=[]) {
+        addDataToGraph(nodes=[], links=[], reverse = false) {
             const data = this.graph.graphData();
-            data.nodes = data.nodes.concat(nodes);
-            data.links = data.links.concat(links);
+            if(reverse){
+                data.nodes = nodes.concat(data.nodes);
+                data.links = links.concat(data.links);
+            }else{
+                data.nodes = data.nodes.concat(nodes);
+                data.links = data.links.concat(links);
+            }
+
             this.graph.graphData(data);
         },
         setGraphFromJson(graph) {
