@@ -5,6 +5,39 @@
         <v-row justify="center">
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
+                    <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
+                        <v-icon> mdi-file-plus-outline </v-icon>
+                    </v-btn>
+                </template>
+                <span>{{$t('tooltips.new_pattern')}}</span>
+            </v-tooltip>
+            <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                    <input type="file" accept="application/json" ref="file" style="display: none" v-on:change="loadPattern" v-on="on">
+                    <v-btn class="ma-2" outlined color="indigo" @click="$refs.file.click()" v-on="on">
+                        <v-icon> mdi-folder-open-outline </v-icon>
+                    </v-btn>
+                </template>
+                <span>{{$t('tooltips.open')}}</span>
+            </v-tooltip>
+            <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                    <v-btn class="ma-2" outlined color="indigo" @click="saveGraph" v-on="on">
+                        <v-icon> mdi-content-save-outline </v-icon>
+                    </v-btn>
+                </template>
+                <span>{{$t('tooltips.save')}}</span>
+            </v-tooltip>
+            <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                    <v-btn class="ma-2" outlined color="indigo" @click="openNotImplementedAlert" v-on="on">
+                        <v-icon> mdi-printer </v-icon>
+                    </v-btn>
+                </template>
+                <span>{{$t('tooltips.print')}}</span>
+            </v-tooltip>
+            <v-tooltip top>
+                <template v-slot:activator="{ on }">
                     <v-btn class="ma-2" outlined color="indigo" @click="undo" v-on="on">
                         <v-icon> mdi-undo </v-icon>
                     </v-btn>
@@ -19,51 +52,6 @@
                 </template>
                 <span>{{$t('tooltips.redo')}}</span>
             </v-tooltip>
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn class="ma-2" outlined color="indigo" @click="saveGraph" v-on="on">
-                        <v-icon> mdi-content-save-outline </v-icon>
-                    </v-btn>
-                </template>
-                <span>{{$t('tooltips.save')}}</span>
-            </v-tooltip>
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <input type="file" accept="application/json" ref="file" style="display: none" v-on:change="loadPattern" v-on="on">
-                    <v-btn class="ma-2" outlined color="indigo" @click="$refs.file.click()" v-on="on">
-                        <v-icon> mdi-folder-open-outline </v-icon>
-                    </v-btn>
-                </template>
-                <span>{{$t('tooltips.open')}}</span>
-            </v-tooltip>
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn class="ma-2" outlined color="indigo" @click.stop="auto_complete_dialog = true" v-on="on">
-                        <v-icon> mdi-auto-fix </v-icon>
-                    </v-btn>
-                </template>
-                <span>{{$t('tooltips.auto_complete')}}</span>
-            </v-tooltip>
-
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn class="ma-2" outlined color="indigo"
-                           @click.stop="startAddHole" :disabled="waitingForHoleSelection" v-on="on">
-                        <v-icon> mdi-selection-ellipse-arrow-inside </v-icon>
-                    </v-btn>
-                </template>
-                <span>{{$t('tooltips.add_hole')}}</span>
-            </v-tooltip>
-
-            <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                    <v-btn class="ma-2" outlined color="indigo" @click.stop="dialog = true" v-on="on">
-                        <v-icon> mdi-new-box </v-icon>
-                    </v-btn>
-                </template>
-                <span>{{$t('tooltips.new_pattern')}}</span>
-            </v-tooltip>
-
         </v-row>
 
         <v-dialog
@@ -108,7 +96,7 @@
                             text
                             @click="dialog = false"
                     >
-                        Cancel
+                        {{$t("cancel")}}
                     </v-btn>
 
                     <v-btn
@@ -116,90 +104,36 @@
                             text
                             @click="startGraph"
                     >
-                        Done
+                        {{$t("done")}}
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
         <v-dialog
-                v-model="auto_complete_dialog"
+                v-model="showNotImplementedAlert"
                 max-width="290"
-                @keydown.enter="autoComplete"
+                @keydown.enter="startGraph"
         >
             <v-card>
-                <v-card-title class="headline">{{$t('auto_complete_card.title')}}</v-card-title>
                 <v-card-text>
-                    {{$t('auto_complete_card.text')}}
-                    <v-container>
-                        <v-text-field
-                                v-model="stitchAmountAutoComplete"
-                                :rules="[rules.number]"
-                                v-bind:label="numStitchesLabelAutoComplete"
-                                maxlength="3"
-                        />
-                        <v-text-field
-                                v-model="numberRepetitionsAutoComplete"
-                                :rules="[rules.number]"
-                                v-bind:label="numRepetitionsLabelAutoComplete"
-                                maxlength="3"
-                        />
-                    </v-container>
+                    {{$t('not_implemented')}}
                 </v-card-text>
 
                 <v-card-actions>
                     <v-spacer/>
 
                     <v-btn
-                            color="green darken-1"
+                            color="darken-1"
                             text
-                            @click="auto_complete_dialog = false"
+                            @click="showNotImplementedAlert = false"
                     >
-                        Cancel
-                    </v-btn>
-
-                    <v-btn
-                            color="green darken-1"
-                            text
-                            @click="autoComplete"
-                    >
-                        Done
+                        Ok
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
 
-        <v-btn
-                class="accept-tile"
-                v-if="waitingForHoleSelection"
-                color="green"
-                dark
-                outlined
-                elevation="24"
-                bottom
-                fixed
-                right
-                fab
-                tile
-                @click="acceptHole"
-        >
-            <v-icon>mdi-check</v-icon>
-        </v-btn>
-        <v-btn
-                class="accept-tile"
-                v-if="waitingForHoleSelection"
-                color="red"
-                dark
-                outlined
-                elevation="24"
-                bottom
-                left
-                fixed
-                tile
-                fab
-                @click="discardHole"
-        >
-            <v-icon>mdi-close</v-icon>
-        </v-btn>
     </div>
 </template>
 
@@ -222,7 +156,7 @@
                     },
                 },
                 patternFile: null,
-                waitingForHoleSelection: false
+                showNotImplementedAlert: false
             }
         },
         computed: {
@@ -232,12 +166,6 @@
             numStitchesLabel: function() {
                 return this.$t('start_pattern_card.num_stitches_label');
             },
-            numStitchesLabelAutoComplete: function() {
-                return this.$t('auto_complete_card.num_stitches');
-            },
-            numRepetitionsLabelAutoComplete: function() {
-                return this.$t('auto_complete_card.num_repetitions');
-            }
         },
         methods: {
             startGraph() {
@@ -246,13 +174,6 @@
                     method: this.selectedMethod,
                     stitchAmount: this.stitchAmount};
                 this.$emit("triggerGraph", msg)
-            },
-            autoComplete() {
-              this.auto_complete_dialog = false;
-              let msg = {name: 'auto_complete',
-                  numStitches: this.stitchAmountAutoComplete,
-                  numRepetitions: this.numberRepetitionsAutoComplete};
-              this.$emit("triggerGraph", msg);
             },
             saveGraph() {
                 let msg = {name: 'saveGraph'};
@@ -276,21 +197,8 @@
                 this.$emit("triggerGraph", msg);
                 this.$refs.file.value = ''; // resets chosen file so that same file can be opened twice after another
             },
-            startAddHole() {
-                this.waitingForHoleSelection = true;
-                let msg = {name: 'startAddHole'};
-                this.$emit("triggerGraph", msg);
-            },
-            stopAddHole(shouldCreate) {
-                this.waitingForHoleSelection = false;
-                let msg = {name: 'stopAddHole', shouldCreate: shouldCreate};
-                this.$emit("triggerGraph", msg);
-            },
-            acceptHole(){
-                this.stopAddHole(true);
-            },
-            discardHole(){
-                this.stopAddHole(false);
+            openNotImplementedAlert(){
+                this.showNotImplementedAlert = true;
             }
         }
     }

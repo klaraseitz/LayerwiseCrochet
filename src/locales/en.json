@@ -1,6 +1,6 @@
 {
   "app_name": "Crochet Chart Designer",
-  "stitch": "stitch | stitches",
+  "crochet": "Crochet Toolbar",
   "stitches": {
     "ch": "Chain Stitch",
     "sc": "Single Crochet",
@@ -34,7 +34,7 @@
     "increase_text": "The default method is increasing stitches. Switch the method to decreasing in the Stitch dialog. Alternatively left-click to increase and right-click to decrease."
   },
   "auto_complete_card":{
-    "title": "Autocomplete Row/Round",
+    "title": "Autocomplete",
     "text": "Choose how many previous stitches you want to repeat for how long.",
     "num_stitches": "Number of previous stitches",
     "num_repetitions": "Number of whole repetitions"
@@ -53,6 +53,12 @@
     "collapse_graph": "hide previous layers",
     "expand_graph": "show previous layers",
     "switch_to_3d": "switch to 3D view",
-    "switch_to_2d": "switch to 2D view"
-  }
+    "switch_to_2d": "switch to 2D view",
+    "print": "print pattern instructions",
+    "remove_layer": "reduce number of layers",
+    "add_layer": "increase number of layers"
+  },
+  "not_implemented": "This feature is not implemented yet.",
+  "cancel": "Abbrechen",
+  "done": "Fertig"
 }

@@ -16,6 +16,8 @@
         <icon-slipstitch v-else-if="iconName === 'slipstitch'"/>
         <icon-treble-crochet v-else-if="iconName === 'trebleCrochet'"/>
         <icon-video3d-off v-else-if="iconName === 'video3dOff'"/>
+        <icon-decrease v-else-if="iconName === 'decrease'"/>
+        <icon-increase v-else-if="iconName === 'increase'"/>
     </g>
   </svg>
 </template>
@@ -29,6 +31,8 @@
     import IconSlipstitch from "@/icons/IconSlipstitch";
     import IconTrebleCrochet from "@/icons/IconTrebleCrochet";
     import IconVideo3dOff from "@/icons/IconVideo3dOff";
+    import IconIncrease from "@/icons/IconIncrease";
+    import IconDecrease from "@/icons/IconDecrease";
 
     export default {
         props: {
@@ -57,7 +61,9 @@
             IconSingleCrochet,
             IconSlipstitch,
             IconTrebleCrochet,
-            IconVideo3dOff
+            IconVideo3dOff,
+            IconIncrease,
+            IconDecrease
         },
     }
 </script>

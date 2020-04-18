@@ -14,7 +14,7 @@
                            @topLayer="updateMaxLayer"
                            @switchDimension="changeDimension($event)"
                            style="width:80%"/>
-            <StitchSelector :layer="maxLayer"
+            <CrochetActions :layer="maxLayer"
                             @triggerGraph="setGraphTrigger($event)"
                             @sendStitch="setStitch($event)"
                             @changeMaxLayer="updateMaxLayer"/>
@@ -27,7 +27,7 @@
     import ActionToolBar from "@/components/ActionToolBar";
     import GraphCanvas3D from "@/components/GraphCanvas3D";
     import GraphCanvas2D from "@/components/GraphCanvas2D";
-    import StitchSelector from "@/components/StitchSelector";
+    import CrochetActions from "@/components/CrochetActions";
     import ViewButtonBar from "@/components/ViewButtonBar";
 
     export default {
@@ -45,7 +45,7 @@
             ActionToolBar,
             GraphCanvas2D,
             GraphCanvas3D,
-            StitchSelector,
+            CrochetActions,
             ViewButtonBar
         },
         methods: {

@@ -1,6 +1,6 @@
 {
   "app_name": "Häkelschrift Designer",
-  "stitch": "Masche | Maschen",
+  "crochet": "Häkeln",
   "stitches": {
     "ch": "Luftmasche",
     "sc": "Feste Masche",
@@ -34,7 +34,7 @@
     "increase_text": "Die standard Methode ist Maschenzunahme. In dem Maschendialog kann die Methode von Zunahme zu Abnahme gewechselt werden. Alternativ führt ein links-klick eine Zunahme und ein rechts-klick eine Abnahme aus."
   },
   "auto_complete_card":{
-    "title": "Reihe/Runde vervollständigen",
+    "title": "Autovervollständigen",
     "text": "Wähle aus, wie viele Maschen wie oft wiederholt werden sollen.",
     "num_stitches": "Anzahl der zu wiederholenden Maschen",
     "num_repetitions": "Anzahl der kompletten Wiederholungen"
@@ -53,6 +53,12 @@
     "collapse_graph": "vorige Ebenen verstecken",
     "expand_graph": "vorige Ebenen anzeigen",
     "switch_to_3d": "zur 3D Ansicht wechseln",
-    "switch_to_2d": "zur 2D Ansicht wechseln"
-  }
+    "switch_to_2d": "zur 2D Ansicht wechseln",
+    "print": "Anleitung drucken",
+    "remove_layer": "Ebenenzahl reduzieren",
+    "add_layer": "Ebenenzahl erhöhen"
+  },
+  "not_implemented": "Diese Funktionalität gibt es noch nicht.",
+  "cancel": "Abbrechen",
+  "done": "Fertig"
 }
