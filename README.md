@@ -15,6 +15,14 @@ npm run serve
 npm run build
 ```
 
+### Previewing production build locally
+```
+npm install -g serve
+# -s flag means serve it in Single-Page Application mode
+# which deals with the routing problem below
+serve -s dist
+```
+
 ### Lints and fixes files
 ```
 npm run lint
