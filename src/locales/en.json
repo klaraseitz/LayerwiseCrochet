@@ -60,5 +60,11 @@
   },
   "not_implemented": "This feature is not implemented yet.",
   "cancel": "Abbrechen",
-  "done": "Fertig"
+  "done": "Fertig",
+  "dont_show_this_help_again": "Do not show this info again the next time.",
+  "hole_info": {
+    "title": "Mark space between stitches as insert hole",
+    "how_to_select": "Highlight all stitches that surround the hole in yellow by clicking on them. Confirm your selection by pressing the green checkmark. Cancel by clicking the X.",
+    "how_to_use_hole": "The created hole will be represented by a dashed circle. It can be clicked - like any other stitch - to crochet into it."
+  }
 }

@@ -113,7 +113,6 @@
         <v-dialog
                 v-model="showNotImplementedAlert"
                 max-width="290"
-                @keydown.enter="startGraph"
         >
             <v-card>
                 <v-card-text>

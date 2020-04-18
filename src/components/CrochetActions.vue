@@ -133,6 +133,35 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog
+                v-model="showHoleInfoScreen"
+                max-width="520"
+        >
+            <v-card>
+                <v-card-title>
+                    {{$t('hole_info.title')}}
+                </v-card-title>
+                <v-card-text>
+                    {{$t('hole_info.how_to_select')}}
+                    <br>
+                    {{$t('hole_info.how_to_use_hole')}}
+                </v-card-text>
+                <v-checkbox v-model="showHoleInfoNeverAgain" :label="$t('dont_show_this_help_again')"></v-checkbox>
+
+
+                <v-card-actions>
+                    <v-spacer/>
+
+                    <v-btn
+                            color="darken-1"
+                            text
+                            @click="showHoleInfoScreen = false"
+                    >
+                        Ok
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <v-btn
                 class="accept-tile"
                 v-if="waitingForHoleSelection"
@@ -193,6 +222,8 @@ export default {
             waitingForHoleSelection: false,
             stitchAmountAutoComplete: 1,
             numberRepetitionsAutoComplete: 5,
+            showHoleInfoScreen: false,
+            showHoleInfoNeverAgain: false,
             rules: {
                 number: value => {
                     const pattern = /^[1-9][0-9]{0,2}$/;
@@ -234,6 +265,9 @@ export default {
         },
         startAddHole() {
             this.waitingForHoleSelection = true;
+            if(!this.showHoleInfoNeverAgain){
+                this.showHoleInfoScreen = true;
+            }
             let msg = {name: 'startAddHole'};
             this.$emit("triggerGraph", msg);
         },

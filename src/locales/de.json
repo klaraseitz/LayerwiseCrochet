@@ -60,5 +60,11 @@
   },
   "not_implemented": "Diese Funktionalität gibt es noch nicht.",
   "cancel": "Abbrechen",
-  "done": "Fertig"
+  "done": "Fertig",
+  "dont_show_this_help_again": "Diese Info beim nächsten Mal nicht mehr zeigen.",
+  "hole_info": {
+    "title": "Maschenzwischenraum als Einstichsloch markieren",
+    "how_to_select": "Markiere alle Maschen, die das Loch umgeben gelb durch anklicken. Bestätige anschließend deine Auswahl mit dem Haken oder verwerfe sie mit dem X.",
+    "how_to_use_hole": "Das erstellte Loch wird als gestrichelter Kreis dargestellt und kann dann wie eine normale Masche angeklickt werden um dort hinein zu häkeln."
+  }
 }
