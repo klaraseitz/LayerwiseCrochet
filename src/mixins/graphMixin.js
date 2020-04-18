@@ -32,7 +32,8 @@ export const graphMixin = {
                 'dc': 30,
                 'tr': 40,
                 'dtr': 50,
-                'slst': 0
+                'slst': 0,
+                'hole': 10
             },
             highlightedNode: null,
             highlightedLink: null,

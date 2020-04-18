@@ -2,8 +2,7 @@
     <div ref="canvas3D"></div>
 </template>
 
-<script >
-    import * as THREE from 'three';
+<script>
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
     import ForceGraph3D from '3d-force-graph';
     import {graphMixin} from "@/mixins/graphMixin";
@@ -177,10 +176,15 @@
                 })
 // *** Force Engine Configuration ***
                 .numDimensions(3)
+
+
+            this.graph.cooldownTime(Infinity)
+                .d3Force('collide', d3.forceCollide(5))
                 //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .d3Force('link')
                 .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
-            
+
+
             if(localStorage.graphJson){
                 this.setGraphFromJson(localStorage.graphJson);
             }
