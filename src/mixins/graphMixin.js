@@ -142,23 +142,27 @@ export const graphMixin = {
         getNode(uuid){
           return this.nodeById().get(uuid);
         },
-        getNextStitchToInsert(node) {
+        getNextStitchToInsert(node, isForward = true) {
             let insertNode;
             if(node.inserts.length > 0){
                 insertNode = this.getNode(node.inserts[node.inserts.length-1]);
             }else{
                 insertNode = this.getNode(node.previous);
             }
+            if(isForward){
+                return this.getNode(insertNode.next);
+            }else{
+                return this.getNode(insertNode.previous);
+            }
 
-            return this.getNode(insertNode.next);
         },
         getPreviousStitches(startStitch, numberOfStitches, stitchList = []) {
             // TODO: when in export the undo history is included I could use also that to get the recent x stitches
             if(numberOfStitches === 0) {
                 return stitchList;
             }
-            // gets all n previous stitches including the given one.
 
+            // gets all n previous stitches including the given one.
             // add current Stitch:
             stitchList.push(startStitch);
             // go one back:
@@ -205,22 +209,51 @@ export const graphMixin = {
             if(!alreadyPushed) {orderedStitches.push(intoSameStitch)}
             return orderedStitches;
         },
+        determineDirection() {
+            let firstInsertNode = null;
+            let previousInsertNode = null;
+            let previousNode = this.currentNode;
+            if(this.currentNode.inserts.length > 1){
+                firstInsertNode = this.getNode(this.currentNode.inserts[0]);
+                previousInsertNode = this.getNode(this.currentNode.inserts[1]);
+            }else if(this.currentNode.inserts.length === 1){
+                firstInsertNode = this.getNode(this.currentNode.inserts[0]);
+                let counter = 0;
+                // here find previous nodes to current node which did not insert into the same as marked as first insert node
+                while(previousInsertNode === null || counter > 10){
+                    counter++;
+                    previousNode = this.getNode(previousNode.previous);
+                    if(previousNode.inserts.length > 1){
+                        for(let i = 0; i < previousNode.inserts.length; i++){
+                            let insertNodeID = previousNode.inserts[i];
+                            if(insertNodeID !== firstInsertNode.uuid ){
+                                previousInsertNode = this.getNode(insertNodeID);
+                            }
+                        }
+                    }else if(previousNode.inserts.length === 1){
+                        let insertNodeID = previousNode.inserts[0];
+                        if(insertNodeID !== firstInsertNode.uuid ){
+                            previousInsertNode = this.getNode(insertNodeID);
+                        }
+                    }else{
+                        // previousNode is ch
+                    }
+                }
+            }else {
+                // current node is ch
+                return true;
+            }
+            return firstInsertNode.previous === previousInsertNode.uuid;
+        },
         handleAutoIncrease(numStitches, numRepetitions) {
             // find the stitches to repeat:
-            let stitchesToRepeat=[];
-
-            stitchesToRepeat = this.getPreviousStitches(this.currentNode, numStitches);
-            console.log("will repeat these stitches: ");
-            console.log(stitchesToRepeat);
+            let stitchesToRepeat = this.getPreviousStitches(this.currentNode, numStitches);
 
             // order stitches so that we know relevant info and know how many stitches go into the same stitch
             let orderedStitches = this.orderStitches(stitchesToRepeat);
-            console.log("ordered stitches: ");
-            console.log(orderedStitches);
-            let nextStitch = this.getNextStitchToInsert(this.currentNode);
+            let isForwardDirection = this.determineDirection();
+            let nextStitch = this.getNextStitchToInsert(this.currentNode, isForwardDirection);
             for(let i = 0; i < numRepetitions; i++){
-                console.log("will insert this stitch: ");
-                console.log(nextStitch);
                 // repeating all stitches in order
                 for(let k = 0; k < orderedStitches.length; k++){
                     orderedStitches[k].forEach(stitch => {
@@ -232,7 +265,7 @@ export const graphMixin = {
                         }
                         this.handleAction(actions);
                     });
-                    nextStitch = this.getNextStitchToInsert(this.currentNode);
+                    nextStitch = this.getNextStitchToInsert(this.currentNode, isForwardDirection);
                 }
             }
 

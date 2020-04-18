@@ -195,7 +195,6 @@
 
 
             this.graph.cooldownTime(Infinity)
-                //.d3Force('collide', d3.forceCollide(5))
                 //.d3Force('center', null)  // we don't want center force because otherwise all nodes will pull until all are balanced around center point
                 .d3Force('link')
                 .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
