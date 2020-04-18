@@ -61,8 +61,8 @@
                 .linkCanvasObjectMode(() => 'before')
                 .linkCanvasObject((link, ctx) =>{
                     // Calculate Angle and Center point for placement
-                    let n1Vec = new Vector(link.source.x, link.source.y, link.source.z);
-                    let n2Vec = new Vector(link.target.x, link.target.y, link.target.z);
+                    let n1Vec = new Vector(link.source.x, link.source.y, 0);
+                    let n2Vec = new Vector(link.target.x, link.target.y, 0);
                     let linkVec = n1Vec.subtract(n2Vec).unit();
                     let perpendicularVec = new Vector(0, 1, 0);
 
