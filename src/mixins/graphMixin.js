@@ -349,7 +349,9 @@ export const graphMixin = {
                 .linkColor(link => link === this.highlightedLink && link.inserts ? this.colors.highlight.rgba_line : this.getLineColor(link));
         },
         getStitchColor(node){
-            if(node.uuid === this.currentNode.uuid){
+            if(node.type === "hole"){
+                return this.colors.invisible.hex;
+            }else if(node.uuid === this.currentNode.uuid){
                 return this.colors.highlight.hex;
             }else if(!this.isEdgeVisible && node.layer % 2 === 0) {
                 return this.colors.even.hex;
