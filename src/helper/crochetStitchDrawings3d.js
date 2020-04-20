@@ -13,7 +13,7 @@ export default class CrochetStitchDrawings3d {
             let material = new THREE.MeshBasicMaterial({color: this.color});
             return new THREE.Mesh(geometry, material);
         } else {
-            return this.createSphereWithTexture('/imgs/' + stitch + '.svg')
+            return this.createSphereWithTexture('./imgs/' + stitch + '.svg')
         }
     }
 
