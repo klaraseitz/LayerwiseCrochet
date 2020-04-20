@@ -35,6 +35,21 @@
                 // do nothing. the 2D library doesnt support this function
             },
             getCanvasObjectForNode(node, ctx) {
+                if(node.type === "hole"){
+                    // set its position in the middle of its surrounding nodes
+                    let newX = 0;
+                    let newY = 0;
+                    node.surroundingNodes.forEach(uuid => {
+                        let node = this.getNode(uuid);
+                        newX += node.x;
+                        newY += node.y;
+                    })
+                    newX /= node.surroundingNodes.length;
+                    newY /= node.surroundingNodes.length;
+                    node.x = newX;
+                    node.y = newY;
+                }
+
                 // all drawings are relative to the nodes' current coordinates
                 if(node.type === "mr" || node.type === "ch" || node.type === "hole"){
                     let color = this.getStitchColor(node);
@@ -127,7 +142,7 @@
                 })
 // *** Force Engine Configuration ***
                 .d3Force('link')
-                .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 10);
+                .distance(link => link.inserts || link.slipstitch ? this.stitchDistances[link.source.type] : 0);
 
 
             if(localStorage.graphJson){

@@ -27,13 +27,13 @@ export const graphMixin = {
             },
             stitchDistances: {
                 'ch': 0,
-                'sc': 10,
+                'sc': 5,
                 'hdc': 20,
                 'dc': 30,
                 'tr': 40,
                 'dtr': 50,
                 'slst': 0,
-                'hole': 10
+                'hole': 0
             },
             highlightedNode: null,
             highlightedLink: null,
