@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: '/lively4/LayerwiseCrochet/dist/',
+    publicPath: '',
     pluginOptions: {
         i18n: {
             locale: 'en',
