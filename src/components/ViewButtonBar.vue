@@ -65,7 +65,7 @@
             return {
                 name: "ViewButtonBar",
                 isGraphReduced: true,
-                is3D: true,
+                is3D: false,
                 isEdgeVisible: true,
                 iconName: 'video3dOff'
             }
