@@ -1,8 +1,7 @@
 <template>
-    <div>
+    <div class="margin">
         <v-card
-                class="mx-1"
-                max-width="300"
+                max-width="250"
                 elevation="24"
         >
             <v-row justify="space-around" dense>
@@ -71,6 +70,7 @@
                 <v-treeview
                         :items="items"
                         activatable
+                        open-all
                         open-on-click
                         dense
                         :active.sync="selectedStitch"
@@ -353,5 +353,8 @@ export default {
     }
     .black-text {
         color: black
+    }
+    .margin {
+        margin-right: 3rem;
     }
 </style>

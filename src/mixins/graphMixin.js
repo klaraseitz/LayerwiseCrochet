@@ -362,13 +362,13 @@ export const graphMixin = {
         getLineColor(link){
             if(this.isEdgeVisible){
                 let {source, target} = this.getNodesFromLink(link);
-                if(source.layer === target.layer){
+                if(source.layer === target.layer && !link.inserts && source.type !== "hole"){
                     if(source.layer % 2 === 0){
                         return this.colors.even.rgba_line;
                     }else{
                         return this.colors.default.rgba_line;
                     }
-                }else if(!link.inserts){
+                }else if(!link.inserts && source.type !== "hole"){
                     return this.colors.layer_start.rgba_line;
                 }
             }

@@ -1,7 +1,7 @@
 <template>
     <div>
         <ActionToolBar @triggerGraph="setGraphTrigger($event)"/>
-        <div style="width: 100%; display:flex; justify-content: center">
+        <div style="width: 100%; display:flex; justify-content: center;">
             <GraphCanvas3D v-if="is3D"
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
@@ -18,7 +18,8 @@
                             @triggerGraph="setGraphTrigger($event)"
                             @sendStitch="setStitch($event)"
                             @changeMaxLayer="updateMaxLayer"/>
-            <ViewButtonBar @triggerGraph="setGraphTrigger($event)"/>
+            <ViewButtonBar @triggerGraph="setGraphTrigger($event)"
+                        />
         </div>
     </div>
 </template>
@@ -37,7 +38,7 @@
                 graphTriggerMsg: '',
                 maxLayer: 0,
                 stitch: null,
-                is3D: true,
+                is3D: false,
                 isGraphReduced: false,
             }
         },

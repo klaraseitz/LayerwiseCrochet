@@ -12,6 +12,7 @@ class Node {
         this.surroundingNodes = type === 'hole' ? [] : null;
         this.uuid = uuid || uuidv4();
         if(x && y && z){
+            console.log("setting x,y,z: ",x, ", ", y, ", ", z);
             this.x = x;
             this.y = y;
             this.z = z;
