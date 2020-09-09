@@ -44,7 +44,7 @@ export const graphMixin = {
             maxLayerToCollapse: -1
         }
     },
-    props: [ 'trigger', 'stitch' ],
+    props: [ 'trigger', 'stitch', 'insertionType' ],
     watch: {
         trigger: function (trigger) {
             switch (trigger.name) {
@@ -259,9 +259,9 @@ export const graphMixin = {
                     orderedStitches[k].forEach(stitch => {
                         let actions;
                         if(stitch.isIncrease){
-                            actions = commandTracker.execute(new CommandAddStitch(this.currentNode, nextStitch, stitch.type, this.graphLayers));
+                            actions = commandTracker.execute(new CommandAddStitch(this.currentNode, nextStitch, stitch.type, this.graphLayers, this.insertionType));
                         }else{
-                            actions = commandTracker.execute(new CommandAddDecreasingStitch(this.currentNode, nextStitch));
+                            actions = commandTracker.execute(new CommandAddDecreasingStitch(this.currentNode, nextStitch, this.insertionType));
                         }
                         this.handleAction(actions);
                     });
@@ -291,11 +291,11 @@ export const graphMixin = {
             this.handleAction(actions);
         },
         addStitch(prevNode, insertNode, type){
-            let actions = commandTracker.execute(new CommandAddStitch(prevNode, insertNode, type, this.graphLayers));
+            let actions = commandTracker.execute(new CommandAddStitch(prevNode, insertNode, type, this.graphLayers, this.insertionType));
             this.handleAction(actions);
         },
         decreaseStitch(previousNode, insertNode) {
-            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNode, insertNode));
+            let actions = commandTracker.execute(new CommandAddDecreasingStitch(previousNode, insertNode, this.insertionType));
             this.handleAction(actions);
         },
         handleNodeClick(node) {

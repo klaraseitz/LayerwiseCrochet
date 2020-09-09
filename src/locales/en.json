@@ -39,6 +39,16 @@
     "num_stitches": "Number of previous stitches",
     "num_repetitions": "Number of whole repetitions"
   },
+  "insertion_point_selector": {
+    "label": "Insertion Type",
+    "insertion_types": {
+      "both_loops": "Both Loops",
+      "front_loop": "Front Loop",
+      "back_loop": "Back Loop",
+      "front_post": "Front Post",
+      "back_post": "Back Post"
+    }
+  },
   "tooltips": {
     "undo": "undo last step",
     "redo": "redo one step",

@@ -25,11 +25,12 @@ class Node {
 }
 
 class Link {
-    constructor(source, target, inserts, slipstitch) {
+    constructor(source, target, inserts, slipstitch, insertion_point) {
         this.source = source || null;
         this.target = target || null;
         this.inserts = inserts || false;
         this.slipstitch = slipstitch || false;
+        this.insertion_point = insertion_point || null; // only set when is insertion link
     }
 
     export() {
@@ -37,7 +38,8 @@ class Link {
             "source": this.source.uuid || this.source,
             "target": this.target.uuid || this.target,
             "inserts": this.inserts,
-            "slipstitch": this.slipstitch
+            "slipstitch": this.slipstitch,
+            "insertion_point": this.insertion_point
         }
     }
 }

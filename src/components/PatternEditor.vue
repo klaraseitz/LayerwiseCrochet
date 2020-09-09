@@ -5,18 +5,21 @@
             <GraphCanvas3D v-if="is3D"
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
+                           :insertionType="insertionType"
                            @topLayer="updateMaxLayer"
                            @switchDimension="changeDimension($event)"
                            style="width:80%"/>
             <GraphCanvas2D v-else
                            :trigger="graphTriggerMsg"
                            :stitch="stitch"
+                           :insertionType="insertionType"
                            @topLayer="updateMaxLayer"
                            @switchDimension="changeDimension($event)"
                            style="width:80%"/>
             <CrochetActions :layer="maxLayer"
                             @triggerGraph="setGraphTrigger($event)"
                             @sendStitch="setStitch($event)"
+                            @sendInsertionPointType="setInsertionPointType($event)"
                             @changeMaxLayer="updateMaxLayer"/>
             <ViewButtonBar @triggerGraph="setGraphTrigger($event)"
                         />
@@ -38,6 +41,7 @@
                 graphTriggerMsg: '',
                 maxLayer: 0,
                 stitch: null,
+                insertionType: "bothLoops",
                 is3D: false,
                 isGraphReduced: false,
             }
@@ -55,6 +59,9 @@
             },
             setStitch(msg) {
                 this.stitch = msg.stitch;
+            },
+            setInsertionPointType(msg) {
+              this.insertionType = msg.insertionType;
             },
             updateMaxLayer(maxLayer) {
                 this.maxLayer = maxLayer;

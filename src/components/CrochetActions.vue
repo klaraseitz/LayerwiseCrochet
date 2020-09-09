@@ -66,6 +66,15 @@
 
             <v-divider></v-divider>
 
+            <v-select
+                v-model="selectedInsertionPoint"
+                :items="insertionPoints"
+                @change="updateInsertionPoint"
+                v-bind:label="insertionPointSelectorLabel"
+            ></v-select>
+
+            <v-divider></v-divider>
+
             <div>
                 <v-treeview
                         :items="items"
@@ -206,6 +215,7 @@ export default {
             name: "CrochetActions.vue",
             auto_complete_dialog: false,
             selectedStitch: [],
+            selectedInsertionPoint: "bothLoops",
             icons: {
                 'ch': 'chainStitch',
                 'sc': 'singleCrochet',
@@ -244,6 +254,10 @@ export default {
             let stitchName = stitch ? stitch.type : null;
             let msg = {name: 'changeStitch', stitch: stitchName};
             this.$emit("sendStitch", msg);
+
+        },updateInsertionPoint(value) {
+            let msg = {name: 'changeInsertionPoint', insertionType: this.selectedInsertionPoint};
+            this.$emit("sendInsertionPointType", msg);
 
         },
         switchStitchMode(){
@@ -326,11 +340,23 @@ export default {
                 { name: this.$t('stitches.slst'), category: this.$t('stitch_category.ending'), type: "slst" },
             ]
         },
+        insertionPoints: function() {
+          return [
+            {text: this.$t('insertion_point_selector.insertion_types.both_loops'), value: "bothLoops", disabled: false},
+            {text: this.$t('insertion_point_selector.insertion_types.front_loop'), value: "frontLoop", disabled: false},
+            {text: this.$t('insertion_point_selector.insertion_types.back_loop'), value: "backLoop", disabled: false},
+            {text: this.$t('insertion_point_selector.insertion_types.front_post'), value: "frontPost", disabled: false},
+            {text: this.$t('insertion_point_selector.insertion_types.back_post'), value: "backPost", disabled: false}
+          ]
+        },
         numStitchesLabelAutoComplete: function() {
             return this.$t('auto_complete_card.num_stitches');
         },
         numRepetitionsLabelAutoComplete: function() {
             return this.$t('auto_complete_card.num_repetitions');
+        },
+        insertionPointSelectorLabel: function() {
+            return this.$t('insertion_point_selector.label');
         }
     }
 }

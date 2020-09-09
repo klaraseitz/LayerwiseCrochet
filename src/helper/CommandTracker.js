@@ -19,7 +19,6 @@ CommandTracker.prototype = {
     constructor: CommandTracker,
     /**
      * Execute a new command.
-     * @param {CommandAddInitialStitch} command Instance of a command.
      * @returns {undefined}
      */
     execute: function (command) {

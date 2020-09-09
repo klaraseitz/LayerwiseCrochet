@@ -65,7 +65,7 @@ export function addStitch() {
     this.uuid = node.uuid;
 
     let linkToPrevious = new Link(node.uuid, this.values.previousNode.uuid);
-    let linkToInsert = new Link(node.uuid, this.values.insertNode.uuid, true);
+    let linkToInsert = new Link(node.uuid, this.values.insertNode.uuid, true, false, this.values.insertionType);
 
     this.values.previousNode.next = this.uuid;
 
@@ -93,7 +93,7 @@ export function addDecreasingStitch() {
     this.previousIsIncrease = this.values.previousNode.isIncrease;
     this.values.previousNode.isIncrease = false;
 
-    let link = new Link(this.values.previousNode.uuid, this.values.insertNode.uuid, true, false);
+    let link = new Link(this.values.previousNode.uuid, this.values.insertNode.uuid, true, false, this.values.insertionType);
 
     this.values.previousNode.inserts.push(this.values.insertNode.uuid);
 

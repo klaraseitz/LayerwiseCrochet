@@ -31,7 +31,7 @@ export function CommandAddInitialStitch(type) {
     Command.call(this, addInitialStitch, null, {type});
 }
 // Prototype chaining for inheritance.
-CommandAddChain.prototype = Object.create(Command.prototype);
+CommandAddInitialStitch.prototype = Object.create(Command.prototype);
 
 export function CommandAddChain(previousNode, layer) {
     // Constructor stealing for inheritance.
@@ -47,16 +47,16 @@ export function CommandConnectWithSlipStitch(from, to) {
 // Prototype chaining for inheritance.
 CommandConnectWithSlipStitch.prototype = Object.create(Command.prototype);
 
-export function CommandAddStitch(previousNode, insertNode, type, layer) {
+export function CommandAddStitch(previousNode, insertNode, type, layer, insertionType) {
     // Constructor stealing for inheritance.
-    Command.call(this, addStitch, removeStitch, {previousNode, insertNode, type, layer});
+    Command.call(this, addStitch, removeStitch, {previousNode, insertNode, type, layer, insertionType});
 }
 // Prototype chaining for inheritance.
 CommandAddStitch.prototype = Object.create(Command.prototype);
 
-export function CommandAddDecreasingStitch(previousNode, insertNode) {
+export function CommandAddDecreasingStitch(previousNode, insertNode, insertionType) {
     // Constructor stealing for inheritance.
-    Command.call(this, addDecreasingStitch, removeDecreasingStitch, {previousNode, insertNode});
+    Command.call(this, addDecreasingStitch, removeDecreasingStitch, {previousNode, insertNode, insertionType});
 }
 // Prototype chaining for inheritance.
 CommandAddDecreasingStitch.prototype = Object.create(Command.prototype);
@@ -66,4 +66,4 @@ export function CommandAddHole(surroundingNodes) {
     Command.call(this, addHole, removeHole, {surroundingNodes: Array.from(surroundingNodes)});
 }
 // Prototype chaining for inheritance.
-CommandAddDecreasingStitch.prototype = Object.create(Command.prototype);
+CommandAddHole.prototype = Object.create(Command.prototype);

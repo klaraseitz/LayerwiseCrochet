@@ -39,6 +39,16 @@
     "num_stitches": "Anzahl der zu wiederholenden Maschen",
     "num_repetitions": "Anzahl der kompletten Wiederholungen"
   },
+  "insertion_point_selector": {
+    "label": "Einstichsart",
+    "insertion_types": {
+      "both_loops": "Beide Maschenglieder",
+      "front_loop": "Vorderes Maschenglied",
+      "back_loop": "Hinteres Maschenglied",
+      "front_post": "Vordere Reliefmasche",
+      "back_post": "Hintere Reliefmasche"
+    }
+  },
   "tooltips": {
     "undo": "Rückgängig",
     "redo": "Wiederherholen",
