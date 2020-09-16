@@ -38,7 +38,8 @@ export const convertToText = {
                             currentSymbols.push(""+stitchRepetition+previousStitch.type);
                         }
                     }
-                    currentSymbols.push("slst");
+                    this.setSlipStitch(nodes[i-1], currentSymbols);
+
                     symbolsPerLayer[previousLayer] = currentSymbols;
                     console.log("currentSymbols of layer "+currentLayer+": ");
                     console.log(currentSymbols);
@@ -173,7 +174,7 @@ export const convertToText = {
                      currentSymbols.push(""+stitchRepetition+previousStitch.type);
                  }
              }
-             currentSymbols.push("slst");
+             this.setSlipStitch(nodes[nodes.length - 1], currentSymbols);
              symbolsPerLayer[previousLayer] = currentSymbols;
              console.log("symbolsPerLayer: ");
              console.log(symbolsPerLayer);
@@ -226,6 +227,19 @@ export const convertToText = {
                  }
              }
              return counter;
+        },
+        setSlipStitch(node, currentSymbols){
+            let links = this.graph.graphData().links;
+            let layerEndsInSlipstitch = false;
+            for(let i = 0; i < links.length; i++){
+                if( (links[i].target.uuid === node.uuid || links[i].source.uuid === node.uuid) && links[i].slipstitch){
+                    layerEndsInSlipstitch = true;
+                    break;
+                }
+            }
+            if(layerEndsInSlipstitch){
+                currentSymbols.push("slst");
+            }
         }
     }
 }
