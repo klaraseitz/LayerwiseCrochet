@@ -7,6 +7,7 @@
     import {graphMixin} from "@/mixins/graphMixin";
     import Vector from '@/helper/vector';
     import CrochetCanvas from "@/helper/crochetCanvas";
+    import {convertToText} from "@/mixins/convertToText";
     const stitchCanvas = new CrochetCanvas();
     const N = 2;
     const gData = {
@@ -20,7 +21,7 @@
     };
 
     export default {
-        mixins: [graphMixin],
+        mixins: [graphMixin, convertToText],
         data() {
             return {
                 name: 'GraphCanvas2D',

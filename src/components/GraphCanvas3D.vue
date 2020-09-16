@@ -7,6 +7,7 @@
     import {graphMixin} from "@/mixins/graphMixin";
     import CrochetPaths from "@/helper/crochetStitchDrawings3d";
     import Vector from "@/helper/vector";
+    import {convertToText} from "@/mixins/convertToText";
     const stitchPaths = new CrochetPaths(0xff0000);
     const N = 2;
     const gData = {
@@ -20,7 +21,7 @@
     };
 
     export default {
-        mixins: [graphMixin],
+        mixins: [graphMixin, convertToText],
         data() {
             return {
                 name: 'GraphCanvas3D',

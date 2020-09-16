@@ -108,6 +108,9 @@ export const graphMixin = {
                         this.collapseLayers();
                     }
                     break;
+                case 'graphToText':
+                    this.graphToSymbols();
+                    break;
                 default:
                     console.warn("got unexpected trigger name");
             }

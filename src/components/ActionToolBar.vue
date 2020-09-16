@@ -30,7 +30,7 @@
             </v-tooltip>
             <v-tooltip top>
                 <template v-slot:activator="{ on }">
-                    <v-btn class="ma-2" outlined color="indigo" @click="openNotImplementedAlert" v-on="on">
+                    <v-btn class="ma-2" outlined color="indigo" @click="graphToText" v-on="on">
                         <v-icon> mdi-printer </v-icon>
                     </v-btn>
                 </template>
@@ -195,6 +195,10 @@
                 let msg = {name: 'loadGraphFile', patternFile: file};
                 this.$emit("triggerGraph", msg);
                 this.$refs.file.value = ''; // resets chosen file so that same file can be opened twice after another
+            },
+            graphToText() {
+              let msg = {name: 'graphToText'}
+              this.$emit("triggerGraph", msg)
             },
             openNotImplementedAlert(){
                 this.showNotImplementedAlert = true;
