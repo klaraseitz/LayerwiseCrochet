@@ -25,9 +25,11 @@ export const convertToText = {
                 let currentLayer = nodes[i].layer;
                 if(currentLayer > previousLayer){
                     // add last info to current layer:
-                    let inc_ending = inSameStitch ? "Inc" : "";
                     if(stitchRepetition > 0){
-                        currentSymbols.push(""+stitchRepetition+previousStitch.type+inc_ending);
+                        currentSymbols.push(""+stitchRepetition+previousStitch.type);
+                        if(inSameStitch){
+                            currentSymbols.push(")");
+                        }
                     }
                     symbolsPerLayer[previousLayer] = currentSymbols;
                     console.log("currentSymbols of layer "+currentLayer+": ");
@@ -70,47 +72,66 @@ export const convertToText = {
                                 increasedNode = nodes[i].inserts[0];
                                 stitchRepetition++;
                             }else{
-                                if(previousStitch.type === nodes[i].type){ // repetition found
-                                    if(increasedNode === nodes[i].inserts[0]){ // repetition into same stitch
-                                        if(inSameStitch){ // previous repetition into same stitch found
-                                            // continues being true
+                                if(inSameStitch){ // previous repetition into same stitch found
+                                    if(increasedNode === nodes[i].inserts[0]){ // still inserting into same stitch
+                                        if(previousStitch.type === nodes[i].type){// same stitch type again found
                                             stitchRepetition++;
-                                        }else{ // previously no same stitch increase
-                                            // save previous stitches:
-                                            let reps = stitchRepetition - 1; // ignore last stitch as it will count together with current
-                                            if(reps > 0){
-                                                currentSymbols.push(""+reps+previousStitch.type);
-                                            }
-                                            stitchRepetition = 2;
-                                            inSameStitch = true;
-                                            // now a same stitch repeat has been found (last and current stitch)
+                                        }else{ // not same stitch, but same insert point
+                                            // save previous stitch
+                                            currentSymbols.push(""+ stitchRepetition+previousStitch.type);
+                                            stitchRepetition = 1;
                                         }
-                                    }else{
-                                        if(inSameStitch){ // previously we had a same stitch repetition, now not anymore
-                                            // save previous stitches:
-                                            currentSymbols.push(""+stitchRepetition+previousStitch.type+"Inc");
-                                            increasedNode = nodes[i].inserts[0]; // update which node is being increased
-                                            stitchRepetition = 1; // reset repetition counter
-                                        }else{ // previously also non same stitch repetition
-                                            stitchRepetition++;
-                                            increasedNode = nodes[i].inserts[0];
-                                        }
+                                    }else{ // not inserting into same stitch anymore
+                                        // save previous stitches:
+                                        currentSymbols.push(""+ stitchRepetition+previousStitch.type);
+                                        // end same stitch increase
+                                        currentSymbols.push(")");
+                                        // reset values for new stitch
+                                        stitchRepetition = 1;
+                                        increasedNode = nodes[i].inserts[0];
                                         inSameStitch = false;
                                     }
-                                }else{// other stitch repetition just ended
-                                    // save previous stitch
-                                    let inc_ending = inSameStitch ? "Inc" : "";
-                                    currentSymbols.push(""+stitchRepetition+previousStitch.type+inc_ending)
-                                    stitchRepetition = 1;
-                                    increasedNode = nodes[i].inserts[0];
+                                }else{ // previously not into same stitch
+                                    if(increasedNode === nodes[i].inserts[0]){ // but now found same stitch insert
+                                        // save previous stitches:
+                                        let reps = stitchRepetition - 1; // ignore last stitch as it will count together with current
+                                        if(reps > 0){
+                                            currentSymbols.push(""+reps+previousStitch.type);
+                                        }
+                                        stitchRepetition = 1; // keep last stitch
+
+                                        // tell that same stitch insert is starting
+                                        currentSymbols.push("(");
+                                        inSameStitch = true;
+                                        if(previousStitch.type === nodes[i].type){ // still same type
+                                            stitchRepetition++;
+                                        }else{
+                                            // save previous stitches
+                                            currentSymbols.push(""+stitchRepetition+previousStitch.type);
+                                            // reset values
+                                            stitchRepetition = 1;
+                                        }
+                                    }else{  // still not in same stitch
+                                        increasedNode = nodes[i].inserts[0]; // new increased node
+                                        if(previousStitch.type === nodes[i].type) { // still same type
+                                            stitchRepetition++;
+                                        }else{ // new type found
+                                            // save stitches
+                                            currentSymbols.push(""+stitchRepetition+previousStitch.type);
+                                            // reset values
+                                            stitchRepetition = 1;
+                                        }
+                                    }
                                 }
                             }
 
                         }else{ // decreasing
                             // save any previously unadded stitches:
                             if(stitchRepetition > 0){
-                                let inc_ending = inSameStitch ? "Inc" : "";
-                                currentSymbols.push(""+stitchRepetition+previousStitch.type + inc_ending);
+                                currentSymbols.push(""+stitchRepetition+previousStitch.type);
+                                if(inSameStitch){
+                                    currentSymbols.push(")");
+                                }
                             }
                             // reset values
                             stitchRepetition = 0;
@@ -124,9 +145,11 @@ export const convertToText = {
                 previousStitch = nodes[i];
             }
             // add final symbols of last layer:
-             let inc_ending = inSameStitch ? "Inc" : "";
              if(stitchRepetition > 0){
-                 currentSymbols.push(""+stitchRepetition+previousStitch.type+inc_ending);
+                 currentSymbols.push(""+stitchRepetition+previousStitch.type);
+                 if(inSameStitch){
+                     currentSymbols.push(")");
+                 }
              }
              symbolsPerLayer[previousLayer] = currentSymbols;
              console.log("symbolsPerLayer: ");
