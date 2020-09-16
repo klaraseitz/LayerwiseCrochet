@@ -38,6 +38,7 @@ export const convertToText = {
                             currentSymbols.push(""+stitchRepetition+previousStitch.type);
                         }
                     }
+                    currentSymbols.push("slst");
                     symbolsPerLayer[previousLayer] = currentSymbols;
                     console.log("currentSymbols of layer "+currentLayer+": ");
                     console.log(currentSymbols);
@@ -67,8 +68,6 @@ export const convertToText = {
                                 stitchRepetition = 1; // found 1 ch so far
                             }
                         }
-                        break;
-                    case 'slst':
                         break;
                     case 'hole':
                         // ignore holes for now
@@ -132,20 +131,23 @@ export const convertToText = {
                                             currentSymbols.push(""+stitchRepetition+previousStitch.type);
                                             stitchRepetition = 1;
                                         }
-                                        // check for skips:
-                                        this.setNrOfSkips(nodes[i], currentSymbols);
                                         inSameStitch = false;
                                     }
+                                    // check for skips:
+                                    this.setNrOfSkips(nodes[i], currentSymbols);
                                 }
                             }
                             increasedNode = nodes[i].inserts[0];
                         }else{ // decreasing
                             // save any previously unadded stitches:
-                            if(stitchRepetition > 0 && previousStitch){
-                                currentSymbols.push(""+stitchRepetition+previousStitch.type);
-                                if(inSameStitch){
-                                    currentSymbols.push(")");
+                            if(inSameStitch){
+                                currentSymbols.push("(");
+                                currentSymbols = currentSymbols.concat(sameStitchSymbols);
+                                sameStitchSymbols = [];
+                                if(stitchRepetition > 0){
+                                    currentSymbols.push(""+stitchRepetition+previousStitch.type);
                                 }
+                                currentSymbols.push(")");
                             }
                             // reset values
                             stitchRepetition = 0;
@@ -171,6 +173,7 @@ export const convertToText = {
                      currentSymbols.push(""+stitchRepetition+previousStitch.type);
                  }
              }
+             currentSymbols.push("slst");
              symbolsPerLayer[previousLayer] = currentSymbols;
              console.log("symbolsPerLayer: ");
              console.log(symbolsPerLayer);
@@ -188,11 +191,23 @@ export const convertToText = {
         distanceBetweenNodes(node1_id, node2_id){ // as long as all nodes are sorted in actual creation order this works
              let node1 = this.getNode(node1_id);
              let node2 = this.getNode(node2_id);
+             if(node1.index < node2.index){ // we ran over the end of the layer
+                 let count = 0;
+                 let nextNode = this.getNode(node2.next);
+                 while(nextNode.uuid !== node1.uuid || count > 10){
+                     nextNode = this.getNode(nextNode.next);
+                     count++;
+                 }
+                 return count;
+             }
              return Math.abs(node1.index - node2.index) - 1;
         },
         getLastInsertedNode(currentNode){
              let previousNode = this.getNode(currentNode.previous);
-             while(previousNode && previousNode.inserts.length === 0 ){
+             while(previousNode && previousNode.inserts.length === 0){
+                 if(previousNode.layer < currentNode.layer){
+                     return previousNode.uuid;
+                 }
                  previousNode = this.getNode(previousNode.previous);
              }
              if(previousNode){
@@ -200,7 +215,6 @@ export const convertToText = {
              }else{
                  return null;
              }
-
         },
         getNrOfInsertsIntoNode(node){
              let insertedNode_id = node.inserts[0];
